@@ -1,0 +1,8 @@
+<div class="sidebar">
+    <div class="sidebar-header">
+        Sidebar !
+    </div>
+    <div class="sidebar-body">
+        <div *ngFor="let item of items" (click)="itemClicked(item)" class="sidebar-item" [class.selected]="item.isSelected">{{item.text}}</div>
+    </div>
+</div>
