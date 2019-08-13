@@ -1,8 +1,8 @@
 .sh-grid-column {
-  flex-basis: 200px;
   border-right: 1px solid black;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-auto-flow: row;
+  width: 200px;
 
   .sh-grid-col-header {
     font-weight: bold;

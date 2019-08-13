@@ -13,11 +13,12 @@
 
     .sidebar-item {
       padding-left: 15px;
-      height: 35px;
+      height: 40px;
       display: flex;
       align-items: center;
       text-decoration: none;
       color: black;
+      font-size: 18px;
 
 
       &.selected {

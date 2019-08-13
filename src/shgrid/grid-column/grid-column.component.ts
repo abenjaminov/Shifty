@@ -23,12 +23,3 @@ export class GridColumnComponent implements OnInit {
   ngOnInit() {
   }
 }
-
-@Component({
-  selector: 'sh-grid-actions-column',
-  templateUrl: '',
-  styleUrls: []
-})
-export class GridActionsColumnComponent {
-  constructor() { }
-}

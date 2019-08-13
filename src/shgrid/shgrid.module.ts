@@ -1,17 +1,17 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GridComponent } from './grid/grid.component';
-import {GridActionsColumnComponent, GridColumnComponent} from './grid-column/grid-column.component';
+import { GridColumnComponent} from './grid-column/grid-column.component';
 
-
+var components = [GridComponent, GridColumnComponent]
 
 @NgModule({
-  declarations: [GridComponent, GridColumnComponent,GridActionsColumnComponent],
+  declarations: [...components],
   imports: [
     CommonModule
   ],
   exports: [
-    GridComponent
+    ...components
   ]
 })
 export class SHGridModule { }
