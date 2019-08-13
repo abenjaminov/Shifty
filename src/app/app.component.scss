@@ -1,0 +1,16 @@
+.app {
+  display: grid;
+  grid-template-columns: 150px auto;
+  height: 100vh;
+  background-color: #f5f5f5;
+
+  .sidebar-container {
+    grid-column: 1;
+    box-shadow: 3px 0px  3px 0px lightgray;
+    background: white;
+  }
+
+  .content-container {
+    grid-column: 2;
+  }
+}

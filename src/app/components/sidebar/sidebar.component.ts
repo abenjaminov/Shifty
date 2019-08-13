@@ -19,6 +19,11 @@ export class SidebarComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    this.items = [
+        { text: "Home",link: "/", isSelected : false },
+      { text: "Profiles",link: "/profiles", isSelected : true },
+      { text: "Rooms",link: "/rooms" }];
+
   }
 
   itemClicked(item: SidebarItem) {
