@@ -7,18 +7,22 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HomeComponent } from './components/home/home.component';
 import { SHGridModule } from 'src/shgrid/shgrid.module';
 import { ViewComponent } from './components/view/view.component';
+import {Router, RouterModule} from "@angular/router";
+import { ProfilesComponent } from './components/profiles/profiles.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SidebarComponent,
     HomeComponent,
-    ViewComponent
+    ViewComponent,
+    ProfilesComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    SHGridModule
+    SHGridModule,
+    RouterModule
   ],
   providers: [],
   bootstrap: [AppComponent]

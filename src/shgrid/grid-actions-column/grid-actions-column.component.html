@@ -1,0 +1,6 @@
+<div class="sh-grid-column action-column">
+  <div class="sh-grid-col-header sh-grid-cell">{{columnSource.header.text}}</div>
+  <div class="sh-grid-cell action-cell" *ngFor="let cellInfo of columnSource.cellInfos;let i = index">
+    <button *ngFor="let action of cellInfo.actions" (click)="action.action(i)" >{{action.icon}}</button>
+  </div>
+</div>

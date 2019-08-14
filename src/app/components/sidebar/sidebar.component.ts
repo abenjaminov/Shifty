@@ -1,4 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, forwardRef, Inject, Input, OnInit} from '@angular/core';
+import {Event, NavigationEnd, Router} from "@angular/router";
 
 export class SidebarItem {
   public isSelected?: boolean = false;
@@ -16,11 +17,27 @@ export class SidebarComponent implements OnInit {
   @Input() items: SidebarItem[];
   selectedItem:SidebarItem;
 
-  constructor() { }
+  constructor(@Inject(forwardRef(() => Router)) private router: Router) {
+    router.events.subscribe((event: Event) => {
+      if (event instanceof NavigationEnd) {
+        var navigationEndEvent = event as NavigationEnd;
+
+        for (let i = 0; i< this.items.length; i++)
+        {
+          var item = this.items[i];
+
+          if(item.link == navigationEndEvent.urlAfterRedirects) {
+            this.itemClicked(item);
+            break;
+          }
+        }
+      }
+    })
+  }
 
   ngOnInit() {
     this.items = [
-        { text: "Home",link: "/", isSelected : false },
+        { text: "Home",link: "/home", isSelected : false },
       { text: "Profiles",link: "/profiles", isSelected : true },
       { text: "Rooms",link: "/rooms" }];
 

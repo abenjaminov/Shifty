@@ -12,7 +12,7 @@ export class ShGridColumn {
 @Component({
   selector: 'sh-grid-column',
   templateUrl: './grid-column.component.html',
-  styleUrls: ['./grid-column.component.scss']
+  styleUrls: ['../grid-column.scss']
 })
 export class GridColumnComponent implements OnInit {
 

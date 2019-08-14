@@ -7,8 +7,6 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class GridComponent implements OnInit {
 
-  @Input() hasActions:boolean;
-
   constructor() { }
 
   ngOnInit() {
