@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ShCellInfo} from "../grid-column/grid-column.component";
+import {ShCellInfo, GridColumnComponent} from "../grid-column/grid-column.component";
 
 export class GridAction {
   icon:string;
@@ -24,6 +24,8 @@ export class GridActionsColumnComponent {
 
   @Input() columnSource: ShGridActionColumn;
 
-  constructor() { }
+  constructor() { 
+    
+  }
 
 }

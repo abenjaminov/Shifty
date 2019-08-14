@@ -7,8 +7,10 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HomeComponent } from './components/home/home.component';
 import { SHGridModule } from 'src/shgrid/shgrid.module';
 import { ViewComponent } from './components/view/view.component';
-import {Router, RouterModule} from "@angular/router";
+import { RouterModule} from "@angular/router";
 import { ProfilesComponent } from './components/profiles/profiles.component';
+import { StateService } from './services/state.service';
+import { ProfileEditComponent } from './components/profiles/edit/profile.edit.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +18,8 @@ import { ProfilesComponent } from './components/profiles/profiles.component';
     SidebarComponent,
     HomeComponent,
     ViewComponent,
-    ProfilesComponent
+    ProfilesComponent,
+    ProfileEditComponent
   ],
   imports: [
     BrowserModule,
@@ -24,7 +27,7 @@ import { ProfilesComponent } from './components/profiles/profiles.component';
     SHGridModule,
     RouterModule
   ],
-  providers: [],
+  providers: [StateService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

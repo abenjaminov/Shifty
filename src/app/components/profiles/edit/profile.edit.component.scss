@@ -1,0 +1,45 @@
+.profile-edit {
+    display: grid;
+    grid-auto-rows: 50% auto;
+    height: 100%;
+    width: 100%;
+
+    .profile-info {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 30% 70%;
+
+        .profile-image {
+            background-color: red;
+        }
+
+        .profile-main-info {
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: 50% 50%;
+
+            .info {
+                padding-left: 10px;
+
+                .property {
+                    font-size: 18px;
+                }
+            }
+
+            .professions {
+                .title {
+                    font-weight: bold;
+                    font-size: 24px;
+                }
+
+                .profession {
+                    font-size: 18px;
+                }
+            }
+        }
+    }
+
+    .profile-secondary-info {
+        background-color:green;
+    }
+}

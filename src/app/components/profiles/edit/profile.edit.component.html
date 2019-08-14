@@ -1,0 +1,22 @@
+<div class="profile-edit" *ngIf="profileToEdit">
+    <div class="profile-info">
+        <div class="profile-image">
+
+        </div>
+        <div class="profile-main-info">
+            <div class="info">
+                <span class="property">Name :  </span>
+                <input [value]="profileToEdit.name" />
+            </div>
+            <div class="professions">
+                <div class="title">Professions</div>
+                <div class="profession" *ngFor="let profession of profileToEdit.professions; let i = index">
+                    {{i + 1}}. {{profession.name}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="profile-secondary-info">
+
+    </div>
+</div>

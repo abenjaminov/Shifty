@@ -2,6 +2,7 @@ import {Component, forwardRef, Inject, OnInit} from '@angular/core';
 import {ShCellInfo, ShGridColumn} from "../../../shgrid/grid-column/grid-column.component";
 import {ProfilesService} from "../../services/profiles.service";
 import {ShGridActionColumn} from "../../../shgrid/grid-actions-column/grid-actions-column.component";
+import { Profile } from 'src/app/models';
 
 @Component({
   selector: 'sh-profiles',
@@ -13,6 +14,8 @@ export class ProfilesComponent implements OnInit {
 
   public actionColumn: ShGridActionColumn;
   private columns: ShGridColumn[] = [];
+
+  public profileToEdit: Profile;
 
   constructor(
       @Inject(forwardRef(() => ProfilesService)) private profilesService: ProfilesService
@@ -35,7 +38,7 @@ export class ProfilesComponent implements OnInit {
         this.actionColumn.cellInfos.push({
           actions : [{
             action: (index) => {
-              console.log(index)
+              this.onEditProfile(this.profilesService.profiles[index]);
             },
             icon: "Edit"
           },{
@@ -51,5 +54,13 @@ export class ProfilesComponent implements OnInit {
     });
 
     this.columns.push(nameColumn, professionsColumn);
+  }
+
+  onEditProfile(profile: Profile) {
+    this.profileToEdit = profile;
+  }
+
+  onDeleteProfiles(profile: Profile) {
+
   }
 }

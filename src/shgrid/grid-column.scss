@@ -1,8 +1,8 @@
 .sh-grid-column {
-  border-right: 1px solid black;
   display: grid;
   grid-auto-flow: row;
   width: 200px;
+  margin-right: 10px;
 
   &.action-column {
     width: auto;
@@ -12,14 +12,12 @@
     font-weight: bold;
     font-size: 18px;
     background-color:lightgray;
-    border-top:1px solid black;
   }
 
   .sh-grid-cell {
     height: 50px;
     line-height: 50px;
     padding-left: 10px;
-    border-bottom: 1px solid black;
 
     &.action-cell {
       display: grid;

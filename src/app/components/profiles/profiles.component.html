@@ -4,5 +4,10 @@
       <sh-grid-actions-column [columnSource]="actionColumn"></sh-grid-actions-column>
       <sh-grid-column *ngFor="let col of this.columns" [columnSource]="col"></sh-grid-column>
     </sh-grid>
+
+    <div class="profile-edit-content">
+        <sh-profile-edit *ngIf="this.profileToEdit" [profile]="this.profileToEdit"></sh-profile-edit>
+    </div>
+    
   </sh-view>
 </div>

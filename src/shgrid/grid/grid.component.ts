@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChildren} from '@angular/core';
 
 @Component({
   selector: 'sh-grid',
@@ -6,6 +6,7 @@ import {Component, Input, OnInit} from '@angular/core';
   styleUrls: ['./grid.component.scss']
 })
 export class GridComponent implements OnInit {
+
 
   constructor() { }
 
