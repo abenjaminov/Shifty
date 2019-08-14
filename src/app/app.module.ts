@@ -11,6 +11,7 @@ import { RouterModule} from "@angular/router";
 import { ProfilesComponent } from './components/profiles/profiles.component';
 import { StateService } from './services/state.service';
 import { ProfileEditComponent } from './components/profiles/edit/profile.edit.component';
+import { DropdownComponent } from './components/dropdown/dropdown.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { ProfileEditComponent } from './components/profiles/edit/profile.edit.co
     HomeComponent,
     ViewComponent,
     ProfilesComponent,
-    ProfileEditComponent
+    ProfileEditComponent,
+    DropdownComponent
   ],
   imports: [
     BrowserModule,

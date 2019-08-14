@@ -1,0 +1,15 @@
+.sh-dropdown {
+    .dropdown-input {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: auto 15px;
+
+        input {
+            outline: none;
+        }
+
+        .arrow {
+            background-color:white;
+        }
+    }
+}

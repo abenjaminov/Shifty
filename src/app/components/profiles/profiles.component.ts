@@ -34,6 +34,7 @@ export class ProfilesComponent implements OnInit {
     professionsColumn.header.text = "Professions";
 
     this.profilesService.load().then(profiles => {
+      this.profileToEdit = profiles[0];
       profiles.forEach(x => {
         this.actionColumn.cellInfos.push({
           actions : [{
