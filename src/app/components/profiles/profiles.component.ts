@@ -3,6 +3,7 @@ import {ShCellInfo, ShGridColumn} from "../../../shgrid/grid-column/grid-column.
 import {ProfilesService} from "../../services/profiles.service";
 import {ShGridActionColumn} from "../../../shgrid/grid-actions-column/grid-actions-column.component";
 import { Profile } from 'src/app/models';
+import {NavigationService} from "../../services/navigation.service";
 
 @Component({
   selector: 'sh-profiles',
@@ -18,7 +19,8 @@ export class ProfilesComponent implements OnInit {
   public profileToEdit: Profile;
 
   constructor(
-      @Inject(forwardRef(() => ProfilesService)) private profilesService: ProfilesService
+      @Inject(forwardRef(() => ProfilesService)) private profilesService: ProfilesService,
+      @Inject(forwardRef(() => NavigationService)) private navigationService: NavigationService
   ) {
 
   }
@@ -58,7 +60,7 @@ export class ProfilesComponent implements OnInit {
   }
 
   onEditProfile(profile: Profile) {
-    this.profileToEdit = profile;
+    this.navigationService.navigateIn(profile.id.toString());
   }
 
   onDeleteProfiles(profile: Profile) {

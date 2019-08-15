@@ -44,8 +44,8 @@ export class StateService
   fetch<T>(url:string) : Promise<Profile[]>{
     var result = new Promise<Profile[]>((resolve, reject) => {
 
-      this.appState.profiles.push({ name: "Asaf Benjaminov",professions:[{ id:0, name: "Senior" },{ id:1, name: "Intern" }] })
-      this.appState.profiles.push({ name: "Israel israeli",professions:[{ id:1, name: "Intern" }] })
+      this.appState.profiles.push({ id:0, name: "Asaf Benjaminov",professions:[{ id:0, name: "Senior" },{ id:1, name: "Intern" }] })
+      this.appState.profiles.push({ id:1, name: "Israel israeli",professions:[{ id:1, name: "Intern" }] })
 
       resolve(this.appState.profiles);
     });

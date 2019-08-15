@@ -12,6 +12,8 @@ import { ProfilesComponent } from './components/profiles/profiles.component';
 import { StateService } from './services/state.service';
 import { ProfileEditComponent } from './components/profiles/edit/profile.edit.component';
 import { DropdownComponent } from './components/dropdown/dropdown.component';
+import {NavigationService} from "./services/navigation.service";
+import {AngularFontAwesomeModule} from "angular-font-awesome";
 
 @NgModule({
   declarations: [
@@ -27,9 +29,10 @@ import { DropdownComponent } from './components/dropdown/dropdown.component';
     BrowserModule,
     AppRoutingModule,
     SHGridModule,
-    RouterModule
+    RouterModule,
+    AngularFontAwesomeModule
   ],
-  providers: [StateService],
+  providers: [StateService, NavigationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

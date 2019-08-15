@@ -1,7 +1,13 @@
 <div class="sh-dropdown">
+
   <div class="dropdown-input">
       <input type="text" (keyup)="onChange($event)" >
-      <div class="arrow">V</div>
+      <fa class="chevron" name="chevron-down" (click)="onOpenClicked()"></fa>
+  </div>
+  <div class="dropdown-content" *ngIf="this.isOpen">
+    <div class="dropdown-option" *ngFor="let option of options">
+        {{option.name}}
+    </div>
   </div>
   
 </div>

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import {HomeComponent} from "./components/home/home.component";
 import {ProfilesComponent} from "./components/profiles/profiles.component";
+import {ProfileEditComponent} from "./components/profiles/edit/profile.edit.component";
 
 
 const routes: Routes = [{
@@ -13,7 +14,16 @@ const routes: Routes = [{
   pathMatch: 'full'
 }, {
   path: "profiles",
-  component: ProfilesComponent
+  children :[
+    {
+      path: '',
+      component: ProfilesComponent,
+    },
+    {
+      path: ':id',
+      component: ProfileEditComponent
+    }
+  ]
 }];
 
 @NgModule({

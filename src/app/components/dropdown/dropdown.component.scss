@@ -1,15 +1,55 @@
 .sh-dropdown {
+    position: relative;
+    .dropdown-content {
+        display: grid;
+        grid-auto-flow: row;
+        min-height: 100px;
+        max-height: 250px;
+        width: calc(100% - 30px);
+        position: absolute;
+        background-color: white;
+        z-index: 1000;
+        overflow: hidden;
+        overflow-y: scroll;
+        border-left: 2px solid rgb(238, 238, 238);
+
+        .dropdown-option {
+            line-height: 25px;
+            padding-left: 5px;
+            height:25px;
+            cursor:pointer;
+
+            &:hover {
+                background-color: rgb(238, 238, 238);
+            }
+        }
+    }
+
     .dropdown-input {
         display: grid;
         grid-auto-flow: column;
-        grid-auto-columns: auto 15px;
+        grid-auto-columns: auto 30px;
 
         input {
-            outline: none;
+            appearance: none;
+            font-size:18px;
+            border-left: 2px solid rgb(238, 238, 238);
+            border-top: 2px solid rgb(238, 238, 238);
+            border-bottom: 2px solid rgb(238, 238, 238);
         }
 
-        .arrow {
+        .chevron {
             background-color:white;
+            text-align: center;
+            border-right: 2px solid rgb(238, 238, 238);
+            border-top: 2px solid rgb(238, 238, 238);
+            border-bottom: 2px solid rgb(238, 238, 238);
+            cursor: pointer;
+            line-height:24px;
+
+            &:hover {
+                background-color: rgb(238, 238, 238);
+            }
         }
     }
 }
