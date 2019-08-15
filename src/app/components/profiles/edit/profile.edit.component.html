@@ -15,9 +15,11 @@
                         <div class="profession" *ngFor="let profession of profileToEdit.professions; let i = index">
                             {{i + 1}}. {{profession.name}}
                         </div>
-                        <div>
-                           <sh-dropdown [options]="tags"></sh-dropdown>
-                            <div>test</div>
+                        <div class="add-professions">
+                           <sh-dropdown [options]="tags" [(selectedOption)]="selectedOption"></sh-dropdown>
+                            <div class="add-btn" (click)="addProfession()">
+                                +
+                            </div>
                         </div>
                     </div>
                 </div>

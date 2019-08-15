@@ -39,6 +39,22 @@
                 .profession {
                     font-size: 18px;
                 }
+
+                .add-professions {
+                    display: grid;
+                    grid-auto-flow: column;
+                    align-items: center;
+                    grid-auto-rows: 90% auto;
+
+                    .add-btn {
+                        text-align: center;
+                        background-color: rgba(0, 0, 255, 0.15);
+                        border-radius: 10px;
+                        width: 30px;
+                        margin: auto;
+                        cursor: pointer;
+                    }
+                }
             }
         }
     }

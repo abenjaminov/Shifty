@@ -30,8 +30,8 @@
         grid-auto-flow: column;
         grid-auto-columns: auto 30px;
 
-        input {
-            appearance: none;
+        .selected-text {
+            background-color: white;
             font-size:18px;
             border-left: 2px solid rgb(238, 238, 238);
             border-top: 2px solid rgb(238, 238, 238);

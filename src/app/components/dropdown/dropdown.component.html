@@ -1,11 +1,11 @@
 <div class="sh-dropdown">
 
   <div class="dropdown-input">
-      <input type="text" (keyup)="onChange($event)" >
+      <div class="selected-text">{{selectedOption?.name || 'Select an option...'}}</div>
       <fa class="chevron" name="chevron-down" (click)="onOpenClicked()"></fa>
   </div>
   <div class="dropdown-content" *ngIf="this.isOpen">
-    <div class="dropdown-option" *ngFor="let option of options">
+    <div class="dropdown-option" *ngFor="let option of options" (click)="onOptionClicked(option)">
         {{option.name}}
     </div>
   </div>

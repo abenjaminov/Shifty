@@ -29,4 +29,8 @@ export class ProfilesService implements IShService<Profile>
 
     return result;
   }
+
+  saveProfile(profile: Profile) {
+
+  }
 }

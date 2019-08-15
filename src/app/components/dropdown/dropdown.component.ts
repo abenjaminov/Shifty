@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import { Observable, Subscriber, Observer, fromEvent } from 'rxjs';
 
-class DropdownOption {
+export class DropdownOption {
   id: string;
   name:string;
 }
@@ -16,10 +16,11 @@ export class DropdownComponent implements OnInit {
   isOpen:boolean;
   searchText:string;
   search$: Observable<any>;
-  selectedOption: DropdownOption;
+  @Input() selectedOption: DropdownOption;
+  @Output() selectedOptionChange: EventEmitter<DropdownOption> = new EventEmitter<DropdownOption>();
 
   @Input() options: DropdownOption[] = [];
-  @Output() onSelectionChange: EventEmitter<DropdownOption> = new EventEmitter<DropdownOption>();
+
 
   constructor() { }
 
@@ -37,6 +38,8 @@ export class DropdownComponent implements OnInit {
 
   onOptionClicked(option:DropdownOption) {
     this.selectedOption = option;
-    this.onSelectionChange.emit(this.selectedOption);
+    this.selectedOptionChange.emit(this.selectedOption);
+
+    this.isOpen = false;
   }
 }
