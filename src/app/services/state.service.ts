@@ -1,5 +1,25 @@
-import {Injectable} from '@angular/core';
+import {Injectable, Inject, forwardRef} from '@angular/core';
 import { Profile, Tag } from '../models';
+import { HttpClient } from '@angular/common/http';
+import { CacheService } from './cache.service';
+
+interface HttpResult {
+  data: any;
+}
+
+export interface IStateObject {
+  id:string | number;
+}
+
+interface ApiConfig {
+  controller : string;
+}
+
+class StateMap {
+  objects: any;
+  apiConfig : ApiConfig;
+  cacheName: string;
+}
 
 export enum AppStatus {
   loading = "loading",
@@ -23,9 +43,13 @@ export class StateService
 {
   private appState: AppState = new AppState();
 
-  private serviceMap: Map<IConstructor, any> = new Map<IConstructor,any>();
+  private serviceMap: Map<IConstructor, StateMap> = new Map<IConstructor,StateMap>();
 
-  constructor() { 
+  constructor(
+    @Inject(forwardRef(() => HttpClient)) private httpClient: HttpClient,
+    @Inject(forwardRef(() => CacheService)) private cacheService: CacheService
+    ) { 
+
     this.initServiceMap();
     this.loadApp();
 
@@ -33,31 +57,102 @@ export class StateService
   }
 
   initServiceMap() {
-    this.serviceMap.set(Tag, this.appState.tags);
-    this.serviceMap.set(Profile, this.appState.profiles);
+    //Object.freeze(this.appState.tags);
+    this.serviceMap.set(Tag, {
+      objects : this.appState.tags,
+      cacheName : 'tags',
+      apiConfig :  { controller : 'tags' }
+    });
+
+    //Object.freeze(this.appState.profiles);
+    this.serviceMap.set(Profile, {
+      objects: this.appState.profiles,
+      cacheName : 'profiles',
+      apiConfig : { controller : 'profiles' }
+    });
+
   }
 
   loadApp() {
     this.appState.appStatus = AppStatus.ready;
   }
 
-  fetch<T>(url:string) : Promise<Profile[]>{
-    var result = new Promise<Profile[]>((resolve, reject) => {
+  fetchMany(T:IConstructor, url:string, cacheName:string) : Promise<IStateObject[]>{
+      var result = new Promise<IStateObject[]>((resolve, reject) => {
+      
+      var cache = this.cacheService.getOrCreate(cacheName);
 
-      this.appState.profiles.push({ id:0, name: "Asaf Benjaminov",professions:[{ id:0, name: "Senior" },{ id:1, name: "Intern" }] })
-      this.appState.profiles.push({ id:1, name: "Israel israeli",professions:[{ id:1, name: "Intern" }] })
+      var cachedObjects = cache.get(url);
+      if(cachedObjects) {
 
-      resolve(this.appState.profiles);
+        var state = this.getState(T);
+        state.length = 0;
+        state.push(...cachedObjects);
+
+        resolve(state);
+
+        return;
+      }
+
+      this.httpClient.get(url).toPromise().then((result:HttpResult) => {
+        var state = this.getState(T);
+        state.length = 0;
+        state.push(...result.data);
+
+        cache.set(url, result.data);
+
+        resolve(state);
+      }).catch(error => {
+        reject(error);
+      })
     });
 
     return result;
   }
 
-  getState(T: IConstructor) {
+  getState(T: IConstructor): IStateObject[] {
+    return this.getStateMap(T).objects;
+  }
+
+  getApiConf(T: IConstructor): ApiConfig {
+    return this.getStateMap(T).apiConfig;
+  }
+
+  getStateMap(T: IConstructor) {
     if(this.serviceMap.has(T)) {
       return this.serviceMap.get(T);
     }
 
-    throw new Error("State does not have a correct map");
+    throw new Error("State map does not have a correct map");
+  }
+
+  objectExists(T: IConstructor, obj: IStateObject) : IStateObject {
+    var objects = this.getState(T);
+
+    var object = objects.find(x => x.id == obj.id);
+
+    return object
+  }
+
+  saveObject(T: IConstructor, obj: IStateObject): Promise<IStateObject> {
+    var result = new Promise<IStateObject>((resolve, reject) => {
+      var oldObject = this.objectExists(T, obj);
+
+      var stateMap = this.getStateMap(T);
+
+      if(oldObject) {
+        this.httpClient.put(`/api/${stateMap.apiConfig.controller}`, obj).toPromise().then(x => {
+          
+          this.cacheService.clear(stateMap.cacheName)
+
+          oldObject = obj;
+          resolve(obj);
+        }).catch(error => {
+          reject(error);
+        })
+      }
+    });
+
+    return result;
   }
 }

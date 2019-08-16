@@ -14,6 +14,7 @@ import { ProfileEditComponent } from './components/profiles/edit/profile.edit.co
 import { DropdownComponent } from './components/dropdown/dropdown.component';
 import {NavigationService} from "./services/navigation.service";
 import {AngularFontAwesomeModule} from "angular-font-awesome";
+import { HttpClientModule } from '@angular/common/http'
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import {AngularFontAwesomeModule} from "angular-font-awesome";
     AppRoutingModule,
     SHGridModule,
     RouterModule,
-    AngularFontAwesomeModule
+    AngularFontAwesomeModule,
+    HttpClientModule
   ],
   providers: [StateService, NavigationService],
   bootstrap: [AppComponent]

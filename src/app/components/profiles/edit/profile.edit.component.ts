@@ -31,6 +31,7 @@ import {DropdownOption} from "../../dropdown/dropdown.component";
 
             if(profileFilter.length > 0) {
                 this.profileToEdit = profileFilter[0];
+                this.newProfile = Object.assign({}, this.profileToEdit);
             }
         })
     }
@@ -41,6 +42,8 @@ import {DropdownOption} from "../../dropdown/dropdown.component";
         var tag = this.tags.find(tag => tag.id.toString() == this.selectedOption.id);
 
         this.newProfile.professions.push(tag);
+
+        this.onSaveClicked();
     }
 
     onSaveClicked() {

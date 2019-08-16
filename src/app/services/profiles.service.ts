@@ -1,11 +1,9 @@
 import {Injectable, Inject, forwardRef} from '@angular/core';
 import {IShService, ServiceState} from "./models";
 import {Profile} from "../models";
-import { StateService } from './state.service';
+import { StateService, IStateObject } from './state.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class ProfilesService implements IShService<Profile>
 {
   state: ServiceState;
@@ -14,14 +12,14 @@ export class ProfilesService implements IShService<Profile>
     @Inject(forwardRef(() => StateService))  private stateService: StateService
     ) { }
 
-  get profiles() {
-    return this.stateService.getState(Profile);
+  get profiles(): Profile[] {
+    return this.stateService.getState(Profile) as Profile[];
   }
 
   load(): Promise<Profile[]> {
     this.state = ServiceState.loading;
     
-    var result = this.stateService.fetch<Profile>("/profiles").then(x => {
+    var result = this.stateService.fetchMany(Profile, "/api/profiles","profiles").then((x:Profile[]) => {
       this.state = ServiceState.ready;
 
       return x;
@@ -30,7 +28,7 @@ export class ProfilesService implements IShService<Profile>
     return result;
   }
 
-  saveProfile(profile: Profile) {
-
+  saveProfile(profile: Profile) : Promise<IStateObject> {
+    return this.stateService.saveObject(Profile, profile);
   }
 }
