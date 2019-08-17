@@ -2,6 +2,7 @@ import {Injectable, Inject, forwardRef} from '@angular/core';
 import { Profile, Tag } from '../models';
 import { HttpClient } from '@angular/common/http';
 import { CacheService } from './cache.service';
+import { timeout } from 'q';
 
 interface HttpResult {
   data: any;
@@ -56,15 +57,13 @@ export class StateService
     (window as any).ShState = this.appState;
   }
 
-  initServiceMap() {
-    //Object.freeze(this.appState.tags);
+  private initServiceMap() {
     this.serviceMap.set(Tag, {
       objects : this.appState.tags,
       cacheName : 'tags',
       apiConfig :  { controller : 'tags' }
     });
 
-    //Object.freeze(this.appState.profiles);
     this.serviceMap.set(Profile, {
       objects: this.appState.profiles,
       cacheName : 'profiles',
@@ -143,6 +142,8 @@ export class StateService
       var stateMap = this.getStateMap(T);
 
       if(oldObject) {
+        this.appState.appStatus = AppStatus.loading;
+
         this.httpClient.put(`/api/${stateMap.apiConfig.controller}`, obj).toPromise().then(x => {
           
           this.cacheService.clear(stateMap.cacheName)
@@ -151,6 +152,8 @@ export class StateService
           resolve(obj);
         }).catch(error => {
           reject(error);
+        }).finally(() => {
+          this.appState.appStatus = AppStatus.ready;
         })
       }
     });

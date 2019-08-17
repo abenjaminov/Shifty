@@ -1,15 +1,19 @@
 @import "../theme.scss";
 
 .app {
+  position: relative;
+}
+
+.app-grid {
   display: grid;
   grid-template-columns: 200px auto;
   height: 100vh;
-  background-color: $theme-primary;
+  background-color: $base-color;
 
   .sidebar-container {
     grid-column: 1;
     box-shadow: 3px 0px  3px 0px $theme-dark-primary;
-    background: $theme-secondary;
+    background: $theme-primary;
   }
 
   .content-container {

@@ -11,4 +11,8 @@ export class NavigationService {
   navigateIn(path: string) {
     this.router.navigate([this.router.url, `${path}`]);
   }
+
+  navigateTo(path: string) {
+    this.router.navigate([`${path}`]);
+  }
 }

@@ -4,6 +4,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {Profile, Tag} from 'src/app/models';
 import {DropdownOption} from "../../dropdown/dropdown.component";
 import { TagsService } from 'src/app/services/tags.service';
+import { NavigationService } from 'src/app/services/navigation.service';
 
 @Component({
     selector: 'sh-profile-edit',
@@ -20,7 +21,8 @@ import { TagsService } from 'src/app/services/tags.service';
     constructor(
         @Inject(forwardRef(() => ActivatedRoute)) private activatedRoute: ActivatedRoute,
         @Inject(forwardRef(() => ProfilesService)) private profilesService: ProfilesService,
-        @Inject(forwardRef(() => TagsService)) private tagsService: TagsService
+        @Inject(forwardRef(() => TagsService)) private tagsService: TagsService,
+        @Inject(forwardRef(() => NavigationService)) private navigationService: NavigationService
     ) {
 
     }
@@ -57,9 +59,23 @@ import { TagsService } from 'src/app/services/tags.service';
         this.newProfile.professions.push(tag);
     }
 
-    onSaveClicked() {
-        this.profilesService.saveProfile(this.newProfile);
+    removeProfession(tag: Tag) {
+      if(!tag) { return; }
 
-        this.init();
+        var index = this.newProfile.professions.indexOf(tag);
+
+        if(index > -1) {
+          this.newProfile.professions.splice(index,1);
+        }
+    }
+
+    onSaveClicked() {
+        this.profilesService.saveProfile(this.newProfile).then(x => {
+          this.navigationService.navigateTo("/profiles");
+        });
+    }
+
+    profileNameChanged($event) {
+      this.newProfile.name = $event.target.value;
     }
 }

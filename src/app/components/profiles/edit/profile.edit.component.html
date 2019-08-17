@@ -1,6 +1,11 @@
 <div class="profile-edit" *ngIf="profileToEdit">
     <sh-view [titleText]="profileToEdit.name">
-        <div class="profile-edit-grid">
+        <div viewActions>
+            <div class="sh-btn" (click)="onSaveClicked()">
+                Save
+            </div>
+        </div>
+        <div viewContent class="profile-edit-grid">
             <div class="profile-info">
                 <div class="profile-image">
                     <img src="../../../../assets/profile.png"/>
@@ -8,14 +13,14 @@
                 <div class="profile-main-info">
                     <div class="info">
                         <span class="property">Name :  </span>
-                        <input [value]="profileToEdit.name" />
+                        <input [value]="newProfile.name" (change)="profileNameChanged($event)"/>
                     </div>
                     <div class="professions">
                         <div class="title">Professions</div>
                         <div class="profession" *ngFor="let profession of profileToEdit.professions; let i = index">
                             <div>{{i + 1}}.</div>
                             <div>{{profession.name}}</div>
-                            <div class="sh-btn">
+                            <div class="sh-btn" (click)="removeProfession(profession)">
                                 Remove
                             </div>
                         </div>
@@ -28,9 +33,9 @@
                     </div>
                 </div>
             </div>
-            <div class="profile-secondary-info">
+            <!-- <div class="profile-secondary-info">
                 Weekly Schedule
-            </div>
+            </div> -->
         </div>
     </sh-view>
 </div>

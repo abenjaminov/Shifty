@@ -3,8 +3,8 @@ var router = express.Router();
 
 var profiles = [];
 
-profiles.push({ id:'0', name: "Asaf Benjaminov",professions:[{ id:0, name: "Senior" },{ id:1, name: "Intern" }] })
-profiles.push({ id:'1' , name: "Israel israeli",professions:[{ id:1, name: "Intern" }] });
+profiles.push({ id:'0', name: "Asaf Benjaminov",professions:[{ id:0, name: "Senior" },{ id:1, name: "Intern" }], profilePic = "" })
+profiles.push({ id:'1' , name: "Israel israeli",professions:[{ id:1, name: "Intern" }], profilePic = "" });
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {

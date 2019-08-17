@@ -14,7 +14,9 @@ import { ProfileEditComponent } from './components/profiles/edit/profile.edit.co
 import { DropdownComponent } from './components/dropdown/dropdown.component';
 import {NavigationService} from "./services/navigation.service";
 import {AngularFontAwesomeModule} from "angular-font-awesome";
-import { HttpClientModule } from '@angular/common/http'
+import { HttpClientModule } from '@angular/common/http';
+import { LoadingComponent } from './components/loading/loading.component';
+import { AssignmentsComponent } from './components/assignments/assignments.component'
 
 @NgModule({
   declarations: [
@@ -24,7 +26,9 @@ import { HttpClientModule } from '@angular/common/http'
     ViewComponent,
     ProfilesComponent,
     ProfileEditComponent,
-    DropdownComponent
+    DropdownComponent,
+    LoadingComponent,
+    AssignmentsComponent
   ],
   imports: [
     BrowserModule,

@@ -9,4 +9,5 @@ export class Profile implements IStateObject {
     id : string | number;
     name: string;
     professions: Tag[];
+    profilePic:string;
 }

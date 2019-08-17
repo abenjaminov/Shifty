@@ -3,8 +3,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var profiles = require('./routes/profilesController');
-var tags = require('./routes/tagsController');
+var profiles = require('./routes/profilesRoute');
+var tags = require('./routes/tagsRoute');
 
 var app = express();
 

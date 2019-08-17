@@ -3,12 +3,10 @@
     <div class="view-header">
         <div><h1>{{titleText}}</h1></div>
         <div class="view-actions">
-            <div class="sh-btn">
-                Save
-            </div>
+            <ng-content select="[viewActions]"></ng-content>
         </div>
     </div>
     <div class="view-content">
-        <ng-content></ng-content>
+        <ng-content select="[viewContent]"></ng-content>
     </div>
 </div>
