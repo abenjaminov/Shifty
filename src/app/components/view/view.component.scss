@@ -10,11 +10,20 @@
     .view-header{
         grid-row: 1;
         background-color: rgba(0,0,255,0.05);
-        width: calc(100% - 50px);
+        width: calc(100% - 100px);
         height: 150px;
         display: flex;
         align-items: center;
         padding-left: 50px;
+        padding-right: 50px;
+        justify-content: space-between;
+
+        .view-actions {
+            .sh-btn {
+                width: 85px;
+                height: 35px;
+            }
+        }
     }
 
     .view-content {

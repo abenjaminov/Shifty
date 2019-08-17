@@ -1,13 +1,15 @@
+@import "../theme.scss";
+
 .app {
   display: grid;
   grid-template-columns: 200px auto;
   height: 100vh;
-  background-color: #f5f5f5;
+  background-color: $theme-primary;
 
   .sidebar-container {
     grid-column: 1;
-    box-shadow: 3px 0px  3px 0px lightgray;
-    background: white;
+    box-shadow: 3px 0px  3px 0px $theme-dark-primary;
+    background: $theme-secondary;
   }
 
   .content-container {

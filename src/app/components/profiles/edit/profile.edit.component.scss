@@ -14,7 +14,9 @@
         grid-auto-columns: 30% 70%;
 
         .profile-image {
-            background-color: red;
+            display: grid;
+            
+            justify-content: center;
         }
 
         .profile-main-info {
@@ -38,27 +40,23 @@
 
                 .profession {
                     font-size: 18px;
+                    display: grid;
+                    grid-auto-flow: column;
+                    grid-auto-columns: 10% auto 20%;
                 }
 
                 .add-professions {
                     display: grid;
                     grid-auto-flow: column;
                     align-items: center;
-                    grid-auto-rows: 90% auto;
-
-                    .add-btn {
-                        text-align: center;
-                        background-color: rgba(0, 0, 255, 0.15);
-                        width: 30px;
-                        margin: auto;
-                        cursor: pointer;
-                    }
+                    grid-auto-columns: 80% auto;
+                    margin-top: 10px;
                 }
             }
         }
     }
 
     .profile-secondary-info {
-        background-color:green;
+        border:1px solid black;
     }
 }

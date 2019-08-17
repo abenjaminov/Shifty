@@ -77,31 +77,33 @@ export class StateService
     this.appState.appStatus = AppStatus.ready;
   }
 
-  fetchMany(T:IConstructor, url:string, cacheName:string) : Promise<IStateObject[]>{
+  fetchMany(T:IConstructor) : Promise<IStateObject[]>{
       var result = new Promise<IStateObject[]>((resolve, reject) => {
       
-      var cache = this.cacheService.getOrCreate(cacheName);
+       var mappedState = this.getStateMap(T);
+
+       var url = `/api/${mappedState.apiConfig.controller}`;
+
+      var cache = this.cacheService.getOrCreate(mappedState.cacheName);
 
       var cachedObjects = cache.get(url);
       if(cachedObjects) {
 
-        var state = this.getState(T);
-        state.length = 0;
-        state.push(...cachedObjects);
+        mappedState.objects.length = 0;
+        mappedState.objects.push(...cachedObjects);
 
-        resolve(state);
+        resolve(mappedState.objects);
 
         return;
       }
 
       this.httpClient.get(url).toPromise().then((result:HttpResult) => {
-        var state = this.getState(T);
-        state.length = 0;
-        state.push(...result.data);
+        mappedState.objects.length = 0;
+        mappedState.objects.push(...result.data);
 
-        cache.set(url, result.data);
+        cache.set(url, Object.assign([], mappedState.objects));
 
-        resolve(state);
+        resolve(mappedState.objects);
       }).catch(error => {
         reject(error);
       })

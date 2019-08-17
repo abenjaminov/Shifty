@@ -3,7 +3,7 @@
         <div class="profile-edit-grid">
             <div class="profile-info">
                 <div class="profile-image">
-
+                    <img src="../../../../assets/profile.png"/>
                 </div>
                 <div class="profile-main-info">
                     <div class="info">
@@ -13,19 +13,23 @@
                     <div class="professions">
                         <div class="title">Professions</div>
                         <div class="profession" *ngFor="let profession of profileToEdit.professions; let i = index">
-                            {{i + 1}}. {{profession.name}}
+                            <div>{{i + 1}}.</div>
+                            <div>{{profession.name}}</div>
+                            <div class="sh-btn">
+                                Remove
+                            </div>
                         </div>
                         <div class="add-professions">
                            <sh-dropdown [options]="tags" [(selectedOption)]="selectedOption"></sh-dropdown>
-                            <div class="add-btn" (click)="addProfession()">
-                                +
+                            <div class="sh-btn" (click)="addProfession()">
+                                ADD
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="profile-secondary-info">
-
+                Weekly Schedule
             </div>
         </div>
     </sh-view>

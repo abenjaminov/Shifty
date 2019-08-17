@@ -28,11 +28,12 @@
     .dropdown-input {
         display: grid;
         grid-auto-flow: column;
-        grid-auto-columns: auto 30px;
+        grid-auto-columns: 90% auto;
 
         .selected-text {
             background-color: white;
             font-size:18px;
+            width: 100%;
             border-left: 2px solid rgb(238, 238, 238);
             border-top: 2px solid rgb(238, 238, 238);
             border-bottom: 2px solid rgb(238, 238, 238);

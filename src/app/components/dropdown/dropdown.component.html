@@ -1,7 +1,7 @@
 <div class="sh-dropdown">
 
   <div class="dropdown-input">
-      <div class="selected-text">{{selectedOption?.name || 'Select an option...'}}</div>
+      <div class="selected-text">{{selectedOption?.name || '---'}}</div>
       <fa class="chevron" name="chevron-down" (click)="onOpenClicked()"></fa>
   </div>
   <div class="dropdown-content" *ngIf="this.isOpen">
