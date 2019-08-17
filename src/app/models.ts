@@ -11,3 +11,13 @@ export class Profile implements IStateObject {
     professions: Tag[];
     profilePic:string;
 }
+
+export enum AssignmentType {
+    Room = "Room",
+    Rotation = "Rotation"
+}
+
+export enum AssignmentImportance {
+    Required = "Required",
+    NiceToHave = "Nice To Have"
+}
