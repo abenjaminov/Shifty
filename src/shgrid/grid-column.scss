@@ -2,7 +2,6 @@
   display: grid;
   grid-auto-flow: row;
   width: 200px;
-  margin-right: 10px;
 
   &.action-column {
     width: auto;
@@ -21,10 +20,18 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid black;
 
     &.action-cell {
       display: grid;
       padding-left: 0px;
+
+      .action-button {
+        cursor: pointer;
+        text-align: center;
+      }
     }
   }
 }

@@ -43,12 +43,7 @@ export class ProfilesComponent implements OnInit {
             action: (index) => {
               this.onEditProfile(this.profilesService.profiles[index]);
             },
-            icon: "Edit"
-          },{
-            action: (index) => {
-              console.log(index)
-            },
-            icon: "Delete"
+            icon: "pencil"
           }]
         });
         nameColumn.cellInfos.push({ text: x.name });
