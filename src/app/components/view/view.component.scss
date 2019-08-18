@@ -30,6 +30,7 @@
         margin: -15px auto 0 auto;
         width: 1200px;
         grid-row: 2;
-        height: 100%;
+        height: calc(100vh - 135px);
+        overflow: auto;
     }
 }
