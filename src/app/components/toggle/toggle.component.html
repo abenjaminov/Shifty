@@ -1,0 +1,3 @@
+<div class="sh-toggle">
+  <div (click)="toggleOptionClicked(i)" *ngFor="let option of options;let i = index;" class="toggle-option" [class.selected]="i == selectedOptionIndex">{{option}}</div>
+</div>

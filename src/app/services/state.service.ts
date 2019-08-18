@@ -1,8 +1,7 @@
 import {Injectable, Inject, forwardRef} from '@angular/core';
-import { Profile, Tag } from '../models';
+import { Profile, Tag, Room } from '../models';
 import { HttpClient } from '@angular/common/http';
 import { CacheService } from './cache.service';
-import { timeout } from 'q';
 
 interface HttpResult {
   data: any;
@@ -31,6 +30,7 @@ class AppState {
   appStatus: AppStatus = AppStatus.loading;
   profiles: Profile[] = [];
   tags: Tag[] = [];
+  rooms: Room[] = [];
 }
 
 export interface IConstructor {
@@ -68,6 +68,12 @@ export class StateService
       objects: this.appState.profiles,
       cacheName : 'profiles',
       apiConfig : { controller : 'profiles' }
+    });
+
+    this.serviceMap.set(Room, {
+      objects: this.appState.rooms,
+      cacheName : 'rooms',
+      apiConfig : { controller : 'rooms' }
     });
 
   }

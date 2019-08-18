@@ -16,7 +16,8 @@ import {NavigationService} from "./services/navigation.service";
 import {AngularFontAwesomeModule} from "angular-font-awesome";
 import { HttpClientModule } from '@angular/common/http';
 import { LoadingComponent } from './components/loading/loading.component';
-import { AssignmentsComponent } from './components/assignments/assignments.component'
+import { AssignmentsComponent } from './components/assignments/assignments.component';
+import { ToggleComponent } from './components/toggle/toggle.component'
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { AssignmentsComponent } from './components/assignments/assignments.compo
     ProfileEditComponent,
     DropdownComponent,
     LoadingComponent,
-    AssignmentsComponent
+    AssignmentsComponent,
+    ToggleComponent
   ],
   imports: [
     BrowserModule,

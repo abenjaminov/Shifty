@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 
 var profiles = require('./routes/profilesRoute');
 var tags = require('./routes/tagsRoute');
+var rooms = require('./routes/roomsRoute');
 
 var app = express();
 
@@ -14,5 +15,6 @@ app.use(cookieParser())
 
 app.use('/api/profiles', profiles);
 app.use('/api/tags', tags);
+app.use('/api/rooms', rooms);
 
 module.exports = app;

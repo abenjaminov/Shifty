@@ -2,10 +2,35 @@
   <sh-view title="Assignments">
     <div viewContent>
       <div class="assignemnt"> 
-        <div class="assignment-desc"><input /></div>
-        <div class="assignment-type">Room</div>
-        <div class="assignment-profession">Senior</div>
-        <div class="assignment-importance">Required</div>
+        <div class="assignment-type assignment-property">
+          <div class="title">Assignment Type:</div>
+          <sh-dropdown [options]="assignmentTypes" [(selectedOption)]="selectedAssignmentType"></sh-dropdown>
+
+          <div class="type-properties-container" *ngIf="selectedAssignmentType && selectedAssignmentType.id != 'Rotation'">
+              <div class="title">Room:</div>
+              <sh-dropdown [options]="rooms" [(selectedOption)]="selectedRoom"></sh-dropdown>
+          </div>
+          <div class="type-properties-container" *ngIf="selectedAssignmentType && selectedAssignmentType.id == 'Permanent'">
+              <div class="title">Day: </div>
+            <sh-dropdown [options]="days" [(selectedOption)]="selectedDay"></sh-dropdown>
+          </div>
+        </div>
+        <div class="assignment-profession assignment-property">
+            <div class="title">Profession:</div>
+            <sh-dropdown [options]="tags" [(selectedOption)]="selectedTag"></sh-dropdown>
+
+            <div class="type-properties-container" *ngIf="selectedAssignmentType && selectedAssignmentType.id == 'Permanent'">
+                <div class="title">Profile:</div>
+              <sh-dropdown [options]="profiles" [(selectedOption)]="selectedProfile"></sh-dropdown>
+            </div>
+        </div>
+        <div class="assignment-importance assignment-property">
+          <div class="title">Importance:</div>
+          <sh-toggle [options]="assignmentImportances" [(selectedOptionIndex)]="selectedImportanceIndex"></sh-toggle>
+        </div>
+        <div class="sh-btn" (click)="addAssignment()">
+          Add Assignment
+        </div>
       </div>
     </div>
   </sh-view>
