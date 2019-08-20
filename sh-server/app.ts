@@ -16,8 +16,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser())
 
 app.use('/api/*', (req ,res,next) => {
-    console.log("All Request");
-
     DbContext.getContext().then(context => {
         (req as any).dbContext = context;
 

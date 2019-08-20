@@ -1,3 +1,5 @@
+import { DbContext } from "../database/database";
+
 export class Profile {
     id! : string;
     name!: string;
