@@ -1,10 +1,13 @@
-var express = require('express');
-var router = express.Router();
+import { Profile } from "../models/models";
+import { Router } from "express-serve-static-core";
 
-var profiles = [];
+import express from 'express';
+var router: Router = express.Router();
+
+var profiles: Profile[] = [];
 var profileId = 0;
 
-profiles.push({id: (profileId++).toString(), name: 'בנימינוב',professions:[],profilePic: ''});
+profiles.push({id: ((profileId++).toString()), name: 'בנימינוב',professions:[],profilePic: ''});
 profiles.push({id: (profileId++).toString(), name: 'ברלוביץ',professions:[],profilePic: ''});
 profiles.push({id: (profileId++).toString(), name: 'בוגאט',professions:[],profilePic: ''});
 profiles.push({id: (profileId++).toString(), name: 'שינקמן',professions:[],profilePic: ''});
@@ -41,11 +44,11 @@ profiles.push({id: (profileId++).toString(), name: 'זיד',professions:[],profi
 profiles.push({id: (profileId++).toString(), name: 'נאגאר',professions:[],profilePic: ''});
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get('/', function(req, res) {
   res.json({data : profiles});
 });
 
-router.put('/', (req,res,next) => {
+router.put('/', (req, res) => {
   var profile = req.body;
   
   var oldProfileIndex = profiles.findIndex(x => x.id == profile.id);

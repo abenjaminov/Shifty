@@ -1,9 +1,12 @@
+import { Tag } from "../models/models";
+import { Router } from "express-serve-static-core";
+
 var express = require('express');
-var router = express.Router();
+var router : Router = express.Router();
 
 var tagId = 0;
 
-var tags =  [{ id:tagId++, name: "Senior" },
+var tags: Tag[] =  [{ id:tagId++, name: "Senior" },
   { id:tagId++, name: "Conventional" },
   { id:tagId++, name: "RF" },
   { id:tagId++, name: "CT Protocoling" },

@@ -1,9 +1,12 @@
+import { Room } from "../models/models";
+import { Router } from "express-serve-static-core";
+
 var express = require('express');
-var router = express.Router();
+var router: Router = express.Router();
 
 var roomId = 0;
 
-var rooms =  [{ id:roomId++, name: "Senior", conditions: [] },
+var rooms : Room[] =  [{ id:roomId++, name: "Senior", conditions: [] },
   { id:roomId++, name: "Conventional", conditions: [] },
   { id:roomId++, name: "RF", conditions: [] },
   { id:roomId++, name: "CT Protocoling", conditions: [] },

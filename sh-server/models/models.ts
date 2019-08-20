@@ -1,11 +1,17 @@
 export class Profile {
-    id : number;
-    name: string;
-    professions: Tag[];
-    profilePic:string;
+    id! : string;
+    name!: string;
+    professions: Tag[] = [];
+    profilePic:string = "";
 }
 
 export class Tag {
-    id: number;
-    name: string;
+    id!: number;
+    name!: string;
+}
+
+export class Room {
+    id!: number;
+    name!: string;
+    conditions: any[] = [];
 }
