@@ -13,7 +13,7 @@ var ProfilesConfig = ShConfig.Profiles;
 router.get('/', (req , res) => {
   var context = RoutesCommon.getContextFromRequest(req);
   
-  context.select(ProfilesConfig.selectAllQuery, true).then(profiles => {
+  context.select(Profile, true).then(profiles => {
     res.json({data : profiles});
   });
 });
@@ -22,7 +22,7 @@ router.put('/', (req , res) => {
   var profile = req.body;
   var context = RoutesCommon.getContextFromRequest(req);
 
-  context.insert(Profile, ProfilesConfig.tableName, profile);
+  context.insert(Profile, profile);
 
   res.json({data : profile});
 })

@@ -3,6 +3,7 @@ import path = require('path');
 import cookieParser = require('cookie-parser');
 import bodyParser = require('body-parser');
 import { DbContext } from './database/database';
+import { RoutesCommon } from './routes/routeCommon';
 
 var profiles = require('./routes/profilesRoute');
 var tags = require('./routes/tagsRoute');
@@ -15,12 +16,22 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser())
 
 app.use('/api/*', (req ,res,next) => {
+    var realJson = res.json;
+
+    // Override json so that the context can be closed
+    res.json = function(body?: any) {
+        var context = RoutesCommon.getContextFromRequest(req);
+        context.close();
+
+        return realJson.call(this, body);
+    }
+
     DbContext.getContext().then(context => {
         (req as any).dbContext = context;
 
         next();
     }).catch(error => {
-
+        res.status(500).json("Error establishing connection");
     });
 })
 
