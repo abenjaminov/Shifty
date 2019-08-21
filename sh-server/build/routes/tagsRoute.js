@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var express = require('express');
 var router = express.Router();
 var tagId = 0;
@@ -20,3 +21,4 @@ router.get('/', function (req, res, next) {
     res.json({ data: tags });
 });
 module.exports = router;
+//# sourceMappingURL=tagsRoute.js.map

@@ -1,25 +1,28 @@
 import * as express from 'express';
-import { Router } from "express-serve-static-core";
-import { DbContext } from "../database/database";
+import { DbContext, ReflectionHelper } from "../database/database";
 import { ShConfig } from '../database/configurations';
+import { Router } from 'express';
+import { RoutesCommon } from './routeCommon';
+import { Profile } from '../models/models';
 
-var router: Router = express.Router();
+var router: Router = express.Router(); 
+
+var ProfilesConfig = ShConfig.Profiles;
 
 /* GET users listing. */
 router.get('/', (req , res) => {
-  (req["dbContext"] as DbContext).select("Zedek", ShConfig.Profiles.selectAllQuery).then(profiles => {
+  var context = RoutesCommon.getContextFromRequest(req);
+  
+  context.select(ProfilesConfig.selectAllQuery, true).then(profiles => {
     res.json({data : profiles});
   });
 });
 
 router.put('/', (req , res) => {
   var profile = req.body;
+  var context = RoutesCommon.getContextFromRequest(req);
 
-  // var oldProfileIndex = profiles.findIndex(x => x.id == profile.id);
-
-  // if(oldProfileIndex > -1) {
-  //   profiles[oldProfileIndex] = profile;
-  // }
+  context.insert(Profile, ProfilesConfig.tableName, profile);
 
   res.json({data : profile});
 })

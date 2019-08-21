@@ -44,7 +44,7 @@ import { NavigationService } from 'src/app/services/navigation.service';
               this.newProfile = Object.assign({}, this.profileToEdit);
 
               var tags = result[1];
-              var profileTagIds = this.newProfile.professions.map(p => p.id);
+              var profileTagIds = this.newProfile.professions ? this.newProfile.professions.map(p => p.id) : [];
 
               this.tags = tags.filter(t => profileTagIds.indexOf(t.id) == -1)
           }
@@ -55,6 +55,10 @@ import { NavigationService } from 'src/app/services/navigation.service';
         if(!this.selectedOption) { return; }
 
         var tag = this.tags.find(tag => tag.id.toString() == this.selectedOption.id);
+
+        if(!this.newProfile.professions) {
+            this.newProfile.professions = [];
+        }
 
         this.newProfile.professions.push(tag);
     }

@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var express = require('express');
 var router = express.Router();
 var roomId = 0;
@@ -28,3 +29,4 @@ router.put('/', function (req, res, next) {
     res.json({ data: room });
 });
 module.exports = router;
+//# sourceMappingURL=roomsRoute.js.map

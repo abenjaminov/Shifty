@@ -1,8 +1,9 @@
-import { DbContext } from "../database/database";
+import { Mapped } from "../database/database";
+
 
 export class Profile {
-    id! : string;
-    name!: string;
+    @Mapped("Id") id! : string;
+    @Mapped("Name") name!: string;
     professions: Tag[] = [];
     profilePic:string = "";
 }

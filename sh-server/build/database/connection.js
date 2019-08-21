@@ -1,8 +1,12 @@
 "use strict";
-var mySQL = require('mysql');
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var mysql_1 = __importDefault(require("mysql"));
 var getConnection = function () {
     var createConnectionPromise = new Promise(function (resolve, reject) {
-        var connection = mySQL.createConnection({
+        var connection = mysql_1.default.createConnection({
             host: '35.246.240.151',
             user: 'root',
             password: 'X7yikbxgckx1',
@@ -20,4 +24,5 @@ var getConnection = function () {
     });
     return createConnectionPromise;
 };
-module.exports = { getConnection: getConnection };
+exports.default = { getConnection: getConnection };
+//# sourceMappingURL=connection.js.map

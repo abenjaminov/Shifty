@@ -2,7 +2,6 @@ import express = require('express');
 import path = require('path');
 import cookieParser = require('cookie-parser');
 import bodyParser = require('body-parser');
-
 import { DbContext } from './database/database';
 
 var profiles = require('./routes/profilesRoute');

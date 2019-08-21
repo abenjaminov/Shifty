@@ -3,3 +3,5 @@ declare namespace Express {
         dbContext: any;
     }
 }
+
+export {};
