@@ -110,8 +110,10 @@ export class DbContext {
         var dbProperties:string[] = [];
         
         for(let prop of Reflect.ownKeys(simpleMappedProps)) {
-            params.push(item[prop].toString());
-            dbProperties.push(simpleMappedProps[prop.toString()]);
+            if(!simpleMappedProps[prop.toString()].isPrimaryKey) {
+                params.push(item[prop].toString());
+                dbProperties.push(simpleMappedProps[prop.toString()].dbColumnName);
+            }
         }
 
         var query = "INSERT INTO " + table + "(" + dbProperties.join(",") + ") VALUES ?";

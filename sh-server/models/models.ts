@@ -56,6 +56,24 @@ export class Room {
     conditions: any[] = [];
 }
 
+export enum AssignmentType {
+    Room = "Room",
+    Rotation = "Rotation",
+    Permanent = "Permanent"
+}
+
+export enum AssignmentImportance {
+    Required = "Required",
+    NiceToHave = "Nice To Have"
+}
+
+@Table("Assignments")
+export class Assignment {
+    @Mapped({ dbColumnName: "id", type: MappingType.number, isPrimaryKey:true }) id!:number;
+    @Mapped({ dbColumnName: "type", type: MappingType.string, isPrimaryKey:false }) type!: AssignmentType;
+    @Mapped({ dbColumnName: "data", type: MappingType.string, isPrimaryKey:false }) data!: string;
+}
+
 export class TypesHelper {
     static typesMapping: {[typeName:string] : Function} = {"Tag" : Tag};
 }

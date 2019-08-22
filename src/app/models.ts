@@ -18,6 +18,12 @@ export class Room {
     conditions: Condition[] = [];
 }
 
+export class Assignment {
+    id!:number;
+    type!: AssignmentType;
+    data!: string;
+}
+
 export class Condition {
     profession: Tag;
     importance: AssignmentImportance

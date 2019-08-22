@@ -1,15 +1,16 @@
 import { Component, OnInit, Inject, forwardRef } from '@angular/core';
-import { Profile, Tag, createEnumList, AssignmentType, AssignmentImportance, Days, Room } from 'src/app/models';
+import { Profile, Tag, createEnumList, AssignmentType, AssignmentImportance, Days, Room, Assignment } from 'src/app/models';
 import { ProfilesService } from 'src/app/services/profiles.service';
 import { TagsService } from 'src/app/services/tags.service';
 import { DropdownOption } from '../dropdown/dropdown.component';
 import { RoomsService } from 'src/app/services/rooms.service';
+import { AssignmentService } from 'src/app/services/assignments.service';
 
 @Component({
   selector: 'sh-assignments',
   templateUrl: './assignments.component.html',
   styleUrls: ['./assignments.component.scss'],
-  providers: [ProfilesService, TagsService, RoomsService]
+  providers: [ProfilesService, TagsService, RoomsService, AssignmentService]
 })
 export class AssignmentsComponent implements OnInit {
 
@@ -23,7 +24,7 @@ export class AssignmentsComponent implements OnInit {
   selectedDay: DropdownOption;
 
   profiles: Profile[]
-  selectedProfile: Profile[];
+  selectedProfile: Profile;
 
   tags: Tag[];
   selectedTag: Tag;
@@ -35,6 +36,7 @@ export class AssignmentsComponent implements OnInit {
     @Inject(forwardRef(() => ProfilesService)) private profilesService: ProfilesService,
     @Inject(forwardRef(() => TagsService)) private tagsService: TagsService,
     @Inject(forwardRef(() => RoomsService)) private roomsService: RoomsService,
+    @Inject(forwardRef(() => AssignmentService)) private assignmentsService: AssignmentService
   ) { }
 
   ngOnInit() {
@@ -49,7 +51,7 @@ export class AssignmentsComponent implements OnInit {
     this.selectedRoom = undefined;
     this.selectedTag = undefined;
 
-    Promise.all([this.tagsService.load(), this.roomsService.load(), this.profilesService.load()]).then(result => {
+    Promise.all([this.tagsService.load(), this.roomsService.load(), this.profilesService.load(), this.assignmentsService.load()]).then(result => {
 
       this.tags = result[0];
       this.rooms = result[1];
@@ -73,19 +75,32 @@ export class AssignmentsComponent implements OnInit {
   }
 
   addAssignment() {
-    if(this.selectedAssignmentType.id == AssignmentType.Room) {
-      var importance = this.assignmentImportances[this.selectedImportanceIndex];
-      this.selectedRoom.conditions.push({ profession: this.selectedTag, importance: AssignmentImportance[importance] });
+    var assignment = new Assignment();
+    assignment.type = AssignmentType[this.selectedAssignmentType.id];
 
-      this.roomsService.saveRoom(this.selectedRoom).then(room => {
-        this.init();
-      });
+    if(this.selectedAssignmentType.id == AssignmentType.Room) {
+      let data = {
+        roomId: this.selectedRoom.id,
+        professionId: this.selectedTag.id,
+        importance: AssignmentImportance[this.assignmentImportances[this.selectedImportanceIndex]]
+      }
+      assignment.data = JSON.stringify(data);
+
+      
     }
     else if (this.selectedAssignmentType.id == AssignmentType.Permanent) {
-
+      let data = {
+        roomId: this.selectedRoom.id,
+        profileId: this.selectedProfile.id,
+        day: this.selectedDay.id,
+        importance: AssignmentImportance[this.assignmentImportances[this.selectedImportanceIndex]]
+      }
+      assignment.data = JSON.stringify(data);
     }
     else if(this.selectedAssignmentType.id == AssignmentType.Rotation) {
       
     }
+
+    this.assignmentsService.addAssignment(assignment);
   }
 }

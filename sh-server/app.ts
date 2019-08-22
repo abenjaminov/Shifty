@@ -8,6 +8,7 @@ import { RoutesCommon } from './routes/routeCommon';
 var profiles = require('./routes/profilesRoute');
 var tags = require('./routes/tagsRoute');
 var rooms = require('./routes/roomsRoute');
+var assignments = require('./routes/assignmentsRoute');
 
 const app: express.Application = express();
 
@@ -40,5 +41,6 @@ app.use('/api/*', (req ,res,next) => {
 app.use('/api/profiles', profiles);
 app.use('/api/tags', tags);
 app.use('/api/rooms', rooms);
+app.use('/api/assignments', assignments);
 
 export { app };

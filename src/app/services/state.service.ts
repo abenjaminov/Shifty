@@ -1,5 +1,5 @@
 import {Injectable, Inject, forwardRef} from '@angular/core';
-import { Profile, Tag, Room } from '../models';
+import { Profile, Tag, Room, Assignment } from '../models';
 import { HttpClient } from '@angular/common/http';
 import { CacheService } from './cache.service';
 
@@ -31,6 +31,7 @@ class AppState {
   profiles: Profile[] = [];
   tags: Tag[] = [];
   rooms: Room[] = [];
+  assignments: Assignment[] = [];
 }
 
 export interface IConstructor {
@@ -76,6 +77,11 @@ export class StateService
       apiConfig : { controller : 'rooms' }
     });
 
+    this.serviceMap.set(Assignment, {
+      objects: this.appState.assignments,
+      cacheName : 'assignments',
+      apiConfig : { controller : 'assignments' }
+    });
   }
 
   loadApp() {
@@ -165,6 +171,30 @@ export class StateService
           this.appState.appStatus = AppStatus.ready;
         })
       }
+    });
+
+    return result;
+  }
+
+  insertObject(T: IConstructor, obj: IStateObject): Promise<IStateObject> {
+    var result = new Promise<IStateObject>((resolve, reject) => {
+
+      var stateMap = this.getStateMap(T);
+
+      this.appState.appStatus = AppStatus.loading;
+
+      this.httpClient.post(`/api/${stateMap.apiConfig.controller}`, obj).toPromise().then(x => {
+        
+        this.cacheService.clear(stateMap.cacheName)
+
+        stateMap.objects.push(obj);
+        resolve(obj);
+      }).catch(error => {
+        reject(error);
+      }).finally(() => {
+        this.appState.appStatus = AppStatus.ready;
+      })
+      
     });
 
     return result;
