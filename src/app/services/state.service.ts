@@ -84,7 +84,8 @@ export class StateService
 
   fetchMany(T:IConstructor) : Promise<IStateObject[]>{
       var result = new Promise<IStateObject[]>((resolve, reject) => {
-      
+      this.appState.appStatus = AppStatus.loading;
+
        var mappedState = this.getStateMap(T);
 
        var url = `/api/${mappedState.apiConfig.controller}`;
@@ -111,6 +112,8 @@ export class StateService
         resolve(mappedState.objects);
       }).catch(error => {
         reject(error);
+      }).finally(() => {
+        this.appState.appStatus = AppStatus.ready;
       })
     });
 

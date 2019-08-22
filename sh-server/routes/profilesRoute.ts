@@ -1,5 +1,4 @@
 import * as express from 'express';
-import { DbContext, ReflectionHelper } from "../database/database";
 import { ShConfig } from '../database/configurations';
 import { Router } from 'express';
 import { RoutesCommon } from './routeCommon';
@@ -21,10 +20,14 @@ router.get('/', (req , res) => {
 router.put('/', (req , res) => {
   var profile = req.body;
   var context = RoutesCommon.getContextFromRequest(req);
+  context.connection.beginTransaction();
 
-  context.insert(Profile, profile);
-
-  res.json({data : profile});
+  context.update(Profile, profile).then(x => {
+    context.updateComplexMappings(Profile, profile).then(x => {
+      context.connection.commit();
+      res.json({data : profile});
+    })
+  });
 })
 
 module.exports = router;

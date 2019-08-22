@@ -16,6 +16,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser())
 
 app.use('/api/*', (req ,res,next) => {
+    console.log("-> " + req.originalUrl);
+
     var realJson = res.json;
 
     // Override json so that the context can be closed
