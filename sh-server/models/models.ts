@@ -66,7 +66,14 @@ export class Tag {
 export class Room {
     id!: number;
     name!: string;
-    conditions: any[] = [];
+    conditions: Condition[] = [];
+}
+
+export class Condition
+{
+    constructor(public tag: Tag,public amount: number, public importance: AssignmentImportance)
+    {
+    }
 }
 
 export enum AssignmentType {

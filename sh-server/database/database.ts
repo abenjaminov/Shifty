@@ -3,7 +3,10 @@ import { Connection, QueryOptions } from 'mysql';
 import { TypesHelper } from '../models/models';
 import { ReflectionHelper, IComplexMapping, IMapping, MappingType, IComplexDbMapping, IMappedPropertiesMetaData } from '../models/reflection';
 
-type IConstructor = new (...args: any[]) => any;
+interface IConstructor {
+    [key:string] : any;
+    new (...args: any[]) : any
+}
 
 export class DbContext {
     
@@ -166,19 +169,20 @@ export class DbContext {
         return updatePromise;
     }
 
-    updateComplexMappings<T extends IConstructor>(type: T, item: any): Promise<T> {
+    updateComplexMappings<T extends IConstructor>(type: T, item: T): Promise<T> {
         var updateComplexPromise = new Promise<T>((resolve, reject) => {
             var complexPropMappings = ReflectionHelper.getComplexMappedProperties(type);
             var simpleMappedProps = ReflectionHelper.getSimpleMappedProperties(type);
             
             var mainPrimaryJsonKey = Reflect.ownKeys(simpleMappedProps).find(x => simpleMappedProps[x.toString()].isPrimaryKey) || '';
+            mainPrimaryJsonKey = mainPrimaryJsonKey.toString();
 
             // Build delete from connection table
             // --> Delete ProfilesProfessions (connTable) WHERE ProfileId (connToMainProp) = typetoText(item[primaryKey])
             var ownKeys = Reflect.ownKeys(complexPropMappings);
             var deleteQuery = "DELETE FROM ";
 
-            var mainPrimaryKeyMapping: IMapping = simpleMappedProps[mainPrimaryJsonKey.toString()];
+            var mainPrimaryKeyMapping: IMapping = simpleMappedProps[mainPrimaryJsonKey];
 
             for(let key of ownKeys) {
                 var complexMapping: IComplexDbMapping = complexPropMappings[key.toString()].db;
@@ -200,7 +204,7 @@ export class DbContext {
                     var complexMapping: IComplexMapping = complexPropMappings[key.toString()];
                     insert += `INSERT INTO ${complexMapping.db.connTable} (${complexMapping.db.connToMainProp}, ${complexMapping.db.connToSourceProp}) VALUES ?`;
 
-                    var complexMapValues: [] = item[key.toString()];
+                    var complexMapValues: any[] = item[key.toString()];
 
                     // complexMapping.sourceType
                     var sourceType = TypesHelper.typesMapping[complexMapping.sourceType];
@@ -212,7 +216,7 @@ export class DbContext {
                     var values = [];
 
                     for(let value of complexMapValues) {
-                        var mainValue = item[mainPrimaryJsonKey];
+                        var mainValue = item[mainPrimaryJsonKey.toString()];
                         var sourceValue = value[sourcePrimaryJsonKey];
                         values.push([mainValue, sourceValue]);
                     }
