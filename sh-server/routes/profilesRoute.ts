@@ -1,12 +1,9 @@
 import * as express from 'express';
-import { ShConfig } from '../database/configurations';
 import { Router } from 'express';
 import { RoutesCommon } from './routeCommon';
 import { Profile } from '../models/models';
 
 var router: Router = express.Router(); 
-
-var ProfilesConfig = ShConfig.Profiles;
 
 /* GET users listing. */
 router.get('/', (req , res) => {
@@ -14,6 +11,8 @@ router.get('/', (req , res) => {
   
   context.select(Profile, true).then(profiles => {
     res.json({data : profiles});
+  }).catch(err => {
+    console.error("Put Profile " + err);
   });
 });
 
@@ -27,6 +26,9 @@ router.put('/', (req , res) => {
       context.connection.commit();
       res.json({data : profile});
     })
+  }).catch(err => {
+    console.error("Put Profile " + err);
+    context.connection.rollback();
   });
 })
 

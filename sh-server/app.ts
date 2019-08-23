@@ -5,6 +5,8 @@ import bodyParser = require('body-parser');
 import { DbContext } from './database/database';
 import { RoutesCommon } from './routes/routeCommon';
 
+var pino = require('express-pino-logger')();
+
 var profiles = require('./routes/profilesRoute');
 var tags = require('./routes/tagsRoute');
 var rooms = require('./routes/roomsRoute');
@@ -16,8 +18,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser())
 
+app.use(pino);
+
+pino.logger.info("Hello");
+
 app.use('/api/*', (req ,res,next) => {
-    console.log("-> " + req.originalUrl);
+    (req as any).log.info("-> " + req.originalUrl);
 
     var realJson = res.json;
 

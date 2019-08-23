@@ -42,6 +42,19 @@ export class Profile {
     @Mapped({ dbColumnName: "name", type: MappingType.string, isPrimaryKey:false }) name!: string;
     @Mapped(profileProfessionsMapping) professions: Tag[] = [];
     profilePic:string = "";
+
+    get isEmpty() {
+        return this.id.indexOf("EMPTY") != -1;
+    }
+
+    static Empty(number: number): Profile {
+        var profile = new Profile();
+        profile.id = "EMPTY PROFILE " + number;
+        profile.name = "Empty Profile " + number;
+        profile.professions = [];
+
+        return profile;
+    }
 }
 
 @Table("Professions")

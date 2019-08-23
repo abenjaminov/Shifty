@@ -24,6 +24,7 @@ export class DbContext {
 
             if(!primaryDbKey) {
                 // TODO : Log
+                console.error("General : Type does not have a primary key")
                 reject("Context.Select -> No Primary key found for " + tableName);
             }
 
@@ -31,31 +32,31 @@ export class DbContext {
 
             var join = "";
             var select = [];
+            if(withForeignData) {
+                // Build the join statements
+                for(let foreignMap of foreignDbData) {
+                    var dbConf = foreignMap.db;
+                    var connTableAlias = dbConf.connAlias;
 
-            // Build the join statements
-            for(let foreignMap of foreignDbData) {
-                var dbConf = foreignMap.db;
-                var connTableAlias = dbConf.connAlias;
+                    var joinWithMain = `LEFT JOIN ${dbConf.connTable} ${connTableAlias} ON ${connTableAlias}.${dbConf.connToMainProp}
+                                        = Z.${primaryDbKey}`;
+                    select.push(`${connTableAlias}.${dbConf.connToMainProp} as ${connTableAlias}_${dbConf.connToMainProp}`);
 
-                var joinWithMain = `LEFT JOIN ${dbConf.connTable} ${connTableAlias} ON ${connTableAlias}.${dbConf.connToMainProp}
-                                    = Z.${primaryDbKey}`;
-                select.push(`${connTableAlias}.${dbConf.connToMainProp} as ${connTableAlias}_${dbConf.connToMainProp}`);
+                    var sourceTableAlias = dbConf.sourceAlias;
 
-                var sourceTableAlias = dbConf.sourceAlias;
+                    var joinSourceToCon = `LEFT JOIN ${dbConf.sourceTable} ${sourceTableAlias} ON ${sourceTableAlias}.${dbConf.sourceProp}
+                                        = ${connTableAlias}.${dbConf.connToSourceProp}`;
+                    
+                    select.push(`${sourceTableAlias}.${dbConf.sourceProp} as ${sourceTableAlias}_${dbConf.sourceProp}`);
+                    select.push(`${connTableAlias}.${dbConf.connToSourceProp} as ${connTableAlias}_${dbConf.connToSourceProp}`);
 
-                var joinSourceToCon = `LEFT JOIN ${dbConf.sourceTable} ${sourceTableAlias} ON ${sourceTableAlias}.${dbConf.sourceProp}
-                                    = ${connTableAlias}.${dbConf.connToSourceProp}`;
-                
-                select.push(`${sourceTableAlias}.${dbConf.sourceProp} as ${sourceTableAlias}_${dbConf.sourceProp}`);
-                select.push(`${connTableAlias}.${dbConf.connToSourceProp} as ${connTableAlias}_${dbConf.connToSourceProp}`);
+                    for(let col of dbConf.sourceAdditionalData) {
+                        select.push(`${sourceTableAlias}.${col} as ${sourceTableAlias}_${col}`);
+                    }
 
-                for(let col of dbConf.sourceAdditionalData) {
-                    select.push(`${sourceTableAlias}.${col} as ${sourceTableAlias}_${col}`);
+                    join += " " + joinWithMain + " " + joinSourceToCon;
                 }
-
-                join += " " + joinWithMain + " " + joinSourceToCon;
             }
-
             var query = `SELECT Z.*${select.length > 0 ? ',' : ''} ${select.join(",")} FROM ${tableName} Z ${join}`;
 
             this.connection.query(query, (err: any, result: Array<T>, fields: any) => {
