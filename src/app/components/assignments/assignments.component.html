@@ -1,5 +1,5 @@
 <div class="sh-assignments">
-  <sh-view title="Assignments">
+  <sh-view titleText="Assignments">
     <div viewContent>
       <div class="assignemnt"> 
         <div class="assignment-type assignment-property">
@@ -30,6 +30,12 @@
         <div class="sh-btn" (click)="addAssignment()">
           Add Assignment
         </div>
+      </div>
+      <div class="assignments-list" *ngIf="assignmentsService.state == 'ready' && actionsColumn">
+        <sh-grid>
+          <sh-grid-column *ngFor="let col of this.assignmentColumns" [columnSource]="col"></sh-grid-column>
+          <sh-grid-actions-column [columnSource]="actionsColumn"></sh-grid-actions-column>
+        </sh-grid>
       </div>
     </div>
   </sh-view>

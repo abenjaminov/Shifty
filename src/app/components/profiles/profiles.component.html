@@ -1,5 +1,5 @@
 <div class="profiles">
-  <sh-view [titleText]="'Profiles'">
+  <sh-view titleText="Profiles">
     <sh-grid viewContent>
       <sh-grid-actions-column [columnSource]="actionColumn"></sh-grid-actions-column>
       <sh-grid-column *ngFor="let col of this.columns" [columnSource]="col"></sh-grid-column>

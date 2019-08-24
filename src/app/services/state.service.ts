@@ -16,7 +16,7 @@ interface ApiConfig {
 }
 
 class StateMap {
-  objects: any;
+  objects: any[];
   apiConfig : ApiConfig;
   cacheName: string;
 }
@@ -103,6 +103,8 @@ export class StateService
 
         mappedState.objects.length = 0;
         mappedState.objects.push(...cachedObjects);
+
+        this.appState.appStatus = AppStatus.ready;
 
         resolve(mappedState.objects);
 
@@ -195,6 +197,29 @@ export class StateService
         this.appState.appStatus = AppStatus.ready;
       })
       
+    });
+
+    return result;
+  }
+
+  deleteObject(T: IConstructor, id: any): Promise<boolean> {
+    var result = new Promise<boolean>((resolve,reject) => {
+      var stateMap = this.getStateMap(T);
+      this.appState.appStatus = AppStatus.loading;
+
+      this.httpClient.delete(`/api/${stateMap.apiConfig.controller}/${id}`).toPromise().then(x => {
+        this.appState.appStatus = AppStatus.ready;
+        this.cacheService.clear(stateMap.cacheName);
+
+        var index = stateMap.objects.findIndex(x => x.id == id);
+        stateMap.objects = stateMap.objects.splice(index,1);
+
+        resolve(true);
+      }).catch(error => {
+        reject(error);
+      }).finally(() => {
+        this.appState.appStatus = AppStatus.ready;
+      })
     });
 
     return result;

@@ -1,7 +1,7 @@
 export enum ServiceState {
-    loading,
-    ready,
-    error
+    loading = "loading",
+    ready = "ready",
+    error = "error"
 }
 
 export interface IShService<T> {

@@ -34,4 +34,8 @@ export class AssignmentService implements IShService<Assignment> {
   addAssignment(assignment: Assignment): Promise<IStateObject> {
     return this.stateService.insertObject(Assignment, assignment);
   }
+
+  deleteAssignment(assignment:Assignment) : Promise<boolean> {
+    return this.stateService.deleteObject(Assignment, assignment.id);
+  }
 }

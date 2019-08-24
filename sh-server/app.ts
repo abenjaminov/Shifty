@@ -4,7 +4,6 @@ import cookieParser = require('cookie-parser');
 import bodyParser = require('body-parser');
 import { DbContext } from './database/database';
 import { RoutesCommon } from './routes/routeCommon';
-import { GeneticEnviroment } from './genetics/evniroment';
 
 var pino = require('express-pino-logger')();
 

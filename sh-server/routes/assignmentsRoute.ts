@@ -21,6 +21,19 @@ router.post('/', (req,res,next) => {
     context.insert(Assignment, assignment).then(x => {
         res.json({data : assignment});
     });
-})
+});
+
+router.delete('/:id',(req,res,next) => {
+    var assignmentId = req.params["id"];
+
+    var context = RoutesCommon.getContextFromRequest(req);
+
+    context.deleteSimple(Assignment, assignmentId).then(x => {
+        res.json({ data: true });
+    }).catch(err => {
+        // TODO : Log
+        console.error("Delete Assignment " + err);
+    })
+});
 
 module.exports = router;

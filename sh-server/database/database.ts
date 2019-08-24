@@ -78,6 +78,7 @@ export class DbContext {
                         (resItem as any)[foreignMap.property] = thisItems;
                     })
                 }
+                
                 resolve(distinctResult);
             });
         });
@@ -167,6 +168,30 @@ export class DbContext {
         });
     
         return updatePromise;
+    }
+
+    deleteSimple<T extends IConstructor>(type: T, keyValue: any): Promise<T> {
+        var deletePromise = new Promise<T>((resolve, reject) => {
+            var simpleMappedProps = ReflectionHelper.getSimpleMappedProperties(type);
+
+            var primaryJsonKey = Reflect.ownKeys(simpleMappedProps).find(x => simpleMappedProps[x.toString()].isPrimaryKey) || '';
+            primaryJsonKey = primaryJsonKey.toString();
+
+            var tableName = ReflectionHelper.getTableName(type);
+
+            var primaryKeyMapping: IMapping = simpleMappedProps[primaryJsonKey];
+
+            var typeText = this.getDbValueText(primaryKeyMapping.type, keyValue);
+            var deleteQuery = `DELETE FROM ${tableName} WHERE ${primaryKeyMapping.dbColumnName} = ${typeText}`;
+
+            this.connection.query(deleteQuery, (err,result) => {
+                if(err) reject(err);
+
+                resolve(result);
+            });
+        })
+
+        return deletePromise;
     }
 
     updateComplexMappings<T extends IConstructor>(type: T, item: T): Promise<T> {
