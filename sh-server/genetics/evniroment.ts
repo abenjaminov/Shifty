@@ -166,7 +166,7 @@ export class GeneticEnviroment {
             var profiles = result[0];
             var rooms = result[1];
             var assignments = result[2];
-        })
+        });
     }
 
     filterRelevantProfilesForToday(profiles: Profile[]) {
@@ -216,7 +216,7 @@ export class GeneticEnviroment {
                     bestPopulation = population;
         }
 
-        var bestChromosome = Enumerable.from(population.chromosomes).orderByDescending(x => x.fitness).first()
+        var bestChromosome = Enumerable.from(population.chromosomes).orderByDescending((x: { fitness: any; }) => x.fitness).first()
 
         return bestChromosome;
     }
@@ -226,8 +226,8 @@ export class GeneticEnviroment {
         var nOfElites = Math.round(oldPopulation.chromosomes.length * elitismRate);
         var nOfChromosomes = newPopulation.chromosomes.length;
 
-        var oldElites = Enumerable.from(oldPopulation.chromosomes).orderByDescending(x => x.fitness).take(nOfElites);
-        var bestOfNew = Enumerable.from(newPopulation.chromosomes).orderByDescending(x => x.fitness).take(nOfChromosomes - nOfElites);
+        var oldElites = Enumerable.from(oldPopulation.chromosomes).orderByDescending((x: { fitness: any; }) => x.fitness).take(nOfElites);
+        var bestOfNew = Enumerable.from(newPopulation.chromosomes).orderByDescending((x: { fitness: any; }) => x.fitness).take(nOfChromosomes - nOfElites);
 
         elitePopulation.chromosomes.push(...oldElites);
         elitePopulation.chromosomes.push(...bestOfNew);
@@ -238,7 +238,7 @@ export class GeneticEnviroment {
     mutation(chromosome: Chromosome, mutationProbability: number) {
         var mutatedGenes: Gene[] = [];
 
-        var notGoodOrNiceToHaveGenes = Enumerable.from(chromosome.genes).where(g => !g.isGood() || g.importance == AssignmentImportance.NiceToHave);
+        var notGoodOrNiceToHaveGenes = Enumerable.from(chromosome.genes).where((g: { isGood: () => void; importance: AssignmentImportance; }) => !g.isGood() || g.importance == AssignmentImportance.NiceToHave);
 
         for(let gene of notGoodOrNiceToHaveGenes) {
             var random = Math.random();
@@ -268,13 +268,13 @@ export class GeneticEnviroment {
         var chromosome1Enumerable = Enumerable.from(couple.chromosome1.genes);
         var chromosome2Enumerable = Enumerable.from(couple.chromosome2.genes);
 
-        var parent1FirstPart = chromosome1Enumerable.where((g, i) => i <= firstCrossoverPoint).select(x => x.clone()).toArray();
-        var parent1SecondPart = chromosome1Enumerable.where((g, i) => i > firstCrossoverPoint && i <= secondCrossoverPoint).select(x => x.clone()).toArray();
-        var parent1ThirdPart = chromosome1Enumerable.where((g, i) => i > secondCrossoverPoint && i <= upperbound).select(x => x.clone()).toArray();
+        var parent1FirstPart = chromosome1Enumerable.where((g: any, i: number) => i <= firstCrossoverPoint).select((x: { clone: () => void; }) => x.clone()).toArray();
+        var parent1SecondPart = chromosome1Enumerable.where((g: any, i: number) => i > firstCrossoverPoint && i <= secondCrossoverPoint).select((x: { clone: () => void; }) => x.clone()).toArray();
+        var parent1ThirdPart = chromosome1Enumerable.where((g: any, i: number) => i > secondCrossoverPoint && i <= upperbound).select((x: { clone: () => void; }) => x.clone()).toArray();
 
-        var parent2FirstPart = chromosome2Enumerable.where((g, i) => i <= firstCrossoverPoint).select(x => x.clone()).toArray();
-        var parent2SecondPart = chromosome2Enumerable.where((g, i) => i > firstCrossoverPoint && i <= secondCrossoverPoint).select(x => x.clone()).toArray();
-        var parent2ThirdPart = chromosome2Enumerable.where((g, i) => i > secondCrossoverPoint && i <= upperbound).select(x => x.clone()).toArray();
+        var parent2FirstPart = chromosome2Enumerable.where((g: any, i: number) => i <= firstCrossoverPoint).select((x: { clone: () => void; }) => x.clone()).toArray();
+        var parent2SecondPart = chromosome2Enumerable.where((g: any, i: number) => i > firstCrossoverPoint && i <= secondCrossoverPoint).select((x: { clone: () => void; }) => x.clone()).toArray();
+        var parent2ThirdPart = chromosome2Enumerable.where((g: any, i: number) => i > secondCrossoverPoint && i <= upperbound).select((x: { clone: () => void; }) => x.clone()).toArray();
 
         var child1 = new Chromosome();
         child1.genes.push(...parent1FirstPart);
@@ -286,16 +286,16 @@ export class GeneticEnviroment {
         child2.genes.push(...parent1SecondPart);
         child2.genes.push(...parent2ThirdPart);
 
-        var doubleChild1Ids = Enumerable.from(child1.genes).groupBy(x => x.profile.id).where(x => x.count() > 1).select(x => x.key()).toArray();
-        var doubleChild2Ids = Enumerable.from(child2.genes).groupBy(x => x.profile.id).where(x => x.count() > 1).select(x => x.key()).toArray();
+        var doubleChild1Ids = Enumerable.from(child1.genes).groupBy((x: { profile: { id: any; }; }) => x.profile.id).where((x: { count: () => number; }) => x.count() > 1).select((x: { key: () => void; }) => x.key()).toArray();
+        var doubleChild2Ids = Enumerable.from(child2.genes).groupBy((x: { profile: { id: any; }; }) => x.profile.id).where((x: { count: () => number; }) => x.count() > 1).select((x: { key: () => void; }) => x.key()).toArray();
 
         var firstChildIndex = 0;
         var secondChildIndex = 0;
 
         for (let i = 0; i < doubleChild1Ids.length; i++)
         {
-            firstChildIndex = Enumerable.from(child1.genes).indexOf(x => x.profile.id == doubleChild1Ids[i]);
-            secondChildIndex = Enumerable.from(child2.genes).indexOf(x => x.profile.id == doubleChild2Ids[i]);
+            firstChildIndex = Enumerable.from(child1.genes).indexOf((x: { profile: { id: any; }; }) => x.profile.id == doubleChild1Ids[i]);
+            secondChildIndex = Enumerable.from(child2.genes).indexOf((x: { profile: { id: any; }; }) => x.profile.id == doubleChild2Ids[i]);
 
             var temp = child2.genes[secondChildIndex].profile;
             child2.genes[secondChildIndex].profile = child1.genes[firstChildIndex].profile;
@@ -331,16 +331,16 @@ export class GeneticEnviroment {
     }
 
     selection(population: Population): ChromosomeCouple | undefined {
-        var sortedChromosomes = Enumerable.from(population.chromosomes).orderBy(x => x.fitness).distinct(c => c.fitness).toArray();
+        var sortedChromosomes = Enumerable.from(population.chromosomes).orderBy((x: { fitness: any; }) => x.fitness).distinct((c: { fitness: any; }) => c.fitness).toArray();
 
         if(sortedChromosomes.length == 1) {
             return undefined;
         }
 
-        var fitnessSum = Enumerable.from(sortedChromosomes).sum(c => c.fitness);
+        var fitnessSum = Enumerable.from(sortedChromosomes).sum((c: { fitness: any; }) => c.fitness);
 
-        var normalizedFitnesses = Enumerable.from(sortedChromosomes).select((c,index) => {return new NormalizedFitness(c.fitness / fitnessSum, index)}).
-                                            orderBy(x => x.value).toArray();
+        var normalizedFitnesses = Enumerable.from(sortedChromosomes).select((c: { fitness: number; },index: number) => {return new NormalizedFitness(c.fitness / fitnessSum, index)}).
+                                            orderBy((x: { value: any; }) => x.value).toArray();
         var normalizedFitnessSum = 0.0;
         var cumilatedSum: number[] = [];
 
@@ -389,7 +389,7 @@ export class GeneticEnviroment {
         for (let i = 0; i < numberOfChromosomes; i++) {
             let chromosome = new Chromosome();
 
-            let randomProfiles = Enumerable.from(profiles).orderBy(p => Math.random()).toArray();
+            let randomProfiles = Enumerable.from(profiles).orderBy((p: any) => Math.random()).toArray();
 
             for(let j = 0; j < geneTemplates.length; j++) {
                 let newGene = new Gene(
@@ -435,10 +435,10 @@ export class GeneticEnviroment {
 
     calculateMaximumAvailableFitness(profiles: Profile[], rooms: Room[]) {
         var maxFitness = 0;
-        var countByTags = Enumerable.from(rooms).selectMany(r => r.conditions).
-                                    groupBy((x) => {return { tagId:x.tag.id, importance: x.importance }}, x => x, (key, elements) => {
-                                        return Enumerable.from(elements).where(c => c.tag.id == key.tagId && c.importance == key.importance).toArray()
-                                    }).toDictionary((x) => {return { tag: x[0].tag, importance: x[0].importance }}, c => c.length);
+        var countByTags = Enumerable.from(rooms).selectMany((r: { conditions: any; }) => r.conditions).
+                                    groupBy((x: { tag: { id: any; }; importance: any; }) => {return { tagId:x.tag.id, importance: x.importance }}, (x: any) => x, (key: { tagId: any; importance: any; }, elements: any) => {
+                                        return Enumerable.from(elements).where((c: { tag: { id: any; }; importance: any; }) => c.tag.id == key.tagId && c.importance == key.importance).toArray()
+                                    }).toDictionary((x: { importance: any; }[]) => {return { tag: x[0].tag, importance: x[0].importance }}, (c: { length: any; }) => c.length);
 
         for(let valuePair of countByTags.toEnumerable()) {
             if (valuePair.key.importance == AssignmentImportance.Required)
@@ -452,13 +452,13 @@ export class GeneticEnviroment {
         }
 
         var usedProfiles: Profile[] = [];
-        var requiredConditions = countByTags.toEnumerable().where(x => x.key.importance == AssignmentImportance.Required);
-        var niceToHaveConditions = countByTags.toEnumerable().where(x => x.key.importance == AssignmentImportance.NiceToHave);
+        var requiredConditions = countByTags.toEnumerable().where((x: { key: { importance: AssignmentImportance; }; }) => x.key.importance == AssignmentImportance.Required);
+        var niceToHaveConditions = countByTags.toEnumerable().where((x: { key: { importance: AssignmentImportance; }; }) => x.key.importance == AssignmentImportance.NiceToHave);
 
         var profilesEnumerable = Enumerable.from(profiles);
 
         for(let reqCondition of requiredConditions) {
-            var relevantProfiles = profilesEnumerable.where(x => x.professions.find(x => x.id == reqCondition.key.tag.id) != undefined && !usedProfiles.find(up => x.id == up.id)).take(reqCondition.value).toArray();
+            var relevantProfiles = profilesEnumerable.where((x: { professions: { find: (arg0: (x: any) => boolean) => any; }; id: string; }) => x.professions.find((x: { id: any; }) => x.id == reqCondition.key.tag.id) != undefined && !usedProfiles.find(up => x.id == up.id)).take(reqCondition.value).toArray();
 
             var difference = reqCondition.value - relevantProfiles.length;
 
@@ -475,7 +475,7 @@ export class GeneticEnviroment {
         }
 
         for(let reqCondition of niceToHaveConditions) {
-            var relevantProfiles = profilesEnumerable.where(x => x.professions.find(x => x.id == reqCondition.key.tag.id) != undefined && !usedProfiles.find(up => x.id == up.id)).take(reqCondition.value).toArray();
+            var relevantProfiles = profilesEnumerable.where((x: { professions: { find: (arg0: (x: any) => boolean) => any; }; id: string; }) => x.professions.find((x: { id: any; }) => x.id == reqCondition.key.tag.id) != undefined && !usedProfiles.find(up => x.id == up.id)).take(reqCondition.value).toArray();
 
             var difference = reqCondition.value - relevantProfiles.length;
 
