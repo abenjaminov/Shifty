@@ -92,6 +92,8 @@ export class Assignment {
     @Mapped({ dbColumnName: "id", type: MappingType.number, isPrimaryKey:true }) id!:number;
     @Mapped({ dbColumnName: "type", type: MappingType.string, isPrimaryKey:false }) type!: AssignmentType;
     @Mapped({ dbColumnName: "data", type: MappingType.string, isPrimaryKey:false }) data!: string;
+    
+    // TODO : Info
 
     // Not mapped
     room?: Room;
