@@ -1,6 +1,7 @@
 import { Chromosome, Gene, Population } from "./genetic.models";
-import { Profile, Room, Condition, AssignmentImportance, Tag } from "../models/models";
+import { Profile, Room, Condition, AssignmentImportance, Tag, Assignment } from "../models/models";
 import Enumerable from "linq";
+import { DbContext } from "../database/database";
 
 class NormalizedFitness
 {
@@ -154,6 +155,22 @@ export class GeneticEnviroment {
 
             console.log();
             console.log("Found perfect match - ", solution);
+    }
+
+    start(context: DbContext) {
+        var selectProfiles = context.select(Profile, true);
+        var selectRooms = context.select(Room, true);
+        var selectAssignments = context.select(Assignment, true);
+
+        Promise.all([selectProfiles, selectRooms, selectAssignments]).then(result => {
+            var profiles = result[0];
+            var rooms = result[1];
+            var assignments = result[2];
+        })
+    }
+
+    filterRelevantProfilesForToday(profiles: Profile[]) {
+
     }
 
     run(profiles: Profile[], rooms: Room[]) : Chromosome | undefined {

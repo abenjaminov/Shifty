@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, forwardRef } from '@angular/core';
-import { Profile, Tag, createEnumList, AssignmentType, AssignmentImportance, Days, Room, Assignment } from 'src/app/models';
+import { Profile, Tag, createEnumList, AssignmentType, AssignmentImportance, Day, Room, Assignment } from 'src/app/models';
 import { ProfilesService } from 'src/app/services/profiles.service';
 import { TagsService } from 'src/app/services/tags.service';
 import { DropdownOption } from '../dropdown/dropdown.component';
@@ -91,7 +91,7 @@ export class AssignmentsComponent implements OnInit {
       })
 
       this.assignmentImportances = createEnumList(AssignmentImportance);
-      this.days = createEnumList(Days).map((item) => {
+      this.days = createEnumList(Day).map((item) => {
         return {
           id: item,
           name: item

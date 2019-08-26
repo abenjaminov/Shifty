@@ -103,8 +103,33 @@ export class Assignment {
     // Not mapped - Permanent type
     day?: string
     profile?: Profile;
+
+    // Not mapped - Rotation type
+    isLockedForNextDay?: boolean;
 }
 
 export class TypesHelper {
     static typesMapping: {[typeName:string] : Function} = {"Tag" : Tag};
+}
+
+export enum Day {
+    Sunday = "Sunday",
+    Monday = "Monday",
+    Tuesday = "Tuesday",
+    Wednesday = "Wednesday",
+    Thursday = "Thursday",
+    Friday = "Friday",
+    Saturday = "Saturday"
+}
+
+export class DailySchedule {
+    day!: Day
+    date!: Date;
+    assignments: Assignment[] = [];
+}
+
+export class WeeklySchedule {
+    days: DailySchedule[] = [];
+    startDate: Date;
+    endDate: Date;
 }

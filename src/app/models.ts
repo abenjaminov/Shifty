@@ -40,7 +40,7 @@ export enum AssignmentImportance {
     NiceToHave = "Nice To Have"
 }
 
-export enum Days {
+export enum Day {
     Sunday = "Sunday",
     Monday = "Monday",
     Tuesday = "Tuesday",
