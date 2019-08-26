@@ -1,10 +1,13 @@
-import { Assignment, Room, Tag} from "../models/models";
+import { Assignment, Room, Tag, DailySchedule} from "../models/models";
 
 export class RoomsService {
 
     populateRoomsWithConditions(roomAssignments: Assignment[]) {
         var rooms: Room[] = [];
-        var tags: Tag[] = []
+        var tags: Tag[] = [];
+
+        var prevDailySchedule: DailySchedule;
+
         for(let roomAssignment of roomAssignments) {
             var assignmentData = JSON.parse(roomAssignment.data);
             roomAssignment.importance = assignmentData.importance;
