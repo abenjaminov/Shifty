@@ -1,5 +1,4 @@
 import { Table, Mapped, MappingType, IComplexMapping } from "./reflection";
-import { stringify } from "querystring";
 
 var roomToAssignmentsMapping: IComplexMapping = {
     property: "assignments",
@@ -8,7 +7,7 @@ var roomToAssignmentsMapping: IComplexMapping = {
         sourceTable: "Assignments",
         sourceProp: "id",
         sourceAlias: "asgn",
-        sourceAdditionalData: [],
+        sourceAdditionalData: ["amount", "day", "importance", "isLockedForNextDay", "professionId","profileId", "roomId","type"],
 
         connTable: "Assignments",
         connAlias: "conn_asgn",
@@ -16,7 +15,31 @@ var roomToAssignmentsMapping: IComplexMapping = {
         connToMainProp: "roomId"
     },
     toItemsMap: (primaryKeyValues: number[],  results: any[]) => {
-        return new Map<string, any[]>();
+        var map: Map<number, Assignment[]> = new Map<number, Assignment[]>();
+
+        for(let id of primaryKeyValues) {
+            var assignmentsResult = results.filter(x => x.id == id && x["asgn_roomId"] != null);
+            var assignments = [];
+            for(let asgn of assignmentsResult) {
+                var assignment: Assignment = {
+                    id: asgn["asgn_id"],
+                    amount: asgn["asgn_amount"],
+                    day: asgn["asgn_day"],
+                    importance: asgn["asgn_importance"],
+                    isLockedForNextDay: asgn["asgn_isLockedForNextDay"],
+                    professionId: asgn["asgn_professionId"],
+                    profileId: asgn["asgn_profileId"],
+                    roomId: asgn["asgn_roomId"],
+                    type: asgn["asgn_type"]
+                };
+
+                assignments.push(assignment);
+            }
+
+            map.set(id, assignments);
+        }
+
+        return map;
     }
 }
 
@@ -150,7 +173,7 @@ export class DailySchedule {
 }
 
 export class WeeklySchedule {
-    days: DailySchedule[] = [];
+    days: {[day:string] : DailySchedule} = {};
     startDate: Date;
     endDate: Date;
 }

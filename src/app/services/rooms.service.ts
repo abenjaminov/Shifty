@@ -11,7 +11,7 @@ export class RoomsService implements IShService<Room> {
     @Inject(forwardRef(() => StateService))  private stateService: StateService
     ) { }
 
-  get tags(): Tag[] {
+  get rooms(): Room[] {
     return this.stateService.getState(Room) as Room[];
   }
 

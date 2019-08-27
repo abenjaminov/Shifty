@@ -5,11 +5,11 @@ import Enumerable from "linq";
 export class RoomsService {
 
     populateRoomsWithConditions(roomAssignments: Assignment[]) {
-        var rooms: Room[] = [];
-        var tags: Tag[] = [];
+        let rooms: Room[] = [];
+        let tags: Tag[] = [];
 
-        var prevDailySchedule: DailySchedule;
-
+        let prevDailySchedule: DailySchedule;
+ים
         for(let roomAssignment of roomAssignments) {
             roomAssignment.importance = roomAssignment.importance;
             roomAssignment.room = rooms.find(r => r.id == roomAssignment.roomId);

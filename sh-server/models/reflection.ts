@@ -4,6 +4,10 @@ export interface IMappedPropertiesMetaData {
     [jsonPropName: string] : string | any
 }
 
+/**
+ * source[sourceProp] > connection[connToSourceProp]
+ * connection[connectionToMainProp] > main[primaryKey]
+ */
 export interface IComplexDbMapping {
     sourceTable: string;
     sourceProp: string;
@@ -21,7 +25,7 @@ export interface IComplexMapping {
     property:string;
     sourceType: string;
     db: IComplexDbMapping;
-    toItemsMap: (primaryKeyValues:string[] | number[], items:any[]) => Map<string,any[]>;
+    toItemsMap: (primaryKeyValues:string[] | number[], items:any[]) => Map<string | number,any[]>;
 }
 
 export interface IMapping {

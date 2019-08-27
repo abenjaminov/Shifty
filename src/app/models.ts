@@ -56,6 +56,29 @@ export enum Day {
     Saturday = "Saturday"
 }
 
+export class DailySchedule {
+    day!: Day
+    date!: Date;
+    assignments: Assignment[] = [];
+
+    // Not mapped
+    dateString:string;
+    isToday: boolean;
+
+    setDateString() {
+        var dateParts = this.date.toDateString().split(' ');
+        this.dateString = `${dateParts[1]} ${dateParts[2]}`;
+    }
+}
+
+export class WeeklySchedule {
+    days: {[day:string] : DailySchedule} = {};
+    startDate: Date;
+    endDate: Date;
+
+
+}
+
 export function createEnumList(enumType) {
     let list = Object.keys(enumType);
 
