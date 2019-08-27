@@ -13,7 +13,8 @@
   .sidebar-container {
     grid-column: 1;
     box-shadow: 3px 0px  3px 0px $theme-dark-primary;
-    background: $theme-primary;
+    background:white;
+    z-index: 1;
   }
 
   .content-container {
