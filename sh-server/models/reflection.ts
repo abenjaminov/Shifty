@@ -21,18 +21,19 @@ export interface IComplexMapping {
     property:string;
     sourceType: string;
     db: IComplexDbMapping;
-    toItemsMap: (primaryKeyValues:string[], items:any[]) => Map<string,any[]>;
+    toItemsMap: (primaryKeyValues:string[] | number[], items:any[]) => Map<string,any[]>;
 }
 
 export interface IMapping {
     dbColumnName: string;
     type:MappingType;
-    isPrimaryKey:boolean;
+    isPrimaryKey?:boolean;
 }
 
 export enum MappingType {
     string,
-    number
+    number,
+    boolean
 }
 
 export class ReflectionHelper {

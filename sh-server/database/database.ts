@@ -116,7 +116,7 @@ export class DbContext {
         
         for(let prop of Reflect.ownKeys(simpleMappedProps)) {
             if(!simpleMappedProps[prop.toString()].isPrimaryKey) {
-                params.push(item[prop].toString());
+                params.push(item[prop] ? item[prop].toString() : null);
                 dbProperties.push(simpleMappedProps[prop.toString()].dbColumnName);
             }
         }

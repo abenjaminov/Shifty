@@ -116,13 +116,11 @@ export class AssignmentsComponent implements OnInit {
     for(let assignment of this.allAssignments) {
       assignmentTypeColumn.cellInfos.push({ text: assignment.type });
 
-      let data = JSON.parse(assignment.data);
-
-      let profile = this.profiles.find(p => p.id == data.profileId);
-      let room = this.rooms.find(r => r.id == data.roomId);
-      let profession = this.tags.find(p => p.id == data.professionId);
-      let importance = data.importance;
-      let day = data.day;
+      let profile = this.profiles.find(p => p.id == assignment.profileId) || {name: '--'};
+      let room = this.rooms.find(r => r.id == assignment.roomId) || {name: '--'};
+      let profession = this.tags.find(p => p.id == assignment.professionId) || {name: '--'};
+      let importance = assignment.importance || '';
+      let day = assignment.day || '';
 
       if(room) {
         roomColumn.cellInfos.push({ text: room.name });
@@ -177,25 +175,18 @@ export class AssignmentsComponent implements OnInit {
   addAssignment() {
     var assignment = new Assignment();
     assignment.type = AssignmentType[this.selectedAssignmentType.id];
+    assignment.amount = 1;
 
     if(this.selectedAssignmentType.id == AssignmentType.Room) {
-      let data = {
-        roomId: this.selectedRoom.id,
-        professionId: this.selectedTag.id,
-        importance: AssignmentImportance[this.assignmentImportances[this.selectedImportanceIndex]]
-      }
-      assignment.data = JSON.stringify(data);
-
-      
+      assignment.roomId = this.selectedRoom.id,
+      assignment.professionId = this.selectedTag.id,
+      assignment.importance = AssignmentImportance[this.assignmentImportances[this.selectedImportanceIndex]]
     }
     else if (this.selectedAssignmentType.id == AssignmentType.Permanent) {
-      let data = {
-        roomId: this.selectedRoom.id,
-        profileId: this.selectedProfile.id,
-        day: this.selectedDay.id,
-        importance: AssignmentImportance[this.assignmentImportances[this.selectedImportanceIndex]]
-      }
-      assignment.data = JSON.stringify(data);
+      assignment.roomId = this.selectedRoom.id;
+      assignment.profileId = this.selectedProfile.id.toString();
+      assignment.day = Day[this.selectedDay.id];
+      assignment.importance = AssignmentImportance[this.assignmentImportances[this.selectedImportanceIndex]]
     }
     else if(this.selectedAssignmentType.id == AssignmentType.Rotation) {
       

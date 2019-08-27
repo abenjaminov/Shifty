@@ -1,5 +1,5 @@
 import { Chromosome, Gene, Population } from "./genetic.models";
-import { Profile, Room, Condition, AssignmentImportance, Tag, Assignment } from "../models/models";
+import { Profile, Room, AssignmentImportance, Tag, Assignment } from "../models/models";
 import Enumerable from "linq";
 import { DbContext } from "../database/database";
 
@@ -25,49 +25,49 @@ export class GeneticEnviroment {
         var SeniorC:Tag = { id: 5,name: "Senior C"};
 
         var rooms: Room[] = [];
-        rooms.push({ id: 1, name: "Room 1", conditions: []});
-        rooms[rooms.length - 1].conditions.push(new Condition(Senior, 1, AssignmentImportance.Required));
-        rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, AssignmentImportance.Required ));
-        rooms[rooms.length - 1].conditions.push(new Condition(Senior, 1, AssignmentImportance.NiceToHave ));
+        rooms.push({ id: 1, name: "Room 1", assignments: []});
+        rooms[rooms.length - 1].assignments.push(new Assignment(Senior, 1, AssignmentImportance.Required));
+        rooms[rooms.length - 1].assignments.push(new Assignment(Intern, 1, AssignmentImportance.Required ));
+        rooms[rooms.length - 1].assignments.push(new Assignment(Senior, 1, AssignmentImportance.NiceToHave ));
 
-        rooms.push({ id: 2, name: "Room 2", conditions: []});
-        rooms[rooms.length - 1].conditions.push(new Condition(SeniorA, 1, AssignmentImportance.Required ));
-        rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, AssignmentImportance.Required ));
+        rooms.push({ id: 2, name: "Room 2", assignments: []});
+        rooms[rooms.length - 1].assignments.push(new Assignment(SeniorA, 1, AssignmentImportance.Required ));
+        rooms[rooms.length - 1].assignments.push(new Assignment(Intern, 1, AssignmentImportance.Required ));
 
-        rooms.push({ id: 3, name: "Room 3", conditions: []});
-        rooms[rooms.length - 1].conditions.push(new Condition(SeniorB, 1, AssignmentImportance.Required ));
-        rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, AssignmentImportance.Required ));
+        rooms.push({ id: 3, name: "Room 3", assignments: []});
+        rooms[rooms.length - 1].assignments.push(new Assignment(SeniorB, 1, AssignmentImportance.Required ));
+        rooms[rooms.length - 1].assignments.push(new Assignment(Intern, 1, AssignmentImportance.Required ));
 
-        rooms.push({ id: 4, name: "Room 4", conditions: []});
-        rooms[rooms.length - 1].conditions.push(new Condition(SeniorC, 1, AssignmentImportance.Required ));
-        rooms[rooms.length - 1].conditions.push(new Condition(SeniorC, 1, AssignmentImportance.NiceToHave ));
-        rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, AssignmentImportance.Required ));
+        rooms.push({ id: 4, name: "Room 4", assignments: []});
+        rooms[rooms.length - 1].assignments.push(new Assignment(SeniorC, 1, AssignmentImportance.Required ));
+        rooms[rooms.length - 1].assignments.push(new Assignment(SeniorC, 1, AssignmentImportance.NiceToHave ));
+        rooms[rooms.length - 1].assignments.push(new Assignment(Intern, 1, AssignmentImportance.Required ));
 
-        rooms.push({ id: 5, name: "Room 5", conditions: []});
-        rooms[rooms.length - 1].conditions.push(new Condition(Senior, 1, AssignmentImportance.Required ));
-        rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, AssignmentImportance.NiceToHave ));
+        rooms.push({ id: 5, name: "Room 5", assignments: []});
+        rooms[rooms.length - 1].assignments.push(new Assignment(Senior, 1, AssignmentImportance.Required ));
+        rooms[rooms.length - 1].assignments.push(new Assignment(Intern, 1, AssignmentImportance.NiceToHave ));
 
-        rooms.push({ id: 6, name: "Room 6", conditions: []});
-        rooms[rooms.length - 1].conditions.push(new Condition(SeniorA, 1, AssignmentImportance.Required ));
-        rooms[rooms.length - 1].conditions.push(new Condition(SeniorA, 1, AssignmentImportance.NiceToHave ));
+        rooms.push({ id: 6, name: "Room 6", assignments: []});
+        rooms[rooms.length - 1].assignments.push(new Assignment(SeniorA, 1, AssignmentImportance.Required ));
+        rooms[rooms.length - 1].assignments.push(new Assignment(SeniorA, 1, AssignmentImportance.NiceToHave ));
 
-        rooms.push({ id: 7, name: "Room 7", conditions: []});
-        rooms[2].conditions.push(new Condition(SeniorB, 1, AssignmentImportance.Required ));
-        rooms[2].conditions.push(new Condition(Intern, 1, AssignmentImportance.Required ));
+        rooms.push({ id: 7, name: "Room 7", assignments: []});
+        rooms[2].assignments.push(new Assignment(SeniorB, 1, AssignmentImportance.Required ));
+        rooms[2].assignments.push(new Assignment(Intern, 1, AssignmentImportance.Required ));
 
-        rooms.push({ id: 8, name: "Room 8", conditions: []});
-        rooms[rooms.length - 1].conditions.push(new Condition(SeniorC, 1, AssignmentImportance.Required ));
-        rooms[rooms.length - 1].conditions.push(new Condition(Senior, 1, AssignmentImportance.NiceToHave ));
-        rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, AssignmentImportance.NiceToHave ));
+        rooms.push({ id: 8, name: "Room 8", assignments: []});
+        rooms[rooms.length - 1].assignments.push(new Assignment(SeniorC, 1, AssignmentImportance.Required ));
+        rooms[rooms.length - 1].assignments.push(new Assignment(Senior, 1, AssignmentImportance.NiceToHave ));
+        rooms[rooms.length - 1].assignments.push(new Assignment(Intern, 1, AssignmentImportance.NiceToHave ));
 
-        rooms.push({ id: 9, name: "Room 9", conditions: []});
-        rooms[rooms.length - 1].conditions.push(new Condition(Senior, 1, AssignmentImportance.Required ));
-        rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, AssignmentImportance.Required ));
-        rooms[rooms.length - 1].conditions.push(new Condition(Senior, 1, AssignmentImportance.NiceToHave ));
+        rooms.push({ id: 9, name: "Room 9", assignments: []});
+        rooms[rooms.length - 1].assignments.push(new Assignment(Senior, 1, AssignmentImportance.Required ));
+        rooms[rooms.length - 1].assignments.push(new Assignment(Intern, 1, AssignmentImportance.Required ));
+        rooms[rooms.length - 1].assignments.push(new Assignment(Senior, 1, AssignmentImportance.NiceToHave ));
 
-        rooms.push({ id: 10, name: "Room 10", conditions: []});
-        rooms[rooms.length - 1].conditions.push(new Condition(SeniorA, 1, AssignmentImportance.Required ));
-        rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, AssignmentImportance.Required ));
+        rooms.push({ id: 10, name: "Room 10", assignments: []});
+        rooms[rooms.length - 1].assignments.push(new Assignment(SeniorA, 1, AssignmentImportance.Required ));
+        rooms[rooms.length - 1].assignments.push(new Assignment(Intern, 1, AssignmentImportance.Required ));
 
         var profiles: Profile[] = [];
 
@@ -238,7 +238,7 @@ export class GeneticEnviroment {
     mutation(chromosome: Chromosome, mutationProbability: number) {
         var mutatedGenes: Gene[] = [];
 
-        var notGoodOrNiceToHaveGenes = Enumerable.from(chromosome.genes).where((g: { isGood: () => void; importance: AssignmentImportance; }) => !g.isGood() || g.importance == AssignmentImportance.NiceToHave);
+        var notGoodOrNiceToHaveGenes = Enumerable.from(chromosome.genes).where((g: Gene) => !g.isGood() || g.importance == AssignmentImportance.NiceToHave);
 
         for(let gene of notGoodOrNiceToHaveGenes) {
             var random = Math.random();
@@ -286,16 +286,16 @@ export class GeneticEnviroment {
         child2.genes.push(...parent1SecondPart);
         child2.genes.push(...parent2ThirdPart);
 
-        var doubleChild1Ids = Enumerable.from(child1.genes).groupBy((x: { profile: { id: any; }; }) => x.profile.id).where((x: { count: () => number; }) => x.count() > 1).select((x: { key: () => void; }) => x.key()).toArray();
-        var doubleChild2Ids = Enumerable.from(child2.genes).groupBy((x: { profile: { id: any; }; }) => x.profile.id).where((x: { count: () => number; }) => x.count() > 1).select((x: { key: () => void; }) => x.key()).toArray();
+        var doubleChild1Ids = Enumerable.from(child1.genes).groupBy((x: Gene ) => x.profile.id).where((x: { count: () => number; }) => x.count() > 1).select((x: { key: () => void; }) => x.key()).toArray();
+        var doubleChild2Ids = Enumerable.from(child2.genes).groupBy((x: Gene ) => x.profile.id).where((x: { count: () => number; }) => x.count() > 1).select((x: { key: () => void; }) => x.key()).toArray();
 
         var firstChildIndex = 0;
         var secondChildIndex = 0;
 
         for (let i = 0; i < doubleChild1Ids.length; i++)
         {
-            firstChildIndex = Enumerable.from(child1.genes).indexOf((x: { profile: { id: any; }; }) => x.profile.id == doubleChild1Ids[i]);
-            secondChildIndex = Enumerable.from(child2.genes).indexOf((x: { profile: { id: any; }; }) => x.profile.id == doubleChild2Ids[i]);
+            firstChildIndex = Enumerable.from(child1.genes).indexOf((x: Gene ) => x.profile.id == doubleChild1Ids[i]);
+            secondChildIndex = Enumerable.from(child2.genes).indexOf((x: Gene ) => x.profile.id == doubleChild2Ids[i]);
 
             var temp = child2.genes[secondChildIndex].profile;
             child2.genes[secondChildIndex].profile = child1.genes[firstChildIndex].profile;
@@ -421,9 +421,9 @@ export class GeneticEnviroment {
         var geneTemplates: Gene[] = [];
 
         for(let room of rooms) {
-            for(let condition of room.conditions) {
-                for (let index = 0; index < condition.amount; index++) {
-                    let geneTemplate = new Gene(room.id, condition.tag, Profile.Empty(-1), condition.importance);
+            for(let assignment of room.assignments) {
+                for (let index = 0; index < assignment.amount; index++) {
+                    let geneTemplate = new Gene(room.id, assignment.profession, Profile.Empty(-1), assignment.importance);
 
                     geneTemplates.push(geneTemplate);
                 }
@@ -435,10 +435,10 @@ export class GeneticEnviroment {
 
     calculateMaximumAvailableFitness(profiles: Profile[], rooms: Room[]) {
         var maxFitness = 0;
-        var countByTags = Enumerable.from(rooms).selectMany((r: { conditions: any; }) => r.conditions).
-                                    groupBy((x: { tag: { id: any; }; importance: any; }) => {return { tagId:x.tag.id, importance: x.importance }}, (x: any) => x, (key: { tagId: any; importance: any; }, elements: any) => {
+        var countByTags = Enumerable.from(rooms).selectMany((r: Room) => r.assignments).
+                                    groupBy((x: Assignment ) => {return { tagId: x.profession.id, importance: x.importance }}, (x: any) => x, (key: { tagId: any; importance: any; }, elements: any) => {
                                         return Enumerable.from(elements).where((c: { tag: { id: any; }; importance: any; }) => c.tag.id == key.tagId && c.importance == key.importance).toArray()
-                                    }).toDictionary((x: { importance: any; }[]) => {return { tag: x[0].tag, importance: x[0].importance }}, (c: { length: any; }) => c.length);
+                                    }).toDictionary((x: Assignment[]) => {return { tag: x[0].profession, importance: x[0].importance }}, (c: { length: any; }) => c.length);
 
         for(let valuePair of countByTags.toEnumerable()) {
             if (valuePair.key.importance == AssignmentImportance.Required)
@@ -452,21 +452,21 @@ export class GeneticEnviroment {
         }
 
         var usedProfiles: Profile[] = [];
-        var requiredConditions = countByTags.toEnumerable().where((x: { key: { importance: AssignmentImportance; }; }) => x.key.importance == AssignmentImportance.Required);
-        var niceToHaveConditions = countByTags.toEnumerable().where((x: { key: { importance: AssignmentImportance; }; }) => x.key.importance == AssignmentImportance.NiceToHave);
+        var requiredAssignments = countByTags.toEnumerable().where((x: { key: { importance: AssignmentImportance; }; }) => x.key.importance == AssignmentImportance.Required);
+        var niceToHaveAssignments = countByTags.toEnumerable().where((x: { key: { importance: AssignmentImportance; }; }) => x.key.importance == AssignmentImportance.NiceToHave);
 
         var profilesEnumerable = Enumerable.from(profiles);
 
-        for(let reqCondition of requiredConditions) {
-            var relevantProfiles = profilesEnumerable.where((x: { professions: { find: (arg0: (x: any) => boolean) => any; }; id: string; }) => x.professions.find((x: { id: any; }) => x.id == reqCondition.key.tag.id) != undefined && !usedProfiles.find(up => x.id == up.id)).take(reqCondition.value).toArray();
+        for(let reqAssignment of requiredAssignments) {
+            var relevantProfiles = profilesEnumerable.where((x: { professions: { find: (arg0: (x: any) => boolean) => any; }; id: string; }) => x.professions.find((x: { id: any; }) => x.id == reqAssignment.key.tag.id) != undefined && !usedProfiles.find(up => x.id == up.id)).take(reqAssignment.value).toArray();
 
-            var difference = reqCondition.value - relevantProfiles.length;
+            var difference = reqAssignment.value - relevantProfiles.length;
 
             if(difference > 0) {
-                if(reqCondition.key.importance == AssignmentImportance.Required) {
+                if(reqAssignment.key.importance == AssignmentImportance.Required) {
                     maxFitness -= 2 * difference;
                 }
-                else if(reqCondition.key.importance == AssignmentImportance.NiceToHave) {
+                else if(reqAssignment.key.importance == AssignmentImportance.NiceToHave) {
                     maxFitness -= 1 * difference;
                 }
             }
@@ -474,16 +474,16 @@ export class GeneticEnviroment {
             usedProfiles.push(...relevantProfiles);
         }
 
-        for(let reqCondition of niceToHaveConditions) {
-            var relevantProfiles = profilesEnumerable.where((x: { professions: { find: (arg0: (x: any) => boolean) => any; }; id: string; }) => x.professions.find((x: { id: any; }) => x.id == reqCondition.key.tag.id) != undefined && !usedProfiles.find(up => x.id == up.id)).take(reqCondition.value).toArray();
+        for(let reqAssignment of niceToHaveAssignments) {
+            var relevantProfiles = profilesEnumerable.where((x: { professions: { find: (arg0: (x: any) => boolean) => any; }; id: string; }) => x.professions.find((x: { id: any; }) => x.id == reqAssignment.key.tag.id) != undefined && !usedProfiles.find(up => x.id == up.id)).take(reqAssignment.value).toArray();
 
-            var difference = reqCondition.value - relevantProfiles.length;
+            var difference = reqAssignment.value - relevantProfiles.length;
 
             if(difference > 0) {
-                if(reqCondition.key.importance == AssignmentImportance.Required) {
+                if(reqAssignment.key.importance == AssignmentImportance.Required) {
                     maxFitness -= 2 * difference;
                 }
-                else if(reqCondition.key.importance == AssignmentImportance.NiceToHave) {
+                else if(reqAssignment.key.importance == AssignmentImportance.NiceToHave) {
                     maxFitness -= 1 * difference;
                 }
             }

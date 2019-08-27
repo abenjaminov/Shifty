@@ -1,4 +1,6 @@
-import { Assignment, Room, Tag, DailySchedule} from "../models/models";
+import { Assignment, Room, Tag, DailySchedule  } from "../models/models";
+
+import Enumerable from "linq";
 
 export class RoomsService {
 
@@ -9,10 +11,17 @@ export class RoomsService {
         var prevDailySchedule: DailySchedule;
 
         for(let roomAssignment of roomAssignments) {
-            var assignmentData = JSON.parse(roomAssignment.data);
-            roomAssignment.importance = assignmentData.importance;
-            roomAssignment.room = rooms.find(r => r.id == assignmentData.roomId);
-            roomAssignment.profession = tags.find(t => t.id == assignmentData.professionId);
+            roomAssignment.importance = roomAssignment.importance;
+            roomAssignment.room = rooms.find(r => r.id == roomAssignment.roomId);
+            roomAssignment.profession = tags.find(t => t.id == roomAssignment.professionId);
         }
+
+        var assignmentsByRoomId = Enumerable.from(roomAssignments).groupBy((ra) => ra.room.id).toDictionary(x => x.key(), y => y);
+
+        rooms.forEach(room => {
+            if(assignmentsByRoomId.contains(room.id)) {
+                room.assignments = assignmentsByRoomId.get(room.id).toArray();
+            }            
+        });
     }
 }

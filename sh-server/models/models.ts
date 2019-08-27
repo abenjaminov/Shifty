@@ -1,6 +1,26 @@
-import { Table, Mapped, MappingType } from "./reflection";
+import { Table, Mapped, MappingType, IComplexMapping } from "./reflection";
+import { stringify } from "querystring";
 
-var profileProfessionsMapping = {
+var roomToAssignmentsMapping: IComplexMapping = {
+    property: "assignments",
+    sourceType: "Assignment",
+    db: {
+        sourceTable: "Assignments",
+        sourceProp: "id",
+        sourceAlias: "asgn",
+        sourceAdditionalData: [],
+
+        connTable: "Assignments",
+        connAlias: "conn_asgn",
+        connToSourceProp: "id",
+        connToMainProp: "roomId"
+    },
+    toItemsMap: (primaryKeyValues: number[],  results: any[]) => {
+        return new Map<string, any[]>();
+    }
+}
+
+var profileProfessionsMapping: IComplexMapping = {
     property: "professions",
     sourceType: "Tag",
     db : {
@@ -63,17 +83,11 @@ export class Tag {
     @Mapped({ dbColumnName: "name", type: MappingType.string, isPrimaryKey:false }) name!: string;
 }
 
+@Table("Rooms")
 export class Room {
-    id!: number;
-    name!: string;
-    conditions: Condition[] = [];
-}
-
-export class Condition
-{
-    constructor(public tag: Tag,public amount: number, public importance: AssignmentImportance)
-    {
-    }
+    @Mapped({dbColumnName: "id", type: MappingType.number, isPrimaryKey:true }) id! : number;
+    @Mapped({ dbColumnName: "name", type: MappingType.string, isPrimaryKey:false }) name!: string;
+    @Mapped(roomToAssignmentsMapping) assignments: Assignment[] = [];
 }
 
 export enum AssignmentType {
@@ -89,29 +103,34 @@ export enum AssignmentImportance {
 
 @Table("Assignments")
 export class Assignment {
-    @Mapped({ dbColumnName: "id", type: MappingType.number, isPrimaryKey:true }) id!:number;
-    @Mapped({ dbColumnName: "type", type: MappingType.string, isPrimaryKey:false }) type!: AssignmentType;
-    @Mapped({ dbColumnName: "data", type: MappingType.string, isPrimaryKey:false }) data!: string;
-    
+    @Mapped({ dbColumnName: "id", type: MappingType.number, isPrimaryKey:true }) id:number;
+    @Mapped({ dbColumnName: "type", type: MappingType.string }) type: AssignmentType;
+    @Mapped({ dbColumnName: "amount", type:MappingType.number}) amount: number = 1;
+    @Mapped({ dbColumnName: "roomId", type:MappingType.number}) roomId?: number;
+    @Mapped({ dbColumnName: "professionId", type:MappingType.number}) professionId?: number;
+    @Mapped({ dbColumnName: "importance", type: MappingType.string}) importance?: AssignmentImportance;
+    @Mapped({ dbColumnName: "day", type: MappingType.string}) day?: Day;
+    @Mapped({ dbColumnName: "profileId", type:MappingType.string}) profileId?: string;
+    @Mapped({ dbColumnName: "isLockedForNextDay", type:MappingType.boolean}) isLockedForNextDay?: boolean;
     // TODO : Info
+
+    constructor(_profession: Tag, _amount:number, _importance: AssignmentImportance) {
+        this.profession = _profession;
+        this.amount = _amount;
+        this.importance = _importance;
+    }
 
     // Not mapped
     room?: Room;
-
-    // Room type
     profession?: Tag
-    importance?: AssignmentImportance;
 
     // Not mapped - Permanent type
-    day?: string
     profile?: Profile;
-
-    // Not mapped - Rotation type
-    isLockedForNextDay?: boolean;
 }
 
 export class TypesHelper {
-    static typesMapping: {[typeName:string] : Function} = {"Tag" : Tag};
+    static typesMapping: {[typeName:string] : Function} = {"Tag" : Tag,
+                                                           "Assignment": Assignment};
 }
 
 export enum Day {

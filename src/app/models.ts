@@ -19,9 +19,15 @@ export class Room {
 }
 
 export class Assignment {
-    id!:number;
-    type!: AssignmentType;
-    data!: string;
+    id:number;
+    type: AssignmentType;
+    amount: number = 1;
+    roomId?: number;
+    professionId?: number;
+    importance?: AssignmentImportance;
+    day?: Day;
+    profileId?: string;
+    isLockedForNextDay?: boolean = false;
 }
 
 export class Condition {
