@@ -10,7 +10,7 @@ var pino = require('express-pino-logger')();
 var profiles = require('./routes/profilesRoute');
 var tags = require('./routes/tagsRoute');
 var rooms = require('./routes/roomsRoute');
-var assignments = require('./routes/assignmentsRoute');
+var conditions = require('./routes/conditionsRoute');
 
 const app: express.Application = express();
 
@@ -47,6 +47,6 @@ app.use('/api/*', (req ,res,next) => {
 app.use('/api/profiles', profiles);
 app.use('/api/tags', tags);
 app.use('/api/rooms', rooms);
-app.use('/api/assignments', assignments);
+app.use('/api/conditions', conditions);
 
 export { app };

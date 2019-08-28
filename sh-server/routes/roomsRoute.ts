@@ -1,4 +1,4 @@
-import { Room, Assignment } from "../models/models";
+import { Room, Condition } from "../models/models";
 import { Router } from "express-serve-static-core";
 import { RoutesCommon } from "./routeCommon";
 

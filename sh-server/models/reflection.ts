@@ -37,7 +37,8 @@ export interface IMapping {
 export enum MappingType {
     string,
     number,
-    boolean
+    boolean,
+    date
 }
 
 export class ReflectionHelper {

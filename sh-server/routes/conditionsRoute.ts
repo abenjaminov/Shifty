@@ -1,4 +1,4 @@
-import {  Assignment } from "../models/models";
+import {  Condition } from "../models/models";
 import { Router } from "express-serve-static-core";
 import { RoutesCommon } from "./routeCommon";
 
@@ -8,18 +8,18 @@ var router: Router = express.Router();
 router.get('/', function(req, res, next) {
     var context = RoutesCommon.getContextFromRequest(req);
   
-    context.select(Assignment, true).then(assignments => {
-      res.json({data : assignments});
+    context.select(Condition, true).then(conditions => {
+      res.json({data : conditions});
     });
 });
 
 router.post('/', (req,res,next) => {
-    var assignment = req.body;
+    var condition = req.body;
 
     var context = RoutesCommon.getContextFromRequest(req);
 
-    context.insert(Assignment, assignment).then(x => {
-        res.json({data : assignment});
+    context.insert(Condition, condition).then(x => {
+        res.json({data : condition});
     });
 });
 
@@ -28,11 +28,11 @@ router.delete('/:id',(req,res,next) => {
 
     var context = RoutesCommon.getContextFromRequest(req);
 
-    context.deleteSimple(Assignment, assignmentId).then(x => {
+    context.deleteSimple(Condition, assignmentId).then(x => {
         res.json({ data: true });
     }).catch(err => {
         // TODO : Log
-        console.error("Delete Assignment " + err);
+        console.error("Delete Condition " + err);
     })
 });
 

@@ -1,11 +1,11 @@
-import { Tag, AssignmentImportance, Profile } from "../models/models";
+import { Tag, ConditionImportance, Profile } from "../models/models";
 import { totalmem } from "os";
 
 export class Gene {
     constructor(public roomId: number,
                 public profession: Tag,
                 public profile: Profile,
-                public importance: AssignmentImportance,
+                public importance: ConditionImportance,
                 public fitness = 0) {}
 
     clone() {
@@ -22,7 +22,7 @@ export class Chromosome {
     fitness: number = 0;
 
     findGeneForSwitch(geneToSwitch: Gene): Gene | undefined {
-        var availableGenes = this.genes.filter(g => !g.isGood() || g.importance == AssignmentImportance.NiceToHave);
+        var availableGenes = this.genes.filter(g => !g.isGood() || g.importance == ConditionImportance.NiceToHave);
 
         for(let gene of availableGenes) {
             if(gene != geneToSwitch) {
@@ -46,11 +46,11 @@ export class Chromosome {
             if(!gene.profile.isEmpty) {
                 if (gene.profile.professions.find((p:Tag) => p.id == gene.profession.id))
                 {
-                    if (gene.importance == AssignmentImportance.Required)
+                    if (gene.importance == ConditionImportance.Required)
                     {
                         gene.fitness = 2;
                     }
-                    else if (gene.importance == AssignmentImportance.NiceToHave)
+                    else if (gene.importance == ConditionImportance.NiceToHave)
                     {
                         gene.fitness = 1;
                     }
