@@ -29,12 +29,6 @@ app.use('/test', (req,res,next) => {
     var allOptions = []
 
     allOptions.push(scheduleService.getDatesOfWeek());
-    allOptions.push(scheduleService.getDatesOfWeek(1));
-    allOptions.push(scheduleService.getDatesOfWeek(2));
-    allOptions.push(scheduleService.getDatesOfWeek(3));
-    allOptions.push(scheduleService.getDatesOfWeek(4));
-    allOptions.push(scheduleService.getDatesOfWeek(5));
-    allOptions.push(scheduleService.getDatesOfWeek(6));
 
     res.json(allOptions);
 })
