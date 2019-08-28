@@ -300,11 +300,11 @@ export class DbContext {
         return promise;
     }
 
-    static getContext(): Promise<DbContext> {
+    static getContext(tenant: string): Promise<DbContext> {
         var getContextPromise = new Promise<DbContext>((resolve,reject) => {
             var newContext: DbContext = new DbContext();
     
-            dbConnection.getConnection().then((connection : Connection) => {
+            dbConnection.getConnection(tenant).then((connection : Connection) => {
                 newContext.connection = connection;
                 
                 resolve(newContext);

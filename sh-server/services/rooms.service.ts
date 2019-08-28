@@ -9,7 +9,7 @@ export class RoomsService {
         let tags: Tag[] = [];
 
         let prevDailySchedule: DailySchedule;
-ים
+
         for(let roomAssignment of roomConditions) {
             roomAssignment.importance = roomAssignment.importance;
             roomAssignment.room = rooms.find(r => r.id == roomAssignment.roomId);

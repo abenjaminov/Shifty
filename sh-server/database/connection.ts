@@ -1,12 +1,12 @@
 import mySql, { Connection, MysqlError } from 'mysql';
 
-var getConnection = () => {
+var getConnection = (tenant:string) => {
     var createConnectionPromise = new Promise<Connection> ((resolve, reject) => {
         var connection: Connection = mySql.createConnection({
             host: '35.246.240.151',
             user: 'root',
             password: 'X7yikbxgckx1',
-            database: "Zedek"
+            database: tenant
         });
         
         connection.connect((err: MysqlError, ...args: any[]) => {

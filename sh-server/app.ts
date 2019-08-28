@@ -4,6 +4,7 @@ import cookieParser = require('cookie-parser');
 import bodyParser = require('body-parser');
 import { DbContext } from './database/database';
 import { RoutesCommon } from './routes/routeCommon';
+import { ScheduleService } from './services/schedule.service';
 
 var pino = require('express-pino-logger')();
 
@@ -22,6 +23,22 @@ app.use(pino);
 
 pino.logger.info("Hello");
 
+app.use('/test', (req,res,next) => {
+    var scheduleService = new ScheduleService();
+
+    var allOptions = []
+
+    allOptions.push(scheduleService.getDatesOfWeek());
+    allOptions.push(scheduleService.getDatesOfWeek(1));
+    allOptions.push(scheduleService.getDatesOfWeek(2));
+    allOptions.push(scheduleService.getDatesOfWeek(3));
+    allOptions.push(scheduleService.getDatesOfWeek(4));
+    allOptions.push(scheduleService.getDatesOfWeek(5));
+    allOptions.push(scheduleService.getDatesOfWeek(6));
+
+    res.json(allOptions);
+})
+
 app.use('/api/*', (req ,res,next) => {
     (req as any).log.info("-> " + req.originalUrl);
 
@@ -33,10 +50,13 @@ app.use('/api/*', (req ,res,next) => {
         context.close();
 
         return realJson.call(this, body);
-    }
+    };
 
-    DbContext.getContext().then(context => {
+    (req as any).tenant = "Zedek";
+
+    DbContext.getContext((req as any).tenant).then(context => {
         (req as any).dbContext = context;
+        
 
         next();
     }).catch(error => {
