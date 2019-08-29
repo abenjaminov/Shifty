@@ -2,14 +2,23 @@ import * as express from 'express';
 import { Router } from 'express';
 import { RoutesCommon } from './routeCommon';
 import { Profile } from '../models/models';
+import { IDataFilter } from '../database/database';
 
 var router: Router = express.Router(); 
 
 /* GET users listing. */
-router.get('/', (req , res) => {
+router.get('/:id?', (req , res) => {
   var context = RoutesCommon.getContextFromRequest(req);
   
-  context.select(Profile, true).then(profiles => {
+  var filter: IDataFilter[] = [];
+  if(req.params.id) {
+    filter.push({ 
+      property: "id",
+      value: req.params.id
+    })
+  }
+
+  context.select(Profile, true, filter).then(profiles => {
     res.json({data : profiles});
   }).catch(err => {
     console.error("Put Profile " + err);

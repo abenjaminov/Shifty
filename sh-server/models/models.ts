@@ -151,7 +151,8 @@ export class Condition {
     profile?: Profile;
 }
 
-export class Condition {
+@Table("Assignments")
+export class Assignment {
     @Mapped({ dbColumnName: "id", type: MappingType.number, isPrimaryKey:true }) id: number;
     @Mapped({ dbColumnName: "conditionId", type: MappingType.number }) conditionId: number;
     @Mapped({ dbColumnName: "profileId", type: MappingType.string }) profileId: number;
@@ -180,7 +181,7 @@ export enum Day {
 export class DailySchedule {
     day!: Day
     date!: Date;
-    conditions: Condition[] = [];
+    assignments: Assignment[] = [];
 }
 
 export class WeeklySchedule {

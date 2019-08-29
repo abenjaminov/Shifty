@@ -57,7 +57,7 @@ export class ReflectionHelper {
         return typeMetaData.table;
     }
 
-    static getSimpleMappedProperties(type: Function) {
+    static getSimpleMappedProperties(type: Function): {[jsonPropName: string] : IMapping} {
         var mappedProperties = this.getMappedProperties(type);
         var ownKeys = Reflect.ownKeys(mappedProperties).map(x => x.toString());
         var simpleProps = ownKeys.filter(ok => mappedProperties[ok].dbColumnName)
@@ -71,7 +71,7 @@ export class ReflectionHelper {
         return simpleMappedProps;
     }
 
-    static getComplexMappedProperties(type: Function) {
+    static getComplexMappedProperties(type: Function): {[jsonPropName: string] : IComplexMapping} {
         var mappedProperties = this.getMappedProperties(type);
         var ownKeys = Reflect.ownKeys(mappedProperties).map(x => x.toString());
         var simpleProps = ownKeys.filter(ok => mappedProperties[ok].property)

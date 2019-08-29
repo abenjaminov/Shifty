@@ -8,6 +8,11 @@ interface IConstructor {
     new (...args: any[]) : any
 }
 
+export interface IDataFilter {
+    property:string;
+    value: any;
+}
+
 export class DbContext {
     
     connection!: Connection;
@@ -16,7 +21,7 @@ export class DbContext {
         this.select.bind(this);
     }
 
-    select<T extends IConstructor>(type: T, withForeignData: boolean = false): Promise<Array<T>> {
+    select<T extends IConstructor>(type: T, withForeignData: boolean = false, filters: IDataFilter[] = []): Promise<Array<T>> {
         var selectPromise = new Promise<Array<T>>((resolve, reject) => {
             var mappedProperties = ReflectionHelper.getMappedProperties(type);
             var tableName = ReflectionHelper.getTableName(type);
@@ -60,7 +65,19 @@ export class DbContext {
                     join += " " + joinWithMain + " " + joinSourceToCon;
                 }
             }
-            var query = `SELECT Z.*${select.length > 0 ? ',' : ''} ${select.join(",")} FROM ${tableName} Z ${join}`;
+
+            var simpleMappedProperties = ReflectionHelper.getSimpleMappedProperties(type);
+
+            var where = '';
+
+            for(let dataFilter of filters) {
+                var simpleProp = simpleMappedProperties[dataFilter.property];
+                var dbValueText = this.getDbValueText(simpleProp.type, dataFilter.value);
+
+                where += `Z.${simpleProp.dbColumnName} = ${dbValueText}`;
+            }
+
+            var query = `SELECT Z.*${select.length > 0 ? ',' : ''} ${select.join(",")} FROM ${tableName} Z ${join} WHERE ${where == '' ? '1 = 1' : where}`;
 
             this.connection.query(query, (err: any, result: Array<T>, fields: any) => {
                 if(err) {
@@ -146,19 +163,7 @@ export class DbContext {
 
                 var dbValueText = this.getDbValueText(simpleProp.type, item[prop]);
 
-                if(simpleProp.isPrimaryKey) {
-                    where = `${simpleProp.dbColumnName} = ${dbValueText}`;
-                }
-                else {
-                    set+= ` ${simpleProp.dbColumnName} = `;
-                
-                    if(simpleProp.type == MappingType.string) {
-                        set += `${dbValueText}`;
-                    }
-                    else if(simpleProp.type == MappingType.number) {
-                        set += `${dbValueText}`;
-                    }
-                }
+                where = `${simpleProp.dbColumnName} = ${dbValueText}`;
             }
 
             var query = `UPDATE ${table} SET ${set} WHERE ${where}`;
