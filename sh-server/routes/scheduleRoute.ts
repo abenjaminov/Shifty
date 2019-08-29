@@ -1,6 +1,6 @@
 import { ScheduleService } from "../services/schedule.service";
 import { RoutesCommon } from "./routeCommon";
-import { Profile, Assignment, Room } from "../models/models";
+import { Profile, Assignment, Room, DailySchedule, Day } from "../models/models";
 import { GeneticEnviroment } from "../genetics/evniroment";
 import { Router, Request } from "express";
 
@@ -20,7 +20,7 @@ router.get('/run', async (req: Request,res,next) => {
 
     let lastWeeksSchedule = await scheduleService.getWeeklySchedule(lastWeekDate);
 
-    var prevDay = lastWeeksSchedule.days[6];
+    var prevDay = lastWeeksSchedule.days[Day.Saturday];
 
     // TODO : Take care of other conditions such as vacations and more
     let profileIdsNotAllowedForThisDay = prevDay.assignments.filter(a => a.condition.isLockedForNextDay).map(a => a.profileId);

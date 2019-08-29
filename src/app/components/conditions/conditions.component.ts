@@ -64,12 +64,12 @@ export class ConditionsComponent implements OnInit {
   }
 
   init() {
-    this.selectedConditionType = undefined;
-    this.selectedDay = undefined;
+    this.selectedConditionType = this.selectedConditionType || undefined;
+    this.selectedDay = this.selectedDay || undefined;
     this.selectedImportanceIndex = 0;
-    this.selectedProfile = undefined;
-    this.selectedRoom = undefined;
-    this.selectedTag = undefined;
+    this.selectedProfile = this.selectedProfile || undefined;
+    this.selectedRoom = this.selectedRoom || undefined;
+    this.selectedTag = this.selectedTag || undefined;
 
     Promise.all([this.tagsService.load(), 
                  this.roomsService.load(), 

@@ -150,13 +150,15 @@ export class DbContext {
         var dbProperties:string[] = [];
         
         for(let prop of Reflect.ownKeys(simpleMappedProps)) {
-            dbProperties.push(simpleMappedProps[prop.toString()].dbColumnName);
+            if(!simpleMappedProps[prop.toString()].isPrimaryKey) {
+                dbProperties.push(simpleMappedProps[prop.toString()].dbColumnName);
+            }
         }
 
         for(let item of items) {
+            values.push([]);
+
             for(let prop of Reflect.ownKeys(simpleMappedProps)) {
-                values.push([]);
-    
                 if(!simpleMappedProps[prop.toString()].isPrimaryKey) {
                     values[values.length - 1].push(item[prop] ? item[prop].toString() : null);
                 }
@@ -168,7 +170,7 @@ export class DbContext {
         var insertPromise = new Promise<Array<T>>((resolve, reject) => {
             this.connection.query(query, [values], (err: any, result: any, fields: any) => {
                 if(err) reject(err);
-                
+
                 resolve(result);
             });
         });

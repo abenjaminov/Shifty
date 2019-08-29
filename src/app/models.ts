@@ -30,7 +30,7 @@ export class Condition {
     isLockedForNextDay?: boolean = false;
 }
 
-export class Condition {
+export class Assignment {
     profession: Tag;
     importance: ConditionImportance
 }
@@ -59,7 +59,7 @@ export enum Day {
 export class DailySchedule {
     day!: Day
     date!: Date;
-    conditions: Condition[] = [];
+    assignments: Assignment[] = [];
 
     // Not mapped
     dateString:string;

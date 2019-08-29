@@ -35,7 +35,7 @@ export class ScheduleService {
             var day = this.getDayByDate(date);
             let dailySchedule = new DailySchedule();
 
-            dailySchedule.assignments = assignmentsByDay.get(date);
+            dailySchedule.assignments = assignmentsByDay.get(date) || [];
             dailySchedule.day = day;
             dailySchedule.date = date;
 

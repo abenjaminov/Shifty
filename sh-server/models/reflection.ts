@@ -8,17 +8,19 @@ export interface IMappedPropertiesMetaData {
  * source[sourceProp] > connection[connToSourceProp]
  * connection[connectionToMainProp] > main[primaryKey]
  */
-export interface IOneToManyDbMapping {
-    sourceTable: string;
-    sourceProp: string;
-    sourceAlias: string;
-    sourceAdditionalData: string[];
-
+export interface IOneToManyDbMapping extends IOneToOneDbMapping {
     connTable:string;
     connAlias:string;
     connToSourceProp:string;
 
     connToMainProp:string;
+}
+
+export interface IOneToOneDbMapping {
+    sourceTable: string;
+    sourceProp: string;
+    sourceAlias: string;
+    sourceAdditionalData: string[];
 }
 
 export interface IOneToOneMapping {
