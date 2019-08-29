@@ -1,0 +1,42 @@
+<div class="sh-conditions">
+  <sh-view titleText="Conditions">
+    <div viewContent>
+      <div class="assignemnt"> 
+        <div class="condition-type condition-property">
+          <div class="title">Condition Type:</div>
+          <sh-dropdown [options]="conditionTypes" [(selectedOption)]="selectedConditionType"></sh-dropdown>
+
+          <div class="type-properties-container" *ngIf="selectedConditionType && selectedConditionType.id != 'Rotation'">
+              <div class="title">Room:</div>
+              <sh-dropdown [options]="rooms" [(selectedOption)]="selectedRoom"></sh-dropdown>
+          </div>
+          <div class="type-properties-container" *ngIf="selectedConditionType && selectedConditionType.id == 'Permanent'">
+              <div class="title">Day: </div>
+            <sh-dropdown [options]="days" [(selectedOption)]="selectedDay"></sh-dropdown>
+          </div>
+        </div>
+        <div class="condition-profession condition-property" *ngIf="selectedConditionType && selectedConditionType.id == 'Room'">
+            <div class="title">Profession:</div>
+            <sh-dropdown [options]="tags" [(selectedOption)]="selectedTag"></sh-dropdown>
+        </div>
+        <div class="condition-profession condition-property" *ngIf="selectedConditionType && selectedConditionType.id == 'Permanent'">
+            <div class="title">Profile:</div>
+            <sh-dropdown [options]="profiles" [(selectedOption)]="selectedProfile"></sh-dropdown>
+        </div>
+        <div class="condition-importance condition-property">
+          <div class="title">Importance:</div>
+          <sh-toggle [options]="conditionImportances" [(selectedOptionIndex)]="selectedImportanceIndex"></sh-toggle>
+        </div>
+        <div class="sh-btn" (click)="addCondition()">
+          Add Condition
+        </div>
+      </div>
+      <div class="conditions-list" *ngIf="conditionsService.state == 'ready' && actionsColumn">
+        <sh-grid>
+          <sh-grid-column *ngFor="let col of this.conditionColumns" [columnSource]="col"></sh-grid-column>
+          <sh-grid-actions-column [columnSource]="actionsColumn"></sh-grid-actions-column>
+        </sh-grid>
+      </div>
+    </div>
+  </sh-view>
+</div>

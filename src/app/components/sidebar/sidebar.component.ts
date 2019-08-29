@@ -39,7 +39,7 @@ export class SidebarComponent implements OnInit {
     this.items = [
         { text: "Home",link: "/home", isSelected : false },
       { text: "Profiles",link: "/profiles", isSelected : true },
-      { text: "Assignments",link: "/assignments" }];
+      { text: "Conditions",link: "/conditions" }];
 
   }
 

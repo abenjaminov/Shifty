@@ -10,10 +10,10 @@ export class RoomsService {
 
         let prevDailySchedule: DailySchedule;
 
-        for(let roomAssignment of roomConditions) {
-            roomAssignment.importance = roomAssignment.importance;
-            roomAssignment.room = rooms.find(r => r.id == roomAssignment.roomId);
-            roomAssignment.profession = tags.find(t => t.id == roomAssignment.professionId);
+        for(let roomCondition of roomConditions) {
+            roomCondition.importance = roomCondition.importance;
+            roomCondition.room = rooms.find(r => r.id == roomCondition.roomId);
+            roomCondition.profession = tags.find(t => t.id == roomCondition.professionId);
         }
 
         var conditionsByRoomId = Enumerable.from(roomConditions).groupBy((ra) => ra.room.id).toDictionary(x => x.key(), y => y);

@@ -1,30 +1,30 @@
 import { Component, OnInit, Inject, forwardRef } from '@angular/core';
-import { Profile, Tag, createEnumList, AssignmentType, AssignmentImportance, Day, Room, Assignment } from 'src/app/models';
+import { Profile, Tag, createEnumList, ConditionType, ConditionImportance, Day, Room, Condition } from 'src/app/models';
 import { ProfilesService } from 'src/app/services/profiles.service';
 import { TagsService } from 'src/app/services/tags.service';
 import { DropdownOption } from '../dropdown/dropdown.component';
 import { RoomsService } from 'src/app/services/rooms.service';
-import { AssignmentService } from 'src/app/services/assignments.service';
+import { ConditionService } from 'src/app/services/conditions.service';
 import { ShGridColumn } from 'src/shgrid/grid-column/grid-column.component';
 import { ShGridActionColumn } from 'src/shgrid/grid-actions-column/grid-actions-column.component';
 import { CompileShallowModuleMetadata } from '@angular/compiler';
 
 @Component({
-  selector: 'sh-assignments',
-  templateUrl: './assignments.component.html',
-  styleUrls: ['./assignments.component.scss'],
-  providers: [ProfilesService, TagsService, RoomsService, AssignmentService]
+  selector: 'sh-conditions',
+  templateUrl: './conditions.component.html',
+  styleUrls: ['./conditions.component.scss'],
+  providers: [ProfilesService, TagsService, RoomsService, ConditionService]
 })
-export class AssignmentsComponent implements OnInit {
+export class ConditionsComponent implements OnInit {
 
-  allAssignments: Assignment[];
-  assignmentColumns: ShGridColumn[] = [];
+  allConditions: Condition[];
+  conditionColumns: ShGridColumn[] = [];
   actionsColumn: ShGridActionColumn;
 
-  assignmentTypes: DropdownOption[];
-  selectedAssignmentType: DropdownOption;
+  conditionTypes: DropdownOption[];
+  selectedConditionType: DropdownOption;
 
-  assignmentImportances: string[];
+  conditionImportances: string[];
   selectedImportanceIndex:number = 0;
 
   days: DropdownOption[];
@@ -43,7 +43,7 @@ export class AssignmentsComponent implements OnInit {
     @Inject(forwardRef(() => ProfilesService)) private profilesService: ProfilesService,
     @Inject(forwardRef(() => TagsService)) private tagsService: TagsService,
     @Inject(forwardRef(() => RoomsService)) private roomsService: RoomsService,
-    @Inject(forwardRef(() => AssignmentService)) private assignmentsService: AssignmentService
+    @Inject(forwardRef(() => ConditionService)) private conditionsService: ConditionService
   ) { }
 
   ngOnInit() {
@@ -52,7 +52,7 @@ export class AssignmentsComponent implements OnInit {
   }
 
   initGridColumns() {
-    var assignmentTypeColumn: ShGridColumn = { header: { text: "Type" }, cellInfos: [] };
+    var conditionTypeColumn: ShGridColumn = { header: { text: "Type" }, cellInfos: [] };
     var roomColumn : ShGridColumn = { header: { text: "Room" }, cellInfos: [] };
     var profileColumn : ShGridColumn = { header: { text: "Profile" }, cellInfos: [] };
     var professionColumn : ShGridColumn = { header: { text: "Profession" }, cellInfos: [] };
@@ -60,11 +60,11 @@ export class AssignmentsComponent implements OnInit {
     var importanceColumn : ShGridColumn = { header: { text: "Importance" }, cellInfos: [] };
     this.actionsColumn = { header: {text: "Actions"}, cellInfos: [] };
 
-    this.assignmentColumns.push(assignmentTypeColumn, roomColumn,profileColumn,professionColumn,dayColumn,importanceColumn);
+    this.conditionColumns.push(conditionTypeColumn, roomColumn,profileColumn,professionColumn,dayColumn,importanceColumn);
   }
 
   init() {
-    this.selectedAssignmentType = undefined;
+    this.selectedConditionType = undefined;
     this.selectedDay = undefined;
     this.selectedImportanceIndex = 0;
     this.selectedProfile = undefined;
@@ -74,23 +74,23 @@ export class AssignmentsComponent implements OnInit {
     Promise.all([this.tagsService.load(), 
                  this.roomsService.load(), 
                  this.profilesService.load(), 
-                 this.assignmentsService.load()]).then(result => {
+                 this.conditionsService.load()]).then(result => {
 
       this.tags = result[0];
       this.rooms = result[1];
       this.profiles = result[2];
-      this.allAssignments = result[3];
+      this.allConditions = result[3];
 
       this.createGridColumns();
 
-      this.assignmentTypes = createEnumList(AssignmentType).map((item) => {
+      this.conditionTypes = createEnumList(ConditionType).map((item) => {
         return {
           id: item,
           name: item
         };
       })
 
-      this.assignmentImportances = createEnumList(AssignmentImportance);
+      this.conditionImportances = createEnumList(ConditionImportance);
       this.days = createEnumList(Day).map((item) => {
         return {
           id: item,
@@ -101,26 +101,26 @@ export class AssignmentsComponent implements OnInit {
   }
 
   createGridColumns() {
-    this.assignmentColumns.forEach(ac => {
+    this.conditionColumns.forEach(ac => {
       ac.cellInfos.length = 0
     });
 
-    var assignmentTypeColumn: ShGridColumn = this.assignmentColumns[0];
-    var roomColumn : ShGridColumn = this.assignmentColumns[1];
-    var profileColumn : ShGridColumn = this.assignmentColumns[2];
-    var professionColumn : ShGridColumn = this.assignmentColumns[3];
-    var dayColumn : ShGridColumn = this.assignmentColumns[4];
-    var importanceColumn : ShGridColumn = this.assignmentColumns[5];
+    var conditionTypeColumn: ShGridColumn = this.conditionColumns[0];
+    var roomColumn : ShGridColumn = this.conditionColumns[1];
+    var profileColumn : ShGridColumn = this.conditionColumns[2];
+    var professionColumn : ShGridColumn = this.conditionColumns[3];
+    var dayColumn : ShGridColumn = this.conditionColumns[4];
+    var importanceColumn : ShGridColumn = this.conditionColumns[5];
     this.actionsColumn.cellInfos.length = 0;
 
-    for(let assignment of this.allAssignments) {
-      assignmentTypeColumn.cellInfos.push({ text: assignment.type });
+    for(let condition of this.allConditions) {
+      conditionTypeColumn.cellInfos.push({ text: condition.type });
 
-      let profile = this.profiles.find(p => p.id == assignment.profileId) || {name: '--'};
-      let room = this.rooms.find(r => r.id == assignment.roomId) || {name: '--'};
-      let profession = this.tags.find(p => p.id == assignment.professionId) || {name: '--'};
-      let importance = assignment.importance || '';
-      let day = assignment.day || '';
+      let profile = this.profiles.find(p => p.id == condition.profileId) || {name: '--'};
+      let room = this.rooms.find(r => r.id == condition.roomId) || {name: '--'};
+      let profession = this.tags.find(p => p.id == condition.professionId) || {name: '--'};
+      let importance = condition.importance || '';
+      let day = condition.day || '';
 
       if(room) {
         roomColumn.cellInfos.push({ text: room.name });
@@ -158,7 +158,7 @@ export class AssignmentsComponent implements OnInit {
       this.actionsColumn.cellInfos.push({
         actions: [{
           action: (index) => {
-            this.onDeleteAssignment(this.allAssignments[index]);
+            this.onDeleteCondition(this.allConditions[index]);
           },
           icon: "trash"
         }]
@@ -166,33 +166,33 @@ export class AssignmentsComponent implements OnInit {
     }
   }
 
-  onDeleteAssignment(assignment:Assignment) {
-    this.assignmentsService.deleteAssignment(assignment).then(x => {
+  onDeleteCondition(condition:Condition) {
+    this.conditionsService.deleteCondition(condition).then(x => {
       this.init();
     })
   }
 
-  addAssignment() {
-    var assignment = new Assignment();
-    assignment.type = AssignmentType[this.selectedAssignmentType.id];
-    assignment.amount = 1;
+  addCondition() {
+    var condition = new Condition();
+    condition.type = ConditionType[this.selectedConditionType.id];
+    condition.amount = 1;
 
-    if(this.selectedAssignmentType.id == AssignmentType.Room) {
-      assignment.roomId = this.selectedRoom.id,
-      assignment.professionId = this.selectedTag.id,
-      assignment.importance = AssignmentImportance[this.assignmentImportances[this.selectedImportanceIndex]]
+    if(this.selectedConditionType.id == ConditionType.Room) {
+      condition.roomId = this.selectedRoom.id,
+      condition.professionId = this.selectedTag.id,
+      condition.importance = ConditionImportance[this.conditionImportances[this.selectedImportanceIndex]]
     }
-    else if (this.selectedAssignmentType.id == AssignmentType.Permanent) {
-      assignment.roomId = this.selectedRoom.id;
-      assignment.profileId = this.selectedProfile.id.toString();
-      assignment.day = Day[this.selectedDay.id];
-      assignment.importance = AssignmentImportance[this.assignmentImportances[this.selectedImportanceIndex]]
+    else if (this.selectedConditionType.id == ConditionType.Permanent) {
+      condition.roomId = this.selectedRoom.id;
+      condition.profileId = this.selectedProfile.id.toString();
+      condition.day = Day[this.selectedDay.id];
+      condition.importance = ConditionImportance[this.conditionImportances[this.selectedImportanceIndex]]
     }
-    else if(this.selectedAssignmentType.id == AssignmentType.Rotation) {
+    else if(this.selectedConditionType.id == ConditionType.Rotation) {
       
     }
 
-    this.assignmentsService.addAssignment(assignment).then(x => {
+    this.conditionsService.addCondition(condition).then(x => {
       this.init();
     });
   }

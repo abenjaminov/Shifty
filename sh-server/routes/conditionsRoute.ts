@@ -24,11 +24,11 @@ router.post('/', (req,res,next) => {
 });
 
 router.delete('/:id',(req,res,next) => {
-    var assignmentId = req.params["id"];
+    var conditionId = req.params["id"];
 
     var context = RoutesCommon.getContextFromRequest(req);
 
-    context.deleteSimple(Condition, assignmentId).then(x => {
+    context.deleteSimple(Condition, conditionId).then(x => {
         res.json({ data: true });
     }).catch(err => {
         // TODO : Log

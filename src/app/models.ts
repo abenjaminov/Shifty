@@ -18,13 +18,13 @@ export class Room {
     conditions: Condition[] = [];
 }
 
-export class Assignment {
+export class Condition {
     id:number;
-    type: AssignmentType;
+    type: ConditionType;
     amount: number = 1;
     roomId?: number;
     professionId?: number;
-    importance?: AssignmentImportance;
+    importance?: ConditionImportance;
     day?: Day;
     profileId?: string;
     isLockedForNextDay?: boolean = false;
@@ -32,16 +32,16 @@ export class Assignment {
 
 export class Condition {
     profession: Tag;
-    importance: AssignmentImportance
+    importance: ConditionImportance
 }
 
-export enum AssignmentType {
+export enum ConditionType {
     Room = "Room",
     Rotation = "Rotation",
     Permanent = "Permanent"
 }
 
-export enum AssignmentImportance {
+export enum ConditionImportance {
     Required = "Required",
     NiceToHave = "Nice To Have"
 }
@@ -59,7 +59,7 @@ export enum Day {
 export class DailySchedule {
     day!: Day
     date!: Date;
-    assignments: Assignment[] = [];
+    conditions: Condition[] = [];
 
     // Not mapped
     dateString:string;

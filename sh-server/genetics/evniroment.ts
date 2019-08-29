@@ -457,16 +457,16 @@ export class GeneticEnviroment {
 
         var profilesEnumerable = Enumerable.from(profiles);
 
-        for(let reqAssignment of requiredConditions) {
-            var relevantProfiles = profilesEnumerable.where((x: { professions: { find: (arg0: (x: any) => boolean) => any; }; id: string; }) => x.professions.find((x: { id: any; }) => x.id == reqAssignment.key.tag.id) != undefined && !usedProfiles.find(up => x.id == up.id)).take(reqAssignment.value).toArray();
+        for(let reqCondition of requiredConditions) {
+            var relevantProfiles = profilesEnumerable.where((x: { professions: { find: (arg0: (x: any) => boolean) => any; }; id: string; }) => x.professions.find((x: { id: any; }) => x.id == reqCondition.key.tag.id) != undefined && !usedProfiles.find(up => x.id == up.id)).take(reqCondition.value).toArray();
 
-            var difference = reqAssignment.value - relevantProfiles.length;
+            var difference = reqCondition.value - relevantProfiles.length;
 
             if(difference > 0) {
-                if(reqAssignment.key.importance == ConditionImportance.Required) {
+                if(reqCondition.key.importance == ConditionImportance.Required) {
                     maxFitness -= 2 * difference;
                 }
-                else if(reqAssignment.key.importance == ConditionImportance.NiceToHave) {
+                else if(reqCondition.key.importance == ConditionImportance.NiceToHave) {
                     maxFitness -= 1 * difference;
                 }
             }
@@ -474,16 +474,16 @@ export class GeneticEnviroment {
             usedProfiles.push(...relevantProfiles);
         }
 
-        for(let reqAssignment of niceToHaveConditions) {
-            var relevantProfiles = profilesEnumerable.where((x: { professions: { find: (arg0: (x: any) => boolean) => any; }; id: string; }) => x.professions.find((x: { id: any; }) => x.id == reqAssignment.key.tag.id) != undefined && !usedProfiles.find(up => x.id == up.id)).take(reqAssignment.value).toArray();
+        for(let reqCondition of niceToHaveConditions) {
+            var relevantProfiles = profilesEnumerable.where((x: { professions: { find: (arg0: (x: any) => boolean) => any; }; id: string; }) => x.professions.find((x: { id: any; }) => x.id == reqCondition.key.tag.id) != undefined && !usedProfiles.find(up => x.id == up.id)).take(reqCondition.value).toArray();
 
-            var difference = reqAssignment.value - relevantProfiles.length;
+            var difference = reqCondition.value - relevantProfiles.length;
 
             if(difference > 0) {
-                if(reqAssignment.key.importance == ConditionImportance.Required) {
+                if(reqCondition.key.importance == ConditionImportance.Required) {
                     maxFitness -= 2 * difference;
                 }
-                else if(reqAssignment.key.importance == ConditionImportance.NiceToHave) {
+                else if(reqCondition.key.importance == ConditionImportance.NiceToHave) {
                     maxFitness -= 1 * difference;
                 }
             }

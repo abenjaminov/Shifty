@@ -3,7 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import {HomeComponent} from "./components/home/home.component";
 import {ProfilesComponent} from "./components/profiles/profiles.component";
 import {ProfileEditComponent} from "./components/profiles/edit/profile.edit.component";
-import { AssignmentsComponent } from './components/assignments/assignments.component';
+import { ConditionsComponent } from './components/conditions/conditions.component';
 
 
 const routes: Routes = [{
@@ -26,11 +26,11 @@ const routes: Routes = [{
     }
   ]
 }, {
-  path: "assignments",
+  path: "conditions",
   children: [
     {
       path: '',
-      component: AssignmentsComponent
+      component: ConditionsComponent
     }
   ]
 }];

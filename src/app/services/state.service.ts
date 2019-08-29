@@ -1,5 +1,5 @@
 import {Injectable, Inject, forwardRef} from '@angular/core';
-import { Profile, Tag, Room, Assignment } from '../models';
+import { Profile, Tag, Room, Condition } from '../models';
 import { HttpClient } from '@angular/common/http';
 import { CacheService } from './cache.service';
 
@@ -31,7 +31,7 @@ class AppState {
   profiles: Profile[] = [];
   tags: Tag[] = [];
   rooms: Room[] = [];
-  assignments: Assignment[] = [];
+  conditions: Condition[] = [];
 }
 
 export interface IConstructor {
@@ -77,10 +77,10 @@ export class StateService
       apiConfig : { controller : 'rooms' }
     });
 
-    this.serviceMap.set(Assignment, {
-      objects: this.appState.assignments,
-      cacheName : 'assignments',
-      apiConfig : { controller : 'assignments' }
+    this.serviceMap.set(Condition, {
+      objects: this.appState.conditions,
+      cacheName : 'conditions',
+      apiConfig : { controller : 'conditions' }
     });
   }
 
