@@ -8,7 +8,7 @@ export interface IMappedPropertiesMetaData {
  * source[sourceProp] > connection[connToSourceProp]
  * connection[connectionToMainProp] > main[primaryKey]
  */
-export interface IComplexDbMapping {
+export interface IOneToManyDbMapping {
     sourceTable: string;
     sourceProp: string;
     sourceAlias: string;
@@ -21,10 +21,17 @@ export interface IComplexDbMapping {
     connToMainProp:string;
 }
 
-export interface IComplexMapping {
+export interface IOneToOneMapping {
+    property: string,
+    sourceType: string,
+    db: any;
+    toItem: Function;
+}
+
+export interface IOneToManyMapping {
     property:string;
     sourceType: string;
-    db: IComplexDbMapping;
+    db: IOneToManyDbMapping;
     toItemsMap: (primaryKeyValues:string[] | number[], items:any[]) => Map<string | number,any[]>;
 }
 
@@ -71,7 +78,7 @@ export class ReflectionHelper {
         return simpleMappedProps;
     }
 
-    static getComplexMappedProperties(type: Function): {[jsonPropName: string] : IComplexMapping} {
+    static getOneToManyMappedProperties(type: Function): {[jsonPropName: string] : IOneToManyMapping} {
         var mappedProperties = this.getMappedProperties(type);
         var ownKeys = Reflect.ownKeys(mappedProperties).map(x => x.toString());
         var simpleProps = ownKeys.filter(ok => mappedProperties[ok].property)
@@ -106,7 +113,7 @@ export function Table(tableName: string) {
     }
 }
 
-export function Mapped(mapping: IMapping | IComplexMapping) {
+export function Mapped(mapping: IMapping | IOneToManyMapping) {
     return (target: any, propertyKey: string | symbol) => {
         // Pull the existing metadata or create an empty object
         const allMetadata = (

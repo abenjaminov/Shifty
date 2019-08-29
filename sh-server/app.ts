@@ -12,6 +12,7 @@ var profiles = require('./routes/profilesRoute');
 var tags = require('./routes/tagsRoute');
 var rooms = require('./routes/roomsRoute');
 var conditions = require('./routes/conditionsRoute');
+var schedule = require('./routes/scheduleRoute');
 
 const app: express.Application = express();
 
@@ -23,15 +24,8 @@ app.use(pino);
 
 pino.logger.info("Hello");
 
-app.use('/test', (req,res,next) => {
-    var scheduleService = new ScheduleService();
-
-    var allOptions = []
-
-    allOptions.push(scheduleService.getDatesOfWeek());
-
-    res.json(allOptions);
-})
+// app.use('/test', (req,res,next) => {
+// })
 
 app.use('/api/*', (req ,res,next) => {
     (req as any).log.info("-> " + req.originalUrl);
@@ -62,5 +56,6 @@ app.use('/api/profiles', profiles);
 app.use('/api/tags', tags);
 app.use('/api/rooms', rooms);
 app.use('/api/conditions', conditions);
+app.use('/api/schedule', schedule);
 
 export { app };

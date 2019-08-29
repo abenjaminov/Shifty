@@ -1,14 +1,14 @@
 import dbConnection from './connection';
 import { Connection, QueryOptions } from 'mysql';
 import { TypesHelper } from '../models/models';
-import { ReflectionHelper, IComplexMapping, IMapping, MappingType, IComplexDbMapping, IMappedPropertiesMetaData } from '../models/reflection';
+import { ReflectionHelper, IOneToManyMapping, IMapping, MappingType, IOneToManyDbMapping, IMappedPropertiesMetaData } from '../models/reflection';
 
 interface IConstructor {
     [key:string] : any;
     new (...args: any[]) : any
 }
 
-// dataFilters[0] AND dataFilters[1] AND dataFilters[2]
+// dataFilters[0] And dataFilters[1] And dataFilters[2]
 export interface IFilterStatement {
     dataFilters: IDataFilter[];
 }
@@ -26,7 +26,10 @@ export class DbContext {
         this.select.bind(this);
     }
 
-    select<T extends IConstructor>(type: T, withForeignData: boolean = false, filters: IFilterStatement[] = []): Promise<Array<T>> {
+    async select<T>(type: IConstructor, 
+        withForeignData: boolean = false, 
+        filters: IFilterStatement[] = []): Promise<Array<T>> {
+
         var selectPromise = new Promise<Array<T>>((resolve, reject) => {
             var mappedProperties = ReflectionHelper.getMappedProperties(type);
             var tableName = ReflectionHelper.getTableName(type);
@@ -41,7 +44,7 @@ export class DbContext {
                 reject("Context.Select -> No Primary key found for " + tableName);
             }
 
-            var foreignDbData: IComplexMapping[] = foreignData.filter(x => x.property);
+            var foreignDbData: IOneToManyMapping[] = foreignData.filter(x => x.property);
 
             var join = "";
             var select = [];
@@ -212,9 +215,9 @@ export class DbContext {
         return deletePromise;
     }
 
-    updateComplexMappings<T extends IConstructor>(type: T, item: T): Promise<T> {
-        var updateComplexPromise = new Promise<T>((resolve, reject) => {
-            var complexPropMappings = ReflectionHelper.getComplexMappedProperties(type);
+    updateOneToManyMappings<T extends IConstructor>(type: T, item: T): Promise<T> {
+        var updateOneToManyPromise = new Promise<T>((resolve, reject) => {
+            var oneToManyPropMappings = ReflectionHelper.getOneToManyMappedProperties(type);
             var simpleMappedProps = ReflectionHelper.getSimpleMappedProperties(type);
             
             var mainPrimaryJsonKey = Reflect.ownKeys(simpleMappedProps).find(x => simpleMappedProps[x.toString()].isPrimaryKey) || '';
@@ -222,15 +225,15 @@ export class DbContext {
 
             // Build delete from connection table
             // --> Delete ProfilesProfessions (connTable) WHERE ProfileId (connToMainProp) = typetoText(item[primaryKey])
-            var ownKeys = Reflect.ownKeys(complexPropMappings);
+            var ownKeys = Reflect.ownKeys(oneToManyPropMappings);
             var deleteQuery = "DELETE FROM ";
 
             var mainPrimaryKeyMapping: IMapping = simpleMappedProps[mainPrimaryJsonKey];
 
             for(let key of ownKeys) {
-                var complexMapping: IComplexDbMapping = complexPropMappings[key.toString()].db;
+                var oneToManyMapping: IOneToManyDbMapping = oneToManyPropMappings[key.toString()].db;
                 var typeText = this.getDbValueText(mainPrimaryKeyMapping.type, item[mainPrimaryJsonKey]);
-                deleteQuery += `${complexMapping.connTable} WHERE ${complexMapping.connToMainProp} = ${typeText}`;
+                deleteQuery += `${oneToManyMapping.connTable} WHERE ${oneToManyMapping.connToMainProp} = ${typeText}`;
             }
 
             // Execute delete
@@ -244,13 +247,13 @@ export class DbContext {
 
                 for(let key of ownKeys) {
                     var insert = "";
-                    var complexMapping: IComplexMapping = complexPropMappings[key.toString()];
-                    insert += `INSERT INTO ${complexMapping.db.connTable} (${complexMapping.db.connToMainProp}, ${complexMapping.db.connToSourceProp}) VALUES ?`;
+                    var oneToManyMapping: IOneToManyMapping = oneToManyPropMappings[key.toString()];
+                    insert += `INSERT INTO ${oneToManyMapping.db.connTable} (${oneToManyMapping.db.connToMainProp}, ${oneToManyMapping.db.connToSourceProp}) VALUES ?`;
 
-                    var complexMapValues: any[] = item[key.toString()];
+                    var oneToManyMapValues: any[] = item[key.toString()];
 
-                    // complexMapping.sourceType
-                    var sourceType = TypesHelper.typesMapping[complexMapping.sourceType];
+                    // oneToManyMapping.sourceType
+                    var sourceType = TypesHelper.typesMapping[oneToManyMapping.sourceType];
                     
                     var simpleSourceTypeMappings = ReflectionHelper.getSimpleMappedProperties(sourceType);
                     var sourcePrimaryJsonKey = Reflect.ownKeys(simpleSourceTypeMappings).find(x => simpleSourceTypeMappings[x.toString()].isPrimaryKey) || '';
@@ -258,7 +261,7 @@ export class DbContext {
 
                     var values = [];
 
-                    for(let value of complexMapValues) {
+                    for(let value of oneToManyMapValues) {
                         var mainValue = item[mainPrimaryJsonKey.toString()];
                         var sourceValue = value[sourcePrimaryJsonKey];
                         values.push([mainValue, sourceValue]);
@@ -278,11 +281,11 @@ export class DbContext {
             })
         });
 
-        return updateComplexPromise;
+        return updateOneToManyPromise;
     }
 
     getDbValueText(mappingType: MappingType, value: any): string {
-        if(mappingType == MappingType.string) {
+        if(mappingType == MappingType.string || mappingType == MappingType.date) {
             return`'${value}'`
         }
         else if(mappingType == MappingType.number) {

@@ -1,6 +1,6 @@
-import { Table, Mapped, MappingType, IComplexMapping } from "./reflection";
+import { Table, Mapped, MappingType, IOneToManyMapping } from "./reflection";
 
-var roomToConditionsMapping: IComplexMapping = {
+var roomToConditionsMapping: IOneToManyMapping = {
     property: "conditions",
     sourceType: "Condition",
     db: {
@@ -43,7 +43,7 @@ var roomToConditionsMapping: IComplexMapping = {
     }
 }
 
-var profileProfessionsMapping: IComplexMapping = {
+var profileProfessionsMapping: IOneToManyMapping = {
     property: "professions",
     sourceType: "Tag",
     db : {
@@ -155,7 +155,7 @@ export class Condition {
 export class Assignment {
     @Mapped({ dbColumnName: "id", type: MappingType.number, isPrimaryKey:true }) id: number;
     @Mapped({ dbColumnName: "conditionId", type: MappingType.number }) conditionId: number;
-    @Mapped({ dbColumnName: "profileId", type: MappingType.string }) profileId: number;
+    @Mapped({ dbColumnName: "profileId", type: MappingType.string }) profileId: string;
     @Mapped({ dbColumnName: "date", type: MappingType.date }) date: Date;
 
     // Not mapped

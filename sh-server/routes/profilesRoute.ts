@@ -31,7 +31,7 @@ router.put('/', (req , res) => {
   context.connection.beginTransaction();
 
   context.update(Profile, profile).then(x => {
-    context.updateComplexMappings(Profile, profile).then(x => {
+    context.updateOneToManyMappings(Profile, profile).then(x => {
       context.connection.commit();
       res.json({data : profile});
     })
