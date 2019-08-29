@@ -2,7 +2,7 @@ import * as express from 'express';
 import { Router } from 'express';
 import { RoutesCommon } from './routeCommon';
 import { Profile } from '../models/models';
-import { IDataFilter } from '../database/database';
+import { IFilterStatement } from '../database/database';
 
 var router: Router = express.Router(); 
 
@@ -10,9 +10,9 @@ var router: Router = express.Router();
 router.get('/:id?', (req , res) => {
   var context = RoutesCommon.getContextFromRequest(req);
   
-  var filter: IDataFilter[] = [];
+  var filter: IFilterStatement[] = [{ dataFilters: [] }];
   if(req.params.id) {
-    filter.push({ 
+    filter[0].dataFilters.push({ 
       property: "id",
       value: req.params.id
     })

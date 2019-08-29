@@ -8,6 +8,11 @@ interface IConstructor {
     new (...args: any[]) : any
 }
 
+// dataFilters[0] AND dataFilters[1] AND dataFilters[2]
+export interface IFilterStatement {
+    dataFilters: IDataFilter[];
+}
+
 export interface IDataFilter {
     property:string;
     value: any;
@@ -21,7 +26,7 @@ export class DbContext {
         this.select.bind(this);
     }
 
-    select<T extends IConstructor>(type: T, withForeignData: boolean = false, filters: IDataFilter[] = []): Promise<Array<T>> {
+    select<T extends IConstructor>(type: T, withForeignData: boolean = false, filters: IFilterStatement[] = []): Promise<Array<T>> {
         var selectPromise = new Promise<Array<T>>((resolve, reject) => {
             var mappedProperties = ReflectionHelper.getMappedProperties(type);
             var tableName = ReflectionHelper.getTableName(type);
@@ -70,11 +75,19 @@ export class DbContext {
 
             var where = '';
 
-            for(let dataFilter of filters) {
-                var simpleProp = simpleMappedProperties[dataFilter.property];
-                var dbValueText = this.getDbValueText(simpleProp.type, dataFilter.value);
+            for(let i = 0; i < filters.length; i++) {
+                var orFilter = filters[i].dataFilters;
 
-                where += `Z.${simpleProp.dbColumnName} = ${dbValueText}`;
+                for(let j = 0; j < orFilter.length; j++) {
+                    var andFilter = orFilter[j];
+
+                    var simpleProp = simpleMappedProperties[andFilter.property];
+                    var dbValueText = this.getDbValueText(simpleProp.type, andFilter.value);
+
+                    where += `Z.${simpleProp.dbColumnName} = ${dbValueText}${j < orFilter.length - 1 ? ' AND ' : ''}`;
+                }
+
+                where += i < filters.length - 1 ? " OR " : "" ;
             }
 
             var query = `SELECT Z.*${select.length > 0 ? ',' : ''} ${select.join(",")} FROM ${tableName} Z ${join} WHERE ${where == '' ? '1 = 1' : where}`;
