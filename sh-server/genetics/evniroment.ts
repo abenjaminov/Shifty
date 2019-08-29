@@ -1,6 +1,6 @@
 import { Chromosome, Gene, Population } from "./genetic.models";
 import { Profile, Room, ConditionImportance, Tag, Condition } from "../models/models";
-import Enumerable from "linq";
+import Enumerable, { IEnumerable } from "linq";
 import { DbContext } from "../database/database";
 
 class NormalizedFitness
@@ -78,83 +78,82 @@ export class GeneticEnviroment {
         profiles.push(profile);
 
         profile = new Profile();profile.id = "2"; profile.name = "Profile 2";
-            profile.professions.push(Senior);
-            profiles.push(profile);
-            profile = new Profile();profile.id = "3"; profile.name = "Profile 3";
-            profile.professions.push(Senior);
-            profiles.push(profile);
-            profile = new Profile();profile.id = "4"; profile.name = "Profile 4";
-            profile.professions.push(Senior);
-            profiles.push(profile);
-            profile = new Profile();profile.id = "5"; profile.name = "Profile 5";
-            profile.professions.push(Senior);
-            profiles.push(profile);
-            profile = new Profile();profile.id = "6"; profile.name = "Profile 6";
-            profile.professions.push(Senior);
-            profiles.push(profile);
+        profile.professions.push(Senior);
+        profiles.push(profile);
+        profile = new Profile();profile.id = "3"; profile.name = "Profile 3";
+        profile.professions.push(Senior);
+        profiles.push(profile);
+        profile = new Profile();profile.id = "4"; profile.name = "Profile 4";
+        profile.professions.push(Senior);
+        profiles.push(profile);
+        profile = new Profile();profile.id = "5"; profile.name = "Profile 5";
+        profile.professions.push(Senior);
+        profiles.push(profile);
+        profile = new Profile();profile.id = "6"; profile.name = "Profile 6";
+        profile.professions.push(Senior);
+        profiles.push(profile);
 
-            profile = new Profile();profile.id = "7"; profile.name = "Profile 7";
-            profile.professions.push(Intern);
-            profiles.push(profile);
-            profile = new Profile();profile.id = "8"; profile.name = "Profile 8";
-            profile.professions.push(Intern);
-            profiles.push(profile);
-            profile = new Profile();profile.id = "9"; profile.name = "Profile 9";
-            profile.professions.push(Intern);
-            profiles.push(profile);
-            profile = new Profile();profile.id = "10"; profile.name = "Profile 10";
-            profile.professions.push(Intern);
-            profiles.push(profile);
-            profile = new Profile();profile.id = "11"; profile.name = "Profile 11";
-            profile.professions.push(Intern);
-            profiles.push(profile);
-            profile = new Profile();profile.id = "12"; profile.name = "Profile 12";
-            profile.professions.push(Intern);
-            profiles.push(profile);
-            profile = new Profile();profile.id = "13"; profile.name = "Profile 13";
-            profile.professions.push(Intern);
-            profiles.push(profile);
-            profile = new Profile();profile.id = "14"; profile.name = "Profile 14";
-            profile.professions.push(Intern);
-            profiles.push(profile);
-            profile = new Profile();profile.id = "15"; profile.name = "Profile 15";
-            profile.professions.push(Intern);
-            profiles.push(profile);
+        profile = new Profile();profile.id = "7"; profile.name = "Profile 7";
+        profile.professions.push(Intern);
+        profiles.push(profile);
+        profile = new Profile();profile.id = "8"; profile.name = "Profile 8";
+        profile.professions.push(Intern);
+        profiles.push(profile);
+        profile = new Profile();profile.id = "9"; profile.name = "Profile 9";
+        profile.professions.push(Intern);
+        profiles.push(profile);
+        profile = new Profile();profile.id = "10"; profile.name = "Profile 10";
+        profile.professions.push(Intern);
+        profiles.push(profile);
+        profile = new Profile();profile.id = "11"; profile.name = "Profile 11";
+        profile.professions.push(Intern);
+        profiles.push(profile);
+        profile = new Profile();profile.id = "12"; profile.name = "Profile 12";
+        profile.professions.push(Intern);
+        profiles.push(profile);
+        profile = new Profile();profile.id = "13"; profile.name = "Profile 13";
+        profile.professions.push(Intern);
+        profiles.push(profile);
+        profile = new Profile();profile.id = "14"; profile.name = "Profile 14";
+        profile.professions.push(Intern);
+        profiles.push(profile);
+        profile = new Profile();profile.id = "15"; profile.name = "Profile 15";
+        profile.professions.push(Intern);
+        profiles.push(profile);
 
-            profile = new Profile();profile.id = "16"; profile.name = "Profile 16";
-            profile.professions.push(SeniorA);
-            profiles.push(profile);
-            profile = new Profile();profile.id = "17"; profile.name = "Profile 17";
-            profile.professions.push(SeniorA);
-            profiles.push(profile);
-            profile = new Profile();profile.id = "18"; profile.name = "Profile 18";
-            profile.professions.push(SeniorA);
-            profiles.push(profile);
-            profile = new Profile();profile.id = "19"; profile.name = "Profile 19";
-            profile.professions.push(SeniorA);
-            profiles.push(profile);
+        profile = new Profile();profile.id = "16"; profile.name = "Profile 16";
+        profile.professions.push(SeniorA);
+        profiles.push(profile);
+        profile = new Profile();profile.id = "17"; profile.name = "Profile 17";
+        profile.professions.push(SeniorA);
+        profiles.push(profile);
+        profile = new Profile();profile.id = "18"; profile.name = "Profile 18";
+        profile.professions.push(SeniorA);
+        profiles.push(profile);
+        profile = new Profile();profile.id = "19"; profile.name = "Profile 19";
+        profile.professions.push(SeniorA);
+        profiles.push(profile);
 
-            profile = new Profile();profile.id = "20"; profile.name = "Profile 20";
-            profile.professions.push(SeniorB);
-            profiles.push(profile);
-            profile = new Profile();profile.id = "21"; profile.name = "Profile 21";
-            profile.professions.push(SeniorB);
-            profiles.push(profile);
+        profile = new Profile();profile.id = "20"; profile.name = "Profile 20";
+        profile.professions.push(SeniorB);
+        profiles.push(profile);
+        profile = new Profile();profile.id = "21"; profile.name = "Profile 21";
+        profile.professions.push(SeniorB);
+        profiles.push(profile);
 
-            profile = new Profile();profile.id = "22"; profile.name = "Profile 22";
-            profile.professions.push(SeniorC);
-            profiles.push(profile);
-            profile = new Profile();profile.id = "23"; profile.name = "Profile 23";
-            profile.professions.push(SeniorC);
-            profiles.push(profile);
-            profile = new Profile();profile.id = "24"; profile.name = "Profile 24";
-            profile.professions.push(SeniorC);
-            profiles.push(profile);
+        profile = new Profile();profile.id = "22"; profile.name = "Profile 22";
+        profile.professions.push(SeniorC);
+        profiles.push(profile);
+        profile = new Profile();profile.id = "23"; profile.name = "Profile 23";
+        profile.professions.push(SeniorC);
+        profiles.push(profile);
+        profile = new Profile();profile.id = "24"; profile.name = "Profile 24";
+        profile.professions.push(SeniorC);
+        profiles.push(profile);
 
-            var solution = GEV.run(profiles, rooms);
+        var solution = GEV.run(profiles, rooms);
 
-            console.log();
-            console.log("Found perfect match - ", solution);
+        return solution;
     }
 
     start(context: DbContext) {
@@ -268,13 +267,13 @@ export class GeneticEnviroment {
         var chromosome1Enumerable = Enumerable.from(couple.chromosome1.genes);
         var chromosome2Enumerable = Enumerable.from(couple.chromosome2.genes);
 
-        var parent1FirstPart = chromosome1Enumerable.where((g: any, i: number) => i <= firstCrossoverPoint).select((x: { clone: () => void; }) => x.clone()).toArray();
-        var parent1SecondPart = chromosome1Enumerable.where((g: any, i: number) => i > firstCrossoverPoint && i <= secondCrossoverPoint).select((x: { clone: () => void; }) => x.clone()).toArray();
-        var parent1ThirdPart = chromosome1Enumerable.where((g: any, i: number) => i > secondCrossoverPoint && i <= upperbound).select((x: { clone: () => void; }) => x.clone()).toArray();
+        var parent1FirstPart = chromosome1Enumerable.where((g: any, i: number) => i <= firstCrossoverPoint).select((x: { clone: () => Gene; }) => x.clone()).toArray();
+        var parent1SecondPart = chromosome1Enumerable.where((g: any, i: number) => i > firstCrossoverPoint && i <= secondCrossoverPoint).select((x: { clone: () => Gene; }) => x.clone()).toArray();
+        var parent1ThirdPart = chromosome1Enumerable.where((g: any, i: number) => i > secondCrossoverPoint && i <= upperbound).select((x: { clone: () => Gene; }) => x.clone()).toArray();
 
-        var parent2FirstPart = chromosome2Enumerable.where((g: any, i: number) => i <= firstCrossoverPoint).select((x: { clone: () => void; }) => x.clone()).toArray();
-        var parent2SecondPart = chromosome2Enumerable.where((g: any, i: number) => i > firstCrossoverPoint && i <= secondCrossoverPoint).select((x: { clone: () => void; }) => x.clone()).toArray();
-        var parent2ThirdPart = chromosome2Enumerable.where((g: any, i: number) => i > secondCrossoverPoint && i <= upperbound).select((x: { clone: () => void; }) => x.clone()).toArray();
+        var parent2FirstPart = chromosome2Enumerable.where((g: any, i: number) => i <= firstCrossoverPoint).select((x: { clone: () => Gene; }) => x.clone()).toArray();
+        var parent2SecondPart = chromosome2Enumerable.where((g: any, i: number) => i > firstCrossoverPoint && i <= secondCrossoverPoint).select((x: { clone: () => Gene; }) => x.clone()).toArray();
+        var parent2ThirdPart = chromosome2Enumerable.where((g: any, i: number) => i > secondCrossoverPoint && i <= upperbound).select((x: { clone: () => Gene; }) => x.clone()).toArray();
 
         var child1 = new Chromosome();
         child1.genes.push(...parent1FirstPart);
@@ -286,8 +285,8 @@ export class GeneticEnviroment {
         child2.genes.push(...parent1SecondPart);
         child2.genes.push(...parent2ThirdPart);
 
-        var doubleChild1Ids = Enumerable.from(child1.genes).groupBy((x: Gene ) => x.profile.id).where((x: { count: () => number; }) => x.count() > 1).select((x: { key: () => void; }) => x.key()).toArray();
-        var doubleChild2Ids = Enumerable.from(child2.genes).groupBy((x: Gene ) => x.profile.id).where((x: { count: () => number; }) => x.count() > 1).select((x: { key: () => void; }) => x.key()).toArray();
+        var doubleChild1Ids = Enumerable.from(child1.genes).groupBy((x: Gene ) => x.profile.id).where((x: { count: () => number; }) => x.count() > 1).select((x: { key: () => string; }) => x.key()).toArray();
+        var doubleChild2Ids = Enumerable.from(child2.genes).groupBy((x: Gene ) => x.profile.id).where((x: { count: () => number; }) => x.count() > 1).select((x: { key: () => string; }) => x.key()).toArray();
 
         var firstChildIndex = 0;
         var secondChildIndex = 0;
@@ -436,8 +435,8 @@ export class GeneticEnviroment {
     calculateMaximumAvailableFitness(profiles: Profile[], rooms: Room[]) {
         var maxFitness = 0;
         var countByTags = Enumerable.from(rooms).selectMany((r: Room) => r.conditions).
-                                    groupBy((x: Condition ) => {return { tagId: x.profession.id, importance: x.importance }}, (x: any) => x, (key: { tagId: any; importance: any; }, elements: any) => {
-                                        return Enumerable.from(elements).where((c: { tag: { id: any; }; importance: any; }) => c.tag.id == key.tagId && c.importance == key.importance).toArray()
+                                    groupBy((x: Condition ) => {return { tagId: x.profession.id, importance: x.importance }}, (x: Condition) => x, (key: { tagId: number; importance: ConditionImportance; }, elements: IEnumerable<Condition>) => {
+                                        return Enumerable.from(elements).where((c: Condition) => c.profession.id == key.tagId && c.importance == key.importance).toArray()
                                     }).toDictionary((x: Condition[]) => {return { tag: x[0].profession, importance: x[0].importance }}, (c: { length: any; }) => c.length);
 
         for(let valuePair of countByTags.toEnumerable()) {

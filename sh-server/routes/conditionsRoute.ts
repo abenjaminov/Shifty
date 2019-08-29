@@ -14,11 +14,11 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/', (req,res,next) => {
-    var condition = req.body;
+    var condition: Condition = req.body;
 
     var context = RoutesCommon.getContextFromRequest(req);
 
-    context.insert(Condition, condition).then(x => {
+    context.insert(Condition, [condition]).then(x => {
         res.json({data : condition});
     });
 });

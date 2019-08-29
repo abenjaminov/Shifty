@@ -1,6 +1,6 @@
 import Enumerable from "linq";
 import { IFilterStatement, DbContext } from "../database/database";
-import { Assignment, WeeklySchedule, Profile, DailySchedule, Day } from "../models/models";
+import { Assignment, WeeklySchedule, Profile, DailySchedule, Day, Condition } from "../models/models";
 
 export class ScheduleService {
 
@@ -19,9 +19,11 @@ export class ScheduleService {
         var profileFilter = profileIds.map(pid => {return{ dataFilters: [{ property: "date", value: pid}]}});
 
         let profiles = await this.context.select<Profile>(Profile, true, profileFilter)
+        let conditions = await this.context.select<Condition>(Condition);
 
         for(let assignment of assignments) {
             assignment.profile = profiles.find(p => p.id == assignment.profileId);
+            assignment.condition = conditions.find(c => c.id == assignment.conditionId);
         }
 
         var assignmentsByDay = Enumerable.from(assignments).groupBy(a => a.date).toDictionary(a => a.key(), a => a.toArray());

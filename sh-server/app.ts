@@ -6,6 +6,10 @@ import { DbContext } from './database/database';
 import { RoutesCommon } from './routes/routeCommon';
 import { ScheduleService } from './services/schedule.service';
 
+import { Router, Request } from "express";
+
+import x from './typings/index';
+
 var pino = require('express-pino-logger')();
 
 var profiles = require('./routes/profilesRoute');
@@ -27,8 +31,9 @@ pino.logger.info("Hello");
 // app.use('/test', (req,res,next) => {
 // })
 
-app.use('/api/*', (req ,res,next) => {
+app.use('/api/*', (req: Request ,res,next) => {
     (req as any).log.info("-> " + req.originalUrl);
+    
 
     var realJson = res.json;
 
@@ -43,7 +48,8 @@ app.use('/api/*', (req ,res,next) => {
     (req as any).tenant = "Zedek";
 
     DbContext.getContext((req as any).tenant).then(context => {
-        (req as any).dbContext = context;
+        req.dbContext = context;
+        req.scheduleService = new ScheduleService(context);
         
 
         next();

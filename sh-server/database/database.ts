@@ -27,7 +27,7 @@ export class DbContext {
     }
 
     async select<T>(type: IConstructor, 
-        withForeignData: boolean = false, 
+        withForeignData: boolean = true, 
         filters: IFilterStatement[] = []): Promise<Array<T>> {
 
         var selectPromise = new Promise<Array<T>>((resolve, reject) => {
@@ -139,8 +139,10 @@ export class DbContext {
         return items;
     }
 
-    insert<T extends IConstructor>(type: T, item: any): Promise<Array<T>> {
+    insert<T>(type: IConstructor, items: any[]): Promise<Array<T>> {
         var table = ReflectionHelper.getTableName(type);
+        
+        var values: any[] = [];
 
         var simpleMappedProps = ReflectionHelper.getSimpleMappedProperties(type);
 
@@ -148,16 +150,25 @@ export class DbContext {
         var dbProperties:string[] = [];
         
         for(let prop of Reflect.ownKeys(simpleMappedProps)) {
-            if(!simpleMappedProps[prop.toString()].isPrimaryKey) {
-                params.push(item[prop] ? item[prop].toString() : null);
-                dbProperties.push(simpleMappedProps[prop.toString()].dbColumnName);
+            dbProperties.push(simpleMappedProps[prop.toString()].dbColumnName);
+        }
+
+        for(let item of items) {
+            for(let prop of Reflect.ownKeys(simpleMappedProps)) {
+                values.push([]);
+    
+                if(!simpleMappedProps[prop.toString()].isPrimaryKey) {
+                    values[values.length - 1].push(item[prop] ? item[prop].toString() : null);
+                }
             }
         }
 
         var query = "INSERT INTO " + table + "(" + dbProperties.join(",") + ") VALUES ?";
         
         var insertPromise = new Promise<Array<T>>((resolve, reject) => {
-            this.connection.query(query, [[params]], (err: any, result: any, fields: any) => {
+            this.connection.query(query, [values], (err: any, result: any, fields: any) => {
+                if(err) reject(err);
+                
                 resolve(result);
             });
         });
