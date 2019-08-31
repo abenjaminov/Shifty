@@ -1,4 +1,4 @@
-import Enumerable from "linq";
+import Enumerable from 'linq';
 import { IFilterStatement, DbContext } from "../database/database";
 import { Assignment, WeeklySchedule, Profile, DailySchedule, Day, Condition } from "../models/models";
 

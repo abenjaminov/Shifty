@@ -31,18 +31,23 @@ var conditionToProfessionMapping: IOneToOneMapping = {
         sourceAlias: "professionc",
         sourceAdditionalData : ["name"]
     },
-    toItemMap: (primaryKeyValues: number[],  results: any[]) => {
+    toItemMap: (primaryKeyValues: number[],  results: any[], alias?: string) => {
+        alias = alias ? "" : alias + "_";
         var map: Map<number, Tag> = new Map<number, Tag>();
 
         for(let id of primaryKeyValues) {
-            var professionResult = results.find(x => x.id == id && 
+            var professionResult = results.find(x => x[`${alias}id`] == id && 
                                                   x["professionc_id"] != null && 
-                                                  x.professionId != null && 
-                                                  x.professionId == x["professionc_id"]);
-            var profession: Tag = {
-                id: professionResult["professionc_id"],
-                name: professionResult["professionc_name"]
-            };
+                                                  x[`${alias}professionId`] != null && 
+                                                  x[`${alias}professionId`] == x["professionc_id"]);
+            var profession: Tag = undefined;
+
+            if(professionResult) {
+                profession = {
+                    id: professionResult["professionc_id"],
+                    name: professionResult["professionc_name"]
+                };
+            }
 
             map.set(id, profession);
         }

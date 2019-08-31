@@ -44,7 +44,7 @@ export interface IOneToOneMapping {
     jsonProperty: string,
     sourceType: string,
     db: IOneToOneDbMapping;
-    toItemMap: (primaryKeyValues:string[] | number[], items:any[]) => Map<string | number,any>;
+    toItemMap: (primaryKeyValues:string[] | number[], items:any[], alias?:string) => Map<string | number,any>;
 }
 
 export interface IOneToManyMapping {
@@ -132,6 +132,14 @@ export class ReflectionHelper {
         let mappings = Reflect.ownKeys(mappedProperties).map(x => mappedProperties[x.toString()]).filter(x => x.descriminator == descriminator);
 
         return mappings;
+    }
+
+    static getPrimaryDbKey(type: Function): string {
+        var simpleMappedProps = this.getMappingsByType(type, InterfaceDescriminator.ISimpleMapping);
+
+        var primaryDbKey:string = simpleMappedProps.find(x => x.isPrimaryKey).dbColumnName;
+
+        return primaryDbKey;
     }
 }
 
