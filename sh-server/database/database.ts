@@ -22,6 +22,7 @@ export interface DeepType {
     typeName: string;
     typeAlias: string;
     keyDbColumn: string;
+    jsonProperty:string,
     oneToOneMappings: Array<IOneToOneMapping>;
     oneToManyMappings: Array<IOneToManyMapping>;
 }
@@ -135,8 +136,12 @@ export class DbContext {
                 // TODO : Map data
                 typeToDeepTypes.forEach((deepType, key) => {
                     for(let oneToOneMapping of deepType.oneToOneMappings) {
-                        var itemMap = oneToOneMapping.toItemMap(distinctResult.map(x => x[deepType.keyDbColumn]), result, deepType.typeAlias);
-                        distinctResult.forEach(resItem => {
+                        let objects = distinctResult.map(dr => dr[deepType.jsonProperty]);
+                        var ids = objects.map(x => x[deepType.keyDbColumn]);
+
+                        var itemMap = oneToOneMapping.toItemMap(ids, result, deepType.typeAlias);
+
+                        objects.forEach((resItem: any) => {
                             var thisItem = itemMap.get(resItem[`${deepType.typeAlias}_${deepType.keyDbColumn}`]);
     
                             (resItem as any)[oneToOneMapping.jsonProperty] = thisItem;
@@ -168,6 +173,7 @@ export class DbContext {
             //this.applyDeepTypes(oneToOneMapping,oneToOneMapping.db.mainProp, deepTypes);
             deepTypes.set(oneToOneMapping.sourceType, {
                 keyDbColumn: oneToOneMapping.db.mainProp,
+                jsonProperty: oneToOneMapping.jsonProperty,
                 typeName: oneToOneMapping.sourceType,
                 typeAlias: oneToOneMapping.db.sourceAlias,
                 oneToManyMappings: [],
@@ -177,41 +183,6 @@ export class DbContext {
 
         return join;
     }
-
-    // private applyDeepTypes(mapping: IOneToOneMapping | IOneToManyMapping, parentPrimaryDbColumn:string, deepTypes: Map<string, DeepType>) {
-        
-
-    //     // let oneToOneDeepMappings: Array<IOneToOneMapping> = ReflectionHelper.getMappingsByType(TypesHelper.typesMapping[mapping.sourceType], InterfaceDescriminator.IOneToOneMapping);
-    //     // let oneToOneDeepTypes: Array<DeepType> = oneToOneDeepMappings.map((x) => {
-    //     //     return {
-    //     //         typeName: mapping.sourceType,
-    //     //         typeAlias: mapping.db.sourceAlias,
-    //     //         keyDbColumn: x.db.mainProp,
-    //     //         oneToManyMappings: [],
-    //     //         oneToOneMappings: []
-    //     //     };
-    //     // });
-        
-
-    //     // let oneToManyDeepMappings: Array<IOneToManyMapping> = ReflectionHelper.getMappingsByType(TypesHelper.typesMapping[mapping.sourceType], InterfaceDescriminator.IOneToManyMapping);
-    //     // let oneToManyDeepTypes: Array<DeepType> = oneToManyDeepMappings.map((x) => {
-    //     //     return {
-    //     //         typeName: mapping.sourceType,
-    //     //         typeAlias: mapping.db.sourceAlias,
-    //     //         keyDbColumn: parentPrimaryDbColumn,
-    //     //         oneToManyMappings: [],
-    //     //         oneToOneMappings: []
-    //     //     };
-    //     // });
-
-    //     deepTypes.set(mapping.sourceType, {
-    //         keyDbColumn: (mapping.db as any).mainProp || parentPrimaryDbColumn,
-    //         typeName: mapping.sourceType,
-    //         typeAlias: mapping.db.sourceAlias,
-    //         oneToManyMappings: [],
-    //         oneToOneMappings: []
-    //     });
-    // }
 
     private applyOneToManyMappings(type: Function, mainAlias: string, primaryDbKey: string, select: Array<string>,deepTypes: Map<string, DeepType>) {
         let oneToManyMappings: Array<IOneToManyMapping> = ReflectionHelper.getMappingsByType(type, InterfaceDescriminator.IOneToManyMapping);
@@ -236,6 +207,7 @@ export class DbContext {
 
             deepTypes.set(oneToManyMapping.sourceType, {
                 keyDbColumn: primaryDbKey,
+                jsonProperty: oneToManyMapping.jsonProperty,
                 typeName: oneToManyMapping.sourceType,
                 typeAlias: oneToManyMapping.db.sourceAlias,
                 oneToManyMappings: [],
