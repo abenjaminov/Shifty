@@ -1,9 +1,62 @@
-import { Table, Mapped, MappingType, IOneToManyMapping } from "./reflection";
+import { Table, Mapped, MappingType, IOneToManyMapping, IOneToOneMapping, InterfaceDescriminator } from "./reflection";
+
+var conditionToProfileMapping: IOneToOneMapping = {
+    descriminator: InterfaceDescriminator.IOneToOneMapping,
+    jsonProperty: "profile",
+    sourceType: "Profile",
+    db: {
+        descriminator: InterfaceDescriminator.IOneToOneDbMapping,
+        sourceTable: "Profiles",
+        sourceProp: "id",
+        mainProp: "profileId",
+        sourceAlias: "profilec",
+        sourceAdditionalData : ["name"]
+    },
+    toItemMap: (primaryKeyValues: number[],  results: any[]) => {
+        var map: Map<number, Profile> = new Map<number, Profile>();
+
+        return map;
+    }
+}
+
+var conditionToProfessionMapping: IOneToOneMapping = {
+    descriminator: InterfaceDescriminator.IOneToOneMapping,
+    jsonProperty: "profession",
+    sourceType: "Profession",
+    db: {
+        descriminator: InterfaceDescriminator.IOneToOneDbMapping,
+        sourceTable: "Professions",
+        sourceProp: "id",
+        mainProp: "professionId",
+        sourceAlias: "professionc",
+        sourceAdditionalData : ["name"]
+    },
+    toItemMap: (primaryKeyValues: number[],  results: any[]) => {
+        var map: Map<number, Tag> = new Map<number, Tag>();
+
+        for(let id of primaryKeyValues) {
+            var professionResult = results.find(x => x.id == id && 
+                                                  x["professionc_id"] != null && 
+                                                  x.professionId != null && 
+                                                  x.professionId == x["professionc_id"]);
+            var profession: Tag = {
+                id: professionResult["professionc_id"],
+                name: professionResult["professionc_name"]
+            };
+
+            map.set(id, profession);
+        }
+
+        return map;
+    }
+}
 
 var roomToConditionsMapping: IOneToManyMapping = {
-    property: "conditions",
+    descriminator: InterfaceDescriminator.IOneToManyMapping,
+    jsonProperty: "conditions",
     sourceType: "Condition",
     db: {
+        descriminator: InterfaceDescriminator.IOneToManyDbMapping,
         sourceTable: "Conditions",
         sourceProp: "id",
         sourceAlias: "cond",
@@ -44,9 +97,11 @@ var roomToConditionsMapping: IOneToManyMapping = {
 }
 
 var profileProfessionsMapping: IOneToManyMapping = {
-    property: "professions",
+    descriminator: InterfaceDescriminator.IOneToManyMapping,
+    jsonProperty: "professions",
     sourceType: "Tag",
     db : {
+        descriminator: InterfaceDescriminator.IOneToManyDbMapping,
         sourceTable: "Professions",
         sourceProp:"id", 
         sourceAlias: "prof",
@@ -81,8 +136,8 @@ var profileProfessionsMapping: IOneToManyMapping = {
 
 @Table("Profiles")
 export class Profile {
-    @Mapped({ dbColumnName: "id", type: MappingType.string, isPrimaryKey:true }) id! : string;
-    @Mapped({ dbColumnName: "name", type: MappingType.string, isPrimaryKey:false }) name!: string;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "id", type: MappingType.string, isPrimaryKey:true }) id! : string;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "name", type: MappingType.string, isPrimaryKey:false }) name!: string;
     @Mapped(profileProfessionsMapping) professions: Tag[] = [];
     profilePic:string = "";
 
@@ -102,14 +157,14 @@ export class Profile {
 
 @Table("Professions")
 export class Tag {
-    @Mapped({ dbColumnName: "id", type: MappingType.number, isPrimaryKey:true }) id! : number;
-    @Mapped({ dbColumnName: "name", type: MappingType.string, isPrimaryKey:false }) name!: string;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping, dbColumnName: "id", type: MappingType.number, isPrimaryKey:true }) id! : number;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "name", type: MappingType.string, isPrimaryKey:false }) name!: string;
 }
 
 @Table("Rooms")
 export class Room {
-    @Mapped({dbColumnName: "id", type: MappingType.number, isPrimaryKey:true }) id! : number;
-    @Mapped({ dbColumnName: "name", type: MappingType.string, isPrimaryKey:false }) name!: string;
+    @Mapped({descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "id", type: MappingType.number, isPrimaryKey:true }) id! : number;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "name", type: MappingType.string, isPrimaryKey:false }) name!: string;
     @Mapped(roomToConditionsMapping) conditions: Condition[] = [];
 }
 
@@ -126,16 +181,19 @@ export enum ConditionImportance {
 
 @Table("Conditions")
 export class Condition {
-    @Mapped({ dbColumnName: "id", type: MappingType.number, isPrimaryKey:true }) id:number;
-    @Mapped({ dbColumnName: "type", type: MappingType.string }) type: ConditionType;
-    @Mapped({ dbColumnName: "amount", type:MappingType.number}) amount: number = 1;
-    @Mapped({ dbColumnName: "roomId", type:MappingType.number}) roomId?: number;
-    @Mapped({ dbColumnName: "professionId", type:MappingType.number}) professionId?: number;
-    @Mapped({ dbColumnName: "importance", type: MappingType.string}) importance?: ConditionImportance;
-    @Mapped({ dbColumnName: "day", type: MappingType.string}) day?: Day;
-    @Mapped({ dbColumnName: "profileId", type:MappingType.string}) profileId?: string;
-    @Mapped({ dbColumnName: "isLockedForNextDay", type:MappingType.boolean}) isLockedForNextDay?: boolean;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "id", type: MappingType.number, isPrimaryKey:true }) id:number;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "type", type: MappingType.string }) type: ConditionType;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "amount", type:MappingType.number}) amount: number = 1;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "roomId", type:MappingType.number}) roomId?: number;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "professionId", type:MappingType.number}) professionId?: number;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "importance", type: MappingType.string}) importance?: ConditionImportance;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "day", type: MappingType.string}) day?: Day;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "profileId", type:MappingType.string}) profileId?: string;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "isLockedForNextDay", type:MappingType.boolean}) isLockedForNextDay?: boolean;
     // TODO : Info
+
+    @Mapped(conditionToProfileMapping) profile?: Profile;
+    @Mapped(conditionToProfessionMapping) profession?: Tag;
 
     constructor(_profession: Tag, _amount:number, _importance: ConditionImportance) {
         this.profession = _profession;
@@ -145,18 +203,17 @@ export class Condition {
 
     // Not mapped
     room?: Room;
-    profession?: Tag
 
     // Not mapped - Permanent type
-    profile?: Profile;
+    
 }
 
 @Table("Assignments")
 export class Assignment {
-    @Mapped({ dbColumnName: "id", type: MappingType.number, isPrimaryKey:true }) id: number;
-    @Mapped({ dbColumnName: "conditionId", type: MappingType.number }) conditionId: number;
-    @Mapped({ dbColumnName: "profileId", type: MappingType.string }) profileId: string;
-    @Mapped({ dbColumnName: "date", type: MappingType.date }) date: Date;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "id", type: MappingType.number, isPrimaryKey:true }) id: number;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "conditionId", type: MappingType.number }) conditionId: number;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "profileId", type: MappingType.string }) profileId: string;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "date", type: MappingType.date }) date: Date;
 
     // Not mapped
     condition: Condition;
@@ -165,7 +222,9 @@ export class Assignment {
 
 export class TypesHelper {
     static typesMapping: {[typeName:string] : Function} = {"Tag" : Tag,
-                                                           "Condition": Condition};
+                                                           "Condition": Condition,
+                                                           "Profile" : Profile,
+                                                            "Profession" : Tag};
 }
 
 export enum Day {

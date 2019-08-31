@@ -8,7 +8,7 @@ var router: Router = express.Router();
 router.get('/', function(req, res, next) {
   var context = RoutesCommon.getContextFromRequest(req);
   
-    context.select(Room, true).then(rooms => {
+    context.select(Room, true, true).then(rooms => {
       res.json({data : rooms});
     });
 });

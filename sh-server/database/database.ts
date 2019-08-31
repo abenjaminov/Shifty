@@ -1,7 +1,7 @@
 import dbConnection from './connection';
 import { Connection, QueryOptions } from 'mysql';
 import { TypesHelper } from '../models/models';
-import { ReflectionHelper, IOneToManyMapping, IMapping, MappingType, IOneToManyDbMapping, IMappedPropertiesMetaData } from '../models/reflection';
+import { ReflectionHelper, IOneToManyMapping, ISimpleMapping, MappingType, IOneToManyDbMapping, IMappedPropertiesMetaData, InterfaceDescriminator, IOneToOneMapping } from '../models/reflection';
 
 interface IConstructor {
     [key:string] : any;
@@ -27,7 +27,8 @@ export class DbContext {
     }
 
     async select<T>(type: IConstructor, 
-        withForeignData: boolean = true, 
+        withForeignData: boolean = true,
+        deepSelect: boolean = false, 
         filters: IFilterStatement[] = []): Promise<Array<T>> {
 
         var selectPromise = new Promise<Array<T>>((resolve, reject) => {
@@ -44,33 +45,29 @@ export class DbContext {
                 reject("Context.Select -> No Primary key found for " + tableName);
             }
 
-            var foreignDbData: IOneToManyMapping[] = foreignData.filter(x => x.property);
+            
+            var oneToOneMappings: IOneToOneMapping[] = foreignData.filter(x => x.descriminator == InterfaceDescriminator.IOneToOneMapping);
 
             var join = "";
-            var select = [];
+            var select: Array<string> = [];
+
             if(withForeignData) {
+                var foreignTypes: Array<string> = []
+
                 // Build the join statements
-                for(let foreignMap of foreignDbData) {
-                    var dbConf = foreignMap.db;
-                    var connTableAlias = dbConf.connAlias;
+                join += this.applyOneToManyMappings(type, primaryDbKey, select, foreignTypes);
 
-                    var joinWithMain = `LEFT JOIN ${dbConf.connTable} ${connTableAlias} ON ${connTableAlias}.${dbConf.connToMainProp}
-                                        = Z.${primaryDbKey}`;
-                    select.push(`${connTableAlias}.${dbConf.connToMainProp} as ${connTableAlias}_${dbConf.connToMainProp}`);
+                join += this.applyOneToOneMappings(type, select, foreignTypes);
 
-                    var sourceTableAlias = dbConf.sourceAlias;
+                if(deepSelect) {
+                    for(let type of foreignTypes) {
+                        let currentType = TypesHelper.typesMapping[type];
+                        var selectType: Array<string> = [];
+                        let joinType = this.applyOneToOneMappings(currentType,selectType,[]);
 
-                    var joinSourceToCon = `LEFT JOIN ${dbConf.sourceTable} ${sourceTableAlias} ON ${sourceTableAlias}.${dbConf.sourceProp}
-                                        = ${connTableAlias}.${dbConf.connToSourceProp}`;
-                    
-                    select.push(`${sourceTableAlias}.${dbConf.sourceProp} as ${sourceTableAlias}_${dbConf.sourceProp}`);
-                    select.push(`${connTableAlias}.${dbConf.connToSourceProp} as ${connTableAlias}_${dbConf.connToSourceProp}`);
-
-                    for(let col of dbConf.sourceAdditionalData) {
-                        select.push(`${sourceTableAlias}.${col} as ${sourceTableAlias}_${col}`);
+                        console.log(joinType);
                     }
-
-                    join += " " + joinWithMain + " " + joinSourceToCon;
+                    
                 }
             }
 
@@ -103,12 +100,23 @@ export class DbContext {
 
                 var distinctResult = this.distinctResult(mappedProperties, primaryDbKey, result);
 
-                for(let foreignMap of foreignDbData) { 
+                var oneToManyMappings: IOneToManyMapping[] = foreignData.filter(x => x.descriminator == InterfaceDescriminator.IOneToManyMapping);
+
+                for(let foreignMap of oneToManyMappings) { 
                     var items = foreignMap.toItemsMap(distinctResult.map(x => x[primaryDbKey]), result);
                     distinctResult.forEach(resItem => {
                         var thisItems = items.get(resItem[primaryDbKey]);
 
-                        (resItem as any)[foreignMap.property] = thisItems;
+                        (resItem as any)[foreignMap.jsonProperty] = thisItems;
+                    })
+                }
+
+                for(let oneToOneMapping of oneToOneMappings) {
+                    var itemMap = oneToOneMapping.toItemMap(distinctResult.map(x => x[primaryDbKey]), result);
+                    distinctResult.forEach(resItem => {
+                        var thisItem = itemMap.get(resItem[primaryDbKey]);
+
+                        (resItem as any)[oneToOneMapping.jsonProperty] = thisItem;
                     })
                 }
                 
@@ -119,9 +127,54 @@ export class DbContext {
         return selectPromise;
     }
 
+    private applyOneToOneMappings(type: Function, select: string[], foreignTypes: string[]) {
+        let join = "";
+        let oneToOneMappings: Array<IOneToOneMapping> = ReflectionHelper.getMappingsByType(type, InterfaceDescriminator.IOneToOneMapping);
+
+        for (let oneToOneMapping of oneToOneMappings) {
+            let dbConf = oneToOneMapping.db;
+            let joinWithMain = `LEFT JOIN ${dbConf.sourceTable} ${dbConf.sourceAlias} ON ${dbConf.sourceAlias}.${dbConf.sourceProp}
+                                        = Z.${dbConf.mainProp}`;
+            select.push(`${dbConf.sourceAlias}.${dbConf.sourceProp} as ${dbConf.sourceAlias}_${dbConf.sourceProp}`);
+            for (let col of dbConf.sourceAdditionalData) {
+                select.push(`${dbConf.sourceAlias}.${col} as ${dbConf.sourceAlias}_${col}`);
+            }
+            join += " " + joinWithMain + " ";
+            foreignTypes.push(oneToOneMapping.sourceType);
+        }
+
+        return join;
+    }
+
+    private applyOneToManyMappings(type: Function, primaryDbKey: string, select: Array<string>,foreigTypes: Array<string>) {
+        let oneToManyMappings: Array<IOneToManyMapping> = ReflectionHelper.getMappingsByType(type, InterfaceDescriminator.IOneToManyMapping);
+
+        let join = "";
+
+        for (let oneToManyMapping of oneToManyMappings) {
+            let dbConf = oneToManyMapping.db;
+            let connTableAlias = dbConf.connAlias;
+            let joinWithMain = `LEFT JOIN ${dbConf.connTable} ${connTableAlias} ON ${connTableAlias}.${dbConf.connToMainProp}
+                                        = Z.${primaryDbKey}`;
+            select.push(`${connTableAlias}.${dbConf.connToMainProp} as ${connTableAlias}_${dbConf.connToMainProp}`);
+            let sourceTableAlias = dbConf.sourceAlias;
+            let joinSourceToCon = `LEFT JOIN ${dbConf.sourceTable} ${sourceTableAlias} ON ${sourceTableAlias}.${dbConf.sourceProp}
+                                        = ${connTableAlias}.${dbConf.connToSourceProp}`;
+            select.push(`${sourceTableAlias}.${dbConf.sourceProp} as ${sourceTableAlias}_${dbConf.sourceProp}`);
+            select.push(`${connTableAlias}.${dbConf.connToSourceProp} as ${connTableAlias}_${dbConf.connToSourceProp}`);
+            for (let col of dbConf.sourceAdditionalData) {
+                select.push(`${sourceTableAlias}.${col} as ${sourceTableAlias}_${col}`);
+            }
+            join += " " + joinWithMain + " " + joinSourceToCon;
+            foreigTypes.push(oneToManyMapping.sourceType);
+        }
+
+        return join;
+    }
+
     distinctResult(mappedProperties: IMappedPropertiesMetaData, primaryKey: string, result: any) {
         var ownKeys = Reflect.ownKeys(mappedProperties);
-        var regularPropertyKeys = ownKeys.filter((x:any) => mappedProperties[x].dbColumnName);
+        var regularPropertyKeys = ownKeys.filter((x:any) => mappedProperties[x].descriminator == InterfaceDescriminator.ISimpleMapping);
 
         var items: any[] = Array.from(new Set(result.map((x:any) => x[primaryKey]))).map((pKey:any) => {
             var resItem = result.find((x:any) => x[primaryKey] == pKey);
@@ -188,7 +241,7 @@ export class DbContext {
             var where = "";
             
             for(let prop of Reflect.ownKeys(simpleMappedProps)) {
-                var simpleProp: IMapping = simpleMappedProps[prop.toString()];
+                var simpleProp: ISimpleMapping = simpleMappedProps[prop.toString()];
 
                 var dbValueText = this.getDbValueText(simpleProp.type, item[prop]);
 
@@ -213,7 +266,7 @@ export class DbContext {
 
             var tableName = ReflectionHelper.getTableName(type);
 
-            var primaryKeyMapping: IMapping = simpleMappedProps[primaryJsonKey];
+            var primaryKeyMapping: ISimpleMapping = simpleMappedProps[primaryJsonKey];
 
             var typeText = this.getDbValueText(primaryKeyMapping.type, keyValue);
             var deleteQuery = `DELETE FROM ${tableName} WHERE ${primaryKeyMapping.dbColumnName} = ${typeText}`;
@@ -241,7 +294,7 @@ export class DbContext {
             var ownKeys = Reflect.ownKeys(oneToManyPropMappings);
             var deleteQuery = "DELETE FROM ";
 
-            var mainPrimaryKeyMapping: IMapping = simpleMappedProps[mainPrimaryJsonKey];
+            var mainPrimaryKeyMapping: ISimpleMapping = simpleMappedProps[mainPrimaryJsonKey];
 
             for(let key of ownKeys) {
                 var oneToManyMapping: IOneToManyDbMapping = oneToManyPropMappings[key.toString()].db;
@@ -270,7 +323,7 @@ export class DbContext {
                     
                     var simpleSourceTypeMappings = ReflectionHelper.getSimpleMappedProperties(sourceType);
                     var sourcePrimaryJsonKey = Reflect.ownKeys(simpleSourceTypeMappings).find(x => simpleSourceTypeMappings[x.toString()].isPrimaryKey) || '';
-                    var sourcePrimaryKeyMapping: IMapping = simpleSourceTypeMappings[sourcePrimaryJsonKey.toString()]
+                    var sourcePrimaryKeyMapping: ISimpleMapping = simpleSourceTypeMappings[sourcePrimaryJsonKey.toString()]
 
                     var values = [];
 

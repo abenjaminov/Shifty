@@ -4,11 +4,25 @@ export interface IMappedPropertiesMetaData {
     [jsonPropName: string] : string | any
 }
 
+export enum InterfaceDescriminator {
+    IOneToManyDbMapping = 0,
+    IOneToOneDbMapping = 1,
+    IOneToOneMapping = 2,
+    IOneToManyMapping = 3,
+    ISimpleMapping = 4
+}
+
 /**
  * source[sourceProp] > connection[connToSourceProp]
  * connection[connectionToMainProp] > main[primaryKey]
  */
-export interface IOneToManyDbMapping extends IOneToOneDbMapping {
+export interface IOneToManyDbMapping {
+    descriminator: InterfaceDescriminator.IOneToManyDbMapping;
+    sourceTable: string;
+    sourceProp: string;
+    sourceAlias: string;
+    sourceAdditionalData: string[];
+
     connTable:string;
     connAlias:string;
     connToSourceProp:string;
@@ -17,27 +31,32 @@ export interface IOneToManyDbMapping extends IOneToOneDbMapping {
 }
 
 export interface IOneToOneDbMapping {
+    descriminator: InterfaceDescriminator.IOneToOneDbMapping;
     sourceTable: string;
     sourceProp: string;
+    mainProp: string;
     sourceAlias: string;
     sourceAdditionalData: string[];
 }
 
 export interface IOneToOneMapping {
-    property: string,
+    descriminator: InterfaceDescriminator.IOneToOneMapping;
+    jsonProperty: string,
     sourceType: string,
-    db: any;
-    toItem: Function;
+    db: IOneToOneDbMapping;
+    toItemMap: (primaryKeyValues:string[] | number[], items:any[]) => Map<string | number,any>;
 }
 
 export interface IOneToManyMapping {
-    property:string;
+    descriminator: InterfaceDescriminator.IOneToManyMapping;
+    jsonProperty:string;
     sourceType: string;
     db: IOneToManyDbMapping;
     toItemsMap: (primaryKeyValues:string[] | number[], items:any[]) => Map<string | number,any[]>;
 }
 
-export interface IMapping {
+export interface ISimpleMapping {
+    descriminator: InterfaceDescriminator.ISimpleMapping;
     dbColumnName: string;
     type:MappingType;
     isPrimaryKey?:boolean;
@@ -66,10 +85,10 @@ export class ReflectionHelper {
         return typeMetaData.table;
     }
 
-    static getSimpleMappedProperties(type: Function): {[jsonPropName: string] : IMapping} {
+    static getSimpleMappedProperties(type: Function): {[jsonPropName: string] : ISimpleMapping} {
         var mappedProperties = this.getMappedProperties(type);
         var ownKeys = Reflect.ownKeys(mappedProperties).map(x => x.toString());
-        var simpleProps = ownKeys.filter(ok => mappedProperties[ok].dbColumnName)
+        var simpleProps = ownKeys.filter(ok => mappedProperties[ok].descriminator == InterfaceDescriminator.ISimpleMapping)
 
         var simpleMappedProps: IMappedPropertiesMetaData = {};
 
@@ -83,15 +102,36 @@ export class ReflectionHelper {
     static getOneToManyMappedProperties(type: Function): {[jsonPropName: string] : IOneToManyMapping} {
         var mappedProperties = this.getMappedProperties(type);
         var ownKeys = Reflect.ownKeys(mappedProperties).map(x => x.toString());
-        var simpleProps = ownKeys.filter(ok => mappedProperties[ok].property)
+        var oneToManyProps = ownKeys.filter(ok => mappedProperties[ok].descriminator == InterfaceDescriminator.IOneToManyMapping)
 
-        var simpleMappedProps: IMappedPropertiesMetaData = {};
+        var oneToManyMappedProps: IMappedPropertiesMetaData = {};
 
-        for(let sp of simpleProps) {
-            simpleMappedProps[sp] = mappedProperties[sp];
+        for(let sp of oneToManyProps) {
+            oneToManyMappedProps[sp] = mappedProperties[sp];
         }
 
-        return simpleMappedProps;
+        return oneToManyMappedProps;
+    }
+
+    static getOneToOneMappedProperties(type: Function): {[jsonPropName: string] : IOneToManyMapping} {
+        var mappedProperties = this.getMappedProperties(type);
+        var ownKeys = Reflect.ownKeys(mappedProperties).map(x => x.toString());
+        var oneToOneProps = ownKeys.filter(ok => mappedProperties[ok].descriminator == InterfaceDescriminator.IOneToOneMapping)
+
+        var oneToOneMappedProps: IMappedPropertiesMetaData = {};
+
+        for(let sp of oneToOneProps) {
+            oneToOneMappedProps[sp] = mappedProperties[sp];
+        }
+
+        return oneToOneMappedProps;
+    }
+
+    static getMappingsByType(type: Function, descriminator: InterfaceDescriminator){
+        let mappedProperties = ReflectionHelper.getMappedProperties(type);
+        let mappings = Reflect.ownKeys(mappedProperties).map(x => mappedProperties[x.toString()]).filter(x => x.descriminator == descriminator);
+
+        return mappings;
     }
 }
 
@@ -115,7 +155,7 @@ export function Table(tableName: string) {
     }
 }
 
-export function Mapped(mapping: IMapping | IOneToManyMapping) {
+export function Mapped(mapping: ISimpleMapping | IOneToManyMapping | IOneToOneMapping) {
     return (target: any, propertyKey: string | symbol) => {
         // Pull the existing metadata or create an empty object
         const allMetadata = (

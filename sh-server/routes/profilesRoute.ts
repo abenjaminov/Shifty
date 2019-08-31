@@ -18,7 +18,7 @@ router.get('/:id?', (req , res) => {
     })
   }
 
-  context.select(Profile, true, filter).then(profiles => {
+  context.select(Profile, true,true, filter).then(profiles => {
     res.json({data : profiles});
   }).catch(err => {
     console.error("Put Profile " + err);

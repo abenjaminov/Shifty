@@ -10,8 +10,8 @@ var router: Router = express.Router();
 router.get('/run', async (req: Request,res,next) => {
     var context = RoutesCommon.getContextFromRequest(req);
 
-    var profiles = await context.select<Profile>(Profile, true, []);
-    var rooms = await context.select<Room>(Room, true, []);
+    var profiles = await context.select<Profile>(Profile, true,true, []);
+    var rooms = await context.select<Room>(Room, true,true, []);
 
     var lastWeekDate = new Date();
     lastWeekDate.setDate(lastWeekDate.getDate() - 7);
