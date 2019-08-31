@@ -60,18 +60,18 @@ export class DbContext {
             var select: Array<string> = [];
 
             if(withForeignData) {
-                var deepTypes: Array<DeepType> = []
+                var typeToDeepTypes: Map<string, DeepType> = new Map<string, DeepType>();
 
                 // Build the join statements
-                join += this.applyOneToManyMappings(type,"Z", primaryDbKey, select, deepTypes);
+                join += this.applyOneToManyMappings(type,"Z", primaryDbKey, select, typeToDeepTypes);
 
-                join += this.applyOneToOneMappings(type,"Z", select, deepTypes);
+                join += this.applyOneToOneMappings(type,"Z", select, typeToDeepTypes);
 
                 if(deepSelect) {
-                    for(let type of deepTypes) {
+                    typeToDeepTypes.forEach((type, key) => {
                         let currentType = TypesHelper.typesMapping[type.typeName];
-                        let joinMany = this.applyOneToManyMappings(currentType, type.typeAlias, type.keyDbColumn, select, []);
-                        let joinType = this.applyOneToOneMappings(currentType,type.typeAlias, select,[]);
+                        let joinMany = this.applyOneToManyMappings(currentType, type.typeAlias, type.keyDbColumn, select, new Map<string, DeepType>());
+                        let joinType = this.applyOneToOneMappings(currentType,type.typeAlias, select,new Map<string, DeepType>());
 
                         let oneToOneDeepMapping = ReflectionHelper.getMappingsByType(currentType, InterfaceDescriminator.IOneToOneMapping);
                         let oneToManyDeepMapping = ReflectionHelper.getMappingsByType(currentType, InterfaceDescriminator.IOneToManyMapping);
@@ -81,7 +81,7 @@ export class DbContext {
 
                         join += joinMany;
                         join += joinType;
-                    }
+                    });
                 }
             }
 
@@ -132,16 +132,17 @@ export class DbContext {
                     })
                 }
                 
-                for(let type of deepTypes) {
-                    for(let oneToOneMapping of type.oneToOneMappings) {
-                        var itemMap = oneToOneMapping.toItemMap(distinctResult.map(x => x[primaryDbKey]), result, type.typeAlias);
+                // TODO : Map data
+                typeToDeepTypes.forEach((deepType, key) => {
+                    for(let oneToOneMapping of deepType.oneToOneMappings) {
+                        var itemMap = oneToOneMapping.toItemMap(distinctResult.map(x => x[deepType.keyDbColumn]), result, deepType.typeAlias);
                         distinctResult.forEach(resItem => {
-                            var thisItem = itemMap.get(resItem[primaryDbKey]);
+                            var thisItem = itemMap.get(resItem[`${deepType.typeAlias}_${deepType.keyDbColumn}`]);
     
                             (resItem as any)[oneToOneMapping.jsonProperty] = thisItem;
                         })
                     }
-                }
+                });
 
                 resolve(distinctResult);
             });
@@ -150,7 +151,7 @@ export class DbContext {
         return selectPromise;
     }
 
-    private applyOneToOneMappings(type: Function,mainAlias: string, select: string[], deepTypes: Array<DeepType>) {
+    private applyOneToOneMappings(type: Function,mainAlias: string, select: string[], deepTypes: Map<string, DeepType>) {
         let join = "";
         let oneToOneMappings: Array<IOneToOneMapping> = ReflectionHelper.getMappingsByType(type, InterfaceDescriminator.IOneToOneMapping);
 
@@ -164,39 +165,55 @@ export class DbContext {
             }
             join += " " + joinWithMain + " ";
 
-            this.applyDeepTypes(oneToOneMapping,oneToOneMapping.db.mainProp, deepTypes);
+            //this.applyDeepTypes(oneToOneMapping,oneToOneMapping.db.mainProp, deepTypes);
+            deepTypes.set(oneToOneMapping.sourceType, {
+                keyDbColumn: oneToOneMapping.db.mainProp,
+                typeName: oneToOneMapping.sourceType,
+                typeAlias: oneToOneMapping.db.sourceAlias,
+                oneToManyMappings: [],
+                oneToOneMappings: []
+            });
         }
 
         return join;
     }
 
-    private applyDeepTypes(mapping: IOneToOneMapping | IOneToManyMapping, parentPrimaryDbColumn:string, deepTypes: DeepType[]) {
-        let oneToOneDeepMappings: Array<IOneToOneMapping> = ReflectionHelper.getMappingsByType(TypesHelper.typesMapping[mapping.sourceType], InterfaceDescriminator.IOneToOneMapping);
-        let oneToOneDeepTypes: Array<DeepType> = oneToOneDeepMappings.map((x) => {
-            return {
-                typeName: x.sourceType,
-                typeAlias: mapping.db.sourceAlias,
-                keyDbColumn: x.db.mainProp,
-                oneToManyMappings: [],
-                oneToOneMappings: []
-            };
-        });
-        deepTypes.push(...oneToOneDeepTypes);
+    // private applyDeepTypes(mapping: IOneToOneMapping | IOneToManyMapping, parentPrimaryDbColumn:string, deepTypes: Map<string, DeepType>) {
+        
 
-        let oneToManyDeepMappings: Array<IOneToManyMapping> = ReflectionHelper.getMappingsByType(TypesHelper.typesMapping[mapping.sourceType], InterfaceDescriminator.IOneToManyMapping);
-        let oneToManyDeepTypes: Array<DeepType> = oneToManyDeepMappings.map((x) => {
-            return {
-                typeName: x.sourceType,
-                typeAlias: mapping.db.sourceAlias,
-                keyDbColumn: parentPrimaryDbColumn,
-                oneToManyMappings: [],
-                oneToOneMappings: []
-            };
-        });
-        deepTypes.push(...oneToManyDeepTypes);
-    }
+    //     // let oneToOneDeepMappings: Array<IOneToOneMapping> = ReflectionHelper.getMappingsByType(TypesHelper.typesMapping[mapping.sourceType], InterfaceDescriminator.IOneToOneMapping);
+    //     // let oneToOneDeepTypes: Array<DeepType> = oneToOneDeepMappings.map((x) => {
+    //     //     return {
+    //     //         typeName: mapping.sourceType,
+    //     //         typeAlias: mapping.db.sourceAlias,
+    //     //         keyDbColumn: x.db.mainProp,
+    //     //         oneToManyMappings: [],
+    //     //         oneToOneMappings: []
+    //     //     };
+    //     // });
+        
 
-    private applyOneToManyMappings(type: Function, mainAlias: string, primaryDbKey: string, select: Array<string>,deepTypes: Array<DeepType>) {
+    //     // let oneToManyDeepMappings: Array<IOneToManyMapping> = ReflectionHelper.getMappingsByType(TypesHelper.typesMapping[mapping.sourceType], InterfaceDescriminator.IOneToManyMapping);
+    //     // let oneToManyDeepTypes: Array<DeepType> = oneToManyDeepMappings.map((x) => {
+    //     //     return {
+    //     //         typeName: mapping.sourceType,
+    //     //         typeAlias: mapping.db.sourceAlias,
+    //     //         keyDbColumn: parentPrimaryDbColumn,
+    //     //         oneToManyMappings: [],
+    //     //         oneToOneMappings: []
+    //     //     };
+    //     // });
+
+    //     deepTypes.set(mapping.sourceType, {
+    //         keyDbColumn: (mapping.db as any).mainProp || parentPrimaryDbColumn,
+    //         typeName: mapping.sourceType,
+    //         typeAlias: mapping.db.sourceAlias,
+    //         oneToManyMappings: [],
+    //         oneToOneMappings: []
+    //     });
+    // }
+
+    private applyOneToManyMappings(type: Function, mainAlias: string, primaryDbKey: string, select: Array<string>,deepTypes: Map<string, DeepType>) {
         let oneToManyMappings: Array<IOneToManyMapping> = ReflectionHelper.getMappingsByType(type, InterfaceDescriminator.IOneToManyMapping);
 
         let join = "";
@@ -217,7 +234,13 @@ export class DbContext {
             }
             join += " " + joinWithMain + " " + joinSourceToCon;
 
-            this.applyDeepTypes(oneToManyMapping, primaryDbKey, deepTypes);
+            deepTypes.set(oneToManyMapping.sourceType, {
+                keyDbColumn: primaryDbKey,
+                typeName: oneToManyMapping.sourceType,
+                typeAlias: oneToManyMapping.db.sourceAlias,
+                oneToManyMappings: [],
+                oneToOneMappings: []
+            });
         }
 
         return join;

@@ -32,7 +32,7 @@ var conditionToProfessionMapping: IOneToOneMapping = {
         sourceAdditionalData : ["name"]
     },
     toItemMap: (primaryKeyValues: number[],  results: any[], alias?: string) => {
-        alias = alias ? "" : alias + "_";
+        alias = alias ? (alias + "_") : "";
         var map: Map<number, Tag> = new Map<number, Tag>();
 
         for(let id of primaryKeyValues) {
