@@ -37,7 +37,8 @@ router.get('/run', async (req: Request,res,next) => {
 
         for(let gene of solutionForThisDay.genes) {
             var assignment = new Assignment();
-            assignment.date = dates[index];
+            let date = dates[index];
+            assignment.date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
             assignment.profileId = gene.profile.id;
             
             var room = rooms.find(r => r.id == gene.roomId);

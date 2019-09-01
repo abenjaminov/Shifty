@@ -24,9 +24,10 @@ export class ScheduleService {
         for(let assignment of assignments) {
             assignment.profile = profiles.find(p => p.id == assignment.profileId);
             assignment.condition = conditions.find(c => c.id == assignment.conditionId);
+            assignment.date = new Date(Date.UTC(assignment.date.getFullYear(), assignment.date.getMonth(), assignment.date.getDate()));
         }
 
-        var assignmentsByDay = Enumerable.from(assignments).groupBy(a => a.date.toDateString()).toDictionary(a => a.key(), a => a.toArray());
+        var assignmentsByDay = Enumerable.from(assignments).groupBy(a => a.date.toISOString()).toDictionary(a => a.key(), a => a.toArray());
 
         var weeklySchedule = new WeeklySchedule();
         var dailySchedules: DailySchedule[] = [];
@@ -35,9 +36,9 @@ export class ScheduleService {
             var day = this.getDayByDate(date);
             let dailySchedule = new DailySchedule();
 
-            dailySchedule.assignments = assignmentsByDay.get(date.toDateString()) || [];
+            dailySchedule.assignments = assignmentsByDay.get(date.toISOString()) || [];
             dailySchedule.day = day;
-            dailySchedule.date = date;
+            dailySchedule.date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
 
             dailySchedules.push(dailySchedule);
             weeklySchedule.days[day] = dailySchedule;
@@ -66,7 +67,7 @@ export class ScheduleService {
 
         if(!startDate) {
             var date = new Date();
-            date = new Date(date.toUTCString());
+            date = new Date(date.toISOString());
             startDate = new Date(date);
         }
         
@@ -80,6 +81,6 @@ export class ScheduleService {
             datesOfWeek.push(new Date(newDate));
         }
 
-        return datesOfWeek;
+        return datesOfWeek.map(date => new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())));
     }
 }
