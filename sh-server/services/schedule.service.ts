@@ -13,7 +13,7 @@ export class ScheduleService {
 
         var filterStatements: IFilterStatement[] = datesOfWeek.map((d) => {return{ dataFilters: [{ property: "date", value: d.toDateString()}]}});
 
-        let assignments = await this.context.select<Assignment>(Assignment, false,true, filterStatements);
+        let assignments = await this.context.select<Assignment>(Assignment, false,false, filterStatements);
 
         var profileIds = assignments.map(a => a.profileId);
         var profileFilter = profileIds.map(pid => {return{ dataFilters: [{ property: "date", value: pid}]}});

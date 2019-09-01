@@ -12,8 +12,27 @@ var conditionToProfileMapping: IOneToOneMapping = {
         sourceAlias: "profilec",
         sourceAdditionalData : ["name"]
     },
-    toItemMap: (primaryKeyValues: number[],  results: any[]) => {
+    toItemMap: (primaryKeyValues: number[],  results: any[], alias?: string) => {
+        alias = alias ? (alias + "_") : "";
         var map: Map<number, Profile> = new Map<number, Profile>();
+
+        for(let id of primaryKeyValues) {
+            var professionResult = results.find(x => x[`${alias}id`] == id && 
+                                                  x["profilec_id"] != null && 
+                                                  x[`${alias}profileId`] != null && 
+                                                  x[`${alias}profileId`] == x["profilec_id"]);
+            var profile: Profile = undefined;
+
+            if(professionResult) {
+                profile = new Profile() ;
+                profile.id = professionResult["profilec_id"],
+                profile.name = professionResult["profilec_name"],
+                profile.professions = [],
+                profile.profilePic = ""
+            }
+
+            map.set(id, profile);
+        }
 
         return map;
     }

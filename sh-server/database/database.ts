@@ -133,38 +133,40 @@ export class DbContext {
                     })
                 }
                 
-                // TODO : Map data
-                typeToDeepTypes.forEach((deepType, key) => {
-                    for(let oneToOneMapping of deepType.oneToOneMappings) {
-                        let objects = distinctResult.map(dr => dr[deepType.jsonProperty]);
-                        if(objects.length > 0) {
-                            var ids: any[];
-                            if(Array.isArray(objects[0])) {
-                                ids = objects.map(value => value.map((innerValues: any) => innerValues[deepType.keyDbColumn])).reduce((total: any[], o) => total.concat(o));    
-                            }
-                            else {
-                                ids = objects.map(x => x[deepType.keyDbColumn]);        
-                            }
-
-                            var itemMap = oneToOneMapping.toItemMap(ids, result, deepType.typeAlias);
-
-                            objects.forEach((resItem: any) => {
-                                if(Array.isArray(resItem)) {
-                                    resItem.forEach((innerResItem: any) => {
-                                        var thisItem = itemMap.get(innerResItem[`${deepType.keyDbColumn}`]);
-        
-                                        (innerResItem as any)[oneToOneMapping.jsonProperty] = thisItem;
-                                    })
+                if(withForeignData && deepSelect) {
+                    // TODO : Map one to many
+                    typeToDeepTypes.forEach((deepType, key) => {
+                        for(let oneToOneMapping of deepType.oneToOneMappings) {
+                            let objects = distinctResult.map(dr => dr[deepType.jsonProperty]);
+                            if(objects.length > 0) {
+                                var ids: any[];
+                                if(Array.isArray(objects[0])) {
+                                    ids = objects.map(value => value.map((innerValues: any) => innerValues[deepType.keyDbColumn])).reduce((total: any[], o) => total.concat(o));    
                                 }
                                 else {
-                                    var thisItem = itemMap.get(resItem[`${deepType.typeAlias}_${deepType.keyDbColumn}`]);
-        
-                                    (resItem as any)[oneToOneMapping.jsonProperty] = thisItem;
+                                    ids = objects.map(x => x[deepType.keyDbColumn]);        
                                 }
-                            })
+
+                                var itemMap = oneToOneMapping.toItemMap(ids, result, deepType.typeAlias);
+
+                                objects.forEach((resItem: any) => {
+                                    if(Array.isArray(resItem)) {
+                                        resItem.forEach((innerResItem: any) => {
+                                            var thisItem = itemMap.get(innerResItem[`${deepType.keyDbColumn}`]);
+            
+                                            (innerResItem as any)[oneToOneMapping.jsonProperty] = thisItem;
+                                        })
+                                    }
+                                    else {
+                                        var thisItem = itemMap.get(resItem[`${deepType.typeAlias}_${deepType.keyDbColumn}`]);
+            
+                                        (resItem as any)[oneToOneMapping.jsonProperty] = thisItem;
+                                    }
+                                })
+                            }
                         }
-                    }
-                });
+                    });
+                }
 
                 resolve(distinctResult);
             });
