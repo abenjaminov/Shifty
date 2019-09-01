@@ -1,5 +1,5 @@
 import {Injectable, Inject, forwardRef} from '@angular/core';
-import { Profile, Tag, Room, Condition } from '../models';
+import {Profile, Tag, Room, Condition, WeeklySchedule} from '../models';
 import { HttpClient } from '@angular/common/http';
 import { CacheService } from './cache.service';
 
@@ -16,7 +16,7 @@ interface ApiConfig {
 }
 
 class StateMap {
-  objects: any[];
+  data: any[] | any;
   apiConfig : ApiConfig;
   cacheName: string;
 }
@@ -32,6 +32,7 @@ class AppState {
   tags: Tag[] = [];
   rooms: Room[] = [];
   conditions: Condition[] = [];
+  weeklySchedules: WeeklySchedule[];
 }
 
 export interface IConstructor {
@@ -60,27 +61,33 @@ export class StateService
 
   private initServiceMap() {
     this.serviceMap.set(Tag, {
-      objects : this.appState.tags,
+      data : this.appState.tags,
       cacheName : 'tags',
       apiConfig :  { controller : 'tags' }
     });
 
     this.serviceMap.set(Profile, {
-      objects: this.appState.profiles,
+      data: this.appState.profiles,
       cacheName : 'profiles',
       apiConfig : { controller : 'profiles' }
     });
 
     this.serviceMap.set(Room, {
-      objects: this.appState.rooms,
+      data: this.appState.rooms,
       cacheName : 'rooms',
       apiConfig : { controller : 'rooms' }
     });
 
     this.serviceMap.set(Condition, {
-      objects: this.appState.conditions,
+      data: this.appState.conditions,
       cacheName : 'conditions',
       apiConfig : { controller : 'conditions' }
+    });
+
+    this.serviceMap.set(WeeklySchedule, {
+      data: this.appState.weeklySchedules,
+      cacheName : 'schedule',
+      apiConfig : { controller : 'schedule' }
     });
   }
 
@@ -88,48 +95,86 @@ export class StateService
     this.appState.appStatus = AppStatus.ready;
   }
 
+  fetch(T: IConstructor) : Promise<IStateObject> {
+    let result = new Promise<IStateObject>((resolve, reject) => {
+        this.appState.appStatus = AppStatus.loading;
+
+        let mappedState = this.getStateMap(T);
+
+        let url = `/api/${mappedState.apiConfig.controller}`;
+
+        let cache = this.cacheService.getOrCreate(mappedState.cacheName);
+
+        let cachedObject = cache.get(url);
+        if(cachedObject) {
+
+          mappedState.data = cachedObject;
+
+          this.appState.appStatus = AppStatus.ready;
+
+          resolve(mappedState.data);
+
+          return;
+        }
+
+        this.httpClient.get(url).toPromise().then((result:HttpResult) => {
+          mappedState.data = result.data;
+
+          cache.set(url, mappedState.data);
+
+          resolve(mappedState.data);
+        }).catch(error => {
+          reject(error);
+        }).finally(() => {
+          this.appState.appStatus = AppStatus.ready;
+        })
+    });
+
+    return result;
+  }
+
   fetchMany(T:IConstructor) : Promise<IStateObject[]>{
-      var result = new Promise<IStateObject[]>((resolve, reject) => {
-      this.appState.appStatus = AppStatus.loading;
+      let result = new Promise<IStateObject[]>((resolve, reject) => {
+        this.appState.appStatus = AppStatus.loading;
 
-       var mappedState = this.getStateMap(T);
+         var mappedState = this.getStateMap(T);
 
-       var url = `/api/${mappedState.apiConfig.controller}`;
+         var url = `/api/${mappedState.apiConfig.controller}`;
 
-      var cache = this.cacheService.getOrCreate(mappedState.cacheName);
+        var cache = this.cacheService.getOrCreate(mappedState.cacheName);
 
-      var cachedObjects = cache.get(url);
-      if(cachedObjects) {
+        var cachedObjects = cache.get(url);
+        if(cachedObjects) {
 
-        mappedState.objects.length = 0;
-        mappedState.objects.push(...cachedObjects);
+          mappedState.data.length = 0;
+          mappedState.data.push(...cachedObjects);
 
-        this.appState.appStatus = AppStatus.ready;
+          this.appState.appStatus = AppStatus.ready;
 
-        resolve(mappedState.objects);
+          resolve(mappedState.data);
 
-        return;
-      }
+          return;
+        }
 
-      this.httpClient.get(url).toPromise().then((result:HttpResult) => {
-        mappedState.objects.length = 0;
-        mappedState.objects.push(...result.data);
+        this.httpClient.get(url).toPromise().then((result:HttpResult) => {
+          mappedState.data.length = 0;
+          mappedState.data.push(...result.data);
 
-        cache.set(url, Object.assign([], mappedState.objects));
+          cache.set(url, Object.assign([], mappedState.data));
 
-        resolve(mappedState.objects);
-      }).catch(error => {
-        reject(error);
-      }).finally(() => {
-        this.appState.appStatus = AppStatus.ready;
-      })
+          resolve(mappedState.data);
+        }).catch(error => {
+          reject(error);
+        }).finally(() => {
+          this.appState.appStatus = AppStatus.ready;
+        })
     });
 
     return result;
   }
 
   getState(T: IConstructor): IStateObject[] {
-    return this.getStateMap(T).objects;
+    return this.getStateMap(T).data;
   }
 
   getApiConf(T: IConstructor): ApiConfig {
@@ -189,7 +234,7 @@ export class StateService
         
         this.cacheService.clear(stateMap.cacheName)
 
-        stateMap.objects.push(obj);
+        stateMap.data.push(obj);
         resolve(obj);
       }).catch(error => {
         reject(error);
@@ -211,8 +256,8 @@ export class StateService
         this.appState.appStatus = AppStatus.ready;
         this.cacheService.clear(stateMap.cacheName);
 
-        var index = stateMap.objects.findIndex(x => x.id == id);
-        stateMap.objects = stateMap.objects.splice(index,1);
+        var index = stateMap.data.findIndex(x => x.id == id);
+        stateMap.data = stateMap.data.splice(index,1);
 
         resolve(true);
       }).catch(error => {

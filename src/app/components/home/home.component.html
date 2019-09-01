@@ -1,12 +1,6 @@
 <div class="sh-home">
-    <div class="info-and-news">
-        Info and news
-    </div>
-    <div class="weekly-schedule">
-        <div class="title">
-            Weekly Schedule : 25 Aug - 31 Aug
-        </div>
-        <div class="schedule">
+    <sh-view titleText="'Weekly Schedule : 25 Aug - 31 Aug'">
+        <div class="schedule" viewContent>
             <div class="column room">
                 <div class="column-title">
                     Rooms
@@ -20,10 +14,10 @@
                     <div class="day-name">{{day}}</div>
                     <div class="day-date">({{this.weeklySchedule.days[day].dateString}})</div>
                 </div>
-                <div class="column-content roomPlaceHolder" *ngFor="let rommPlaceholder of this.rooms">
-                    --
+                <div class="column-content roomPlaceHolder" *ngFor="let room of this.rooms">
+                    {{this.assignmentsToRoomAndDay[room.id + '-' + day]}}
                 </div>
             </div>
         </div>
-    </div>
+    </sh-view>
 </div>

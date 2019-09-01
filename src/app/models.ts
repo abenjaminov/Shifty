@@ -12,13 +12,13 @@ export class Profile implements IStateObject {
     profilePic:string;
 }
 
-export class Room {
+export class Room implements IStateObject {
     id: number;
     name: string;
     conditions: Condition[] = [];
 }
 
-export class Condition {
+export class Condition implements IStateObject {
     id:number;
     type: ConditionType;
     amount: number = 1;
@@ -30,9 +30,12 @@ export class Condition {
     isLockedForNextDay?: boolean = false;
 }
 
-export class Assignment {
+export class Assignment implements IStateObject {
     profession: Tag;
     importance: ConditionImportance
+    condition: Condition;
+    profile:Profile;
+    id: number;
 }
 
 export enum ConditionType {
@@ -65,18 +68,14 @@ export class DailySchedule {
     dateString:string;
     isToday: boolean;
 
-    setDateString() {
-        var dateParts = this.date.toDateString().split(' ');
-        this.dateString = `${dateParts[1]} ${dateParts[2]}`;
-    }
+
 }
 
-export class WeeklySchedule {
-    days: {[day:string] : DailySchedule} = {};
+export class WeeklySchedule implements IStateObject {
+    days: {[day: string] : DailySchedule} = {};
     startDate: Date;
     endDate: Date;
-
-
+    id: string | number;
 }
 
 export function createEnumList(enumType) {

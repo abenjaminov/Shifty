@@ -54,7 +54,7 @@ router.get('/run', async (req: Request,res,next) => {
         return err;
     });
 
-    if(!Array.isArray(result)) {
+    if(!(result as any).affectedRows) {
         res.status(500).json("Error occured running scheduler");
     }
     else {
@@ -71,10 +71,15 @@ router.get('/test', async (req,res,next) => {
 router.get('/:date?', (req,res,next) => {
     let scheduleService = new ScheduleService(RoutesCommon.getContextFromRequest(req));
 
-    scheduleService.getWeeklySchedule().then(x => {
-        console.log(x)
+    var firstDate = undefined;
 
-        res.json(x);
+    if(req.params.date) {
+        var dateParts = req.params.date.split(";");
+        firstDate = new Date(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2]));
+    }
+
+    scheduleService.getWeeklySchedule(firstDate).then(x => {
+        res.send({data : x});
     })
 });
 
