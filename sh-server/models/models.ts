@@ -268,6 +268,7 @@ export class DailySchedule {
 }
 
 export class WeeklySchedule {
+    id: string;
     days: {[day:string] : DailySchedule} = {};
     startDate: Date;
     endDate: Date;
