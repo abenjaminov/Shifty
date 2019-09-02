@@ -66,8 +66,9 @@ export class StateService
       cacheName : 'tags',
       apiConfig :  { controller : 'tags' },
       mapToState: data => {
+        let dataCopy = Object.assign([], data);
         this.appState.tags.length = 0;
-        this.appState.tags.push(...data);
+        this.appState.tags.push(...dataCopy);
         return this.appState.tags;
       }
     });
@@ -77,8 +78,9 @@ export class StateService
       cacheName : 'profiles',
       apiConfig : { controller : 'profiles' },
       mapToState: data => {
+        let dataCopy = Object.assign([], data);
         this.appState.profiles.length = 0;
-        this.appState.profiles.push(...data);
+        this.appState.profiles.push(...dataCopy);
         return this.appState.profiles;
       }
     });
@@ -88,8 +90,9 @@ export class StateService
       cacheName : 'rooms',
       apiConfig : { controller : 'rooms' },
       mapToState: data => {
+        let dataCopy = Object.assign([], data);
         this.appState.rooms.length = 0;
-        this.appState.rooms.push(...data);
+        this.appState.rooms.push(...dataCopy);
         return this.appState.rooms;
       }
     });
@@ -99,8 +102,9 @@ export class StateService
       cacheName : 'conditions',
       apiConfig : { controller : 'conditions' },
       mapToState: data => {
+        let dataCopy = Object.assign([], data);
         this.appState.conditions.length = 0;
-        this.appState.conditions.push(...data);
+        this.appState.conditions.push(...dataCopy);
         return this.appState.conditions;
       }
     });
@@ -146,9 +150,7 @@ export class StateService
 
       mappedState.mapToState(cachedData);
 
-      this.appState.appStatus = AppStatus.ready;
-
-      return mappedState.data;
+      return cachedData;
     }
 
     let result: HttpResult = await this.httpClient.get<HttpResult>(url).toPromise<HttpResult>();

@@ -13,6 +13,7 @@ export class HomeComponent implements OnInit {
   days: string[];
   rooms: Room[];
   weeklySchedule: WeeklySchedule = new WeeklySchedule();
+  title: string;
 
   assignmentsToRoomAndDay: {[key:string] : string} = {};
 
@@ -28,6 +29,8 @@ export class HomeComponent implements OnInit {
       this.rooms = this.roomsService.rooms;
 
       this.weeklySchedule = result[1];
+
+      this.title = this.weeklySchedule.days[Day.Sunday].dateString + " - " + this.weeklySchedule.days[Day.Saturday].dateString;
 
       this.mapRoomsPerDayAssignment();
     })

@@ -40,6 +40,9 @@ export class ScheduleService {
         }
       }
 
+      weeklySchedule.startDate = this.toDate(weeklySchedule.startDate as any);
+      weeklySchedule.endDate = this.toDate(weeklySchedule.endDate as any);
+
       return weeklySchedule;
     });
 
@@ -56,5 +59,9 @@ export class ScheduleService {
     let today = new Date();
 
     return date.getFullYear() == today.getFullYear() && date.getMonth() == today.getMonth() && date.getDate() == today.getDate();
+  }
+
+  toDate(value: string) {
+    return new Date(value);
   }
 }
