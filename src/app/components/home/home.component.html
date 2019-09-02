@@ -1,22 +1,26 @@
 <div class="sh-home">
     <sh-view titleText="'Weekly Schedule : 25 Aug - 31 Aug'">
         <div class="schedule" viewContent>
-            <div class="column room">
-                <div class="column-title">
+            <div class="row">
+                <div class="title">
                     Rooms
                 </div>
-                <div class="column-content room-title" *ngFor="let room of this.rooms">
-                    {{room.name}}
+                <div class="cell title" *ngFor="let day of this.days">
+                    {{day}}
                 </div>
             </div>
-            <div class="day column" *ngFor="let day of this.days" [ngClass]="{'today' : this.weeklySchedule.days[day].isToday}">
-                <div class="column-title day-title">
-                    <div class="day-name">{{day}}</div>
-                    <div class="day-date">({{this.weeklySchedule.days[day].dateString}})</div>
-                </div>
-                <div class="column-content roomPlaceHolder" *ngFor="let room of this.rooms">
-                    {{this.assignmentsToRoomAndDay[room.id + '-' + day]}}
-                </div>
+            <div>
+               <div class="row room" *ngFor="let room of this.rooms">
+                    <div class="title room-name">
+                        {{room.name}}
+                    </div>
+                    <div class="cell daily-assignments" *ngFor="let day of this.days">
+                        <div class="assignment" *ngFor="let asgn of this.weeklySchedule.days[day].assignmentsByRoom.get(room.id)">
+                            <div [ngClass]="{'required' : asgn.condition.importance == 'Required', 'nice-to-have' : asgn.condition.importance == 'Nice To Have'}">{{asgn.condition.importance[0]}}</div>
+                            <div class="assignment-text">{{asgn.profile.name}}</div>
+                        </div>
+                    </div>
+               </div>
             </div>
         </div>
     </sh-view>

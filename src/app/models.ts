@@ -67,8 +67,7 @@ export class DailySchedule {
     // Not mapped
     dateString:string;
     isToday: boolean;
-
-
+    assignmentsByRoom: Map<number/*room.id*/, Assignment[]> = new Map<number, Assignment[]>();
 }
 
 export class WeeklySchedule implements IStateObject {

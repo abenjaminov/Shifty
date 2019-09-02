@@ -1,6 +1,7 @@
 import {forwardRef, Inject, Injectable} from '@angular/core';
-import {IShService, ServiceState} from "./models";
-import {DailySchedule, Day, Profile, Tag, WeeklySchedule} from "../models";
+import {ServiceState} from "./models";
+import * as Enumerable from 'linq';
+import {createEnumList, DailySchedule, Day, Profile, Tag, WeeklySchedule} from "../models";
 import {StateService} from "./state.service";
 
 @Injectable({
@@ -9,26 +10,37 @@ import {StateService} from "./state.service";
 export class ScheduleService {
 
   state: ServiceState;
+  dayNames: Array<string>;
 
   constructor(
       @Inject(forwardRef(() => StateService))  private stateService: StateService
-  ) { }
+  ) {
+    this.dayNames = createEnumList(Day);
+  }
 
-  load(date: Date): Promise<WeeklySchedule> {
+  load(date?: Date): Promise<WeeklySchedule> {
     this.state = ServiceState.loading;
 
-    let result = this.stateService.fetch<WeeklySchedule>(WeeklySchedule).then((x:WeeklySchedule) => {
+    let result = this.stateService.fetch<WeeklySchedule>(WeeklySchedule).then((weeklySchedule:WeeklySchedule) => {
       this.state = ServiceState.ready;
 
-      this.fixDailySchedule(x.days[Day.Sunday]);
-      this.fixDailySchedule(x.days[Day.Monday]);
-      this.fixDailySchedule(x.days[Day.Tuesday]);
-      this.fixDailySchedule(x.days[Day.Wednesday]);
-      this.fixDailySchedule(x.days[Day.Thursday]);
-      this.fixDailySchedule(x.days[Day.Friday]);
-      this.fixDailySchedule(x.days[Day.Saturday]);
+      for(let day of this.dayNames) {
+        weeklySchedule.days[day] = Object.assign(new DailySchedule(), weeklySchedule.days[day]);
+        let dailySchedule = weeklySchedule.days[day];
 
-      return x;
+        this.fixDailySchedule(dailySchedule);
+
+        dailySchedule.isToday = this.isToday(dailySchedule.date);
+
+        let allRooms = Enumerable.from(dailySchedule.assignments).select(a => a.condition.roomId).distinct().toArray();
+
+        for(let roomId of allRooms) {
+          let assignmentsForRoom = Enumerable.from(dailySchedule.assignments).where(a => a.condition.roomId == roomId).toArray();
+          dailySchedule.assignmentsByRoom.set(roomId, assignmentsForRoom);
+        }
+      }
+
+      return weeklySchedule;
     });
 
     return result;
@@ -38,5 +50,11 @@ export class ScheduleService {
     day.date = new Date(day.date);
     let dateParts = day.date.toDateString().split(' ');
     day.dateString = `${dateParts[1]} ${dateParts[2]}`;
+  }
+
+  isToday(date: Date) {
+    let today = new Date();
+
+    return date.getFullYear() == today.getFullYear() && date.getMonth() == today.getMonth() && date.getDate() == today.getDate();
   }
 }

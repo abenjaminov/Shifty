@@ -19,7 +19,7 @@ class StateMap {
   data: any[] | any;
   apiConfig : ApiConfig;
   cacheName: string;
-  mapToState: (data: any) => void;
+  mapToState: (data: any) => any;
 }
 
 export enum AppStatus {
@@ -68,6 +68,7 @@ export class StateService
       mapToState: data => {
         this.appState.tags.length = 0;
         this.appState.tags.push(...data);
+        return this.appState.tags;
       }
     });
 
@@ -78,6 +79,7 @@ export class StateService
       mapToState: data => {
         this.appState.profiles.length = 0;
         this.appState.profiles.push(...data);
+        return this.appState.profiles;
       }
     });
 
@@ -88,6 +90,7 @@ export class StateService
       mapToState: data => {
         this.appState.rooms.length = 0;
         this.appState.rooms.push(...data);
+        return this.appState.rooms;
       }
     });
 
@@ -98,6 +101,7 @@ export class StateService
       mapToState: data => {
         this.appState.conditions.length = 0;
         this.appState.conditions.push(...data);
+        return this.appState.conditions;
       }
     });
 
@@ -107,6 +111,7 @@ export class StateService
       apiConfig : { controller : 'schedule' },
       mapToState: (data: WeeklySchedule) => {
         this.appState.weeklySchedules.set(data.id, data);
+        return this.appState.weeklySchedules.get(data.id);
       }
     });
   }
@@ -148,11 +153,11 @@ export class StateService
 
     let result: HttpResult = await this.httpClient.get<HttpResult>(url).toPromise<HttpResult>();
 
-    mappedState.mapToState(result.data)
+    cachedData = mappedState.mapToState(result.data)
 
-    cache.set(url, Object.assign([], mappedState.data));
+    cache.set(url, cachedData);
 
-    return mappedState.data;
+    return cachedData;
   }
 
   getState(T: IConstructor): IStateObject[] {

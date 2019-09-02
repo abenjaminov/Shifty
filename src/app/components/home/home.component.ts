@@ -34,18 +34,18 @@ export class HomeComponent implements OnInit {
   }
 
   mapRoomsPerDayAssignment() {
-      for(let day of this.days) {
-        let dailySchedule: DailySchedule = this.weeklySchedule.days[day];
-
-        for(let room of this.rooms) {
-          var assignment = dailySchedule.assignments.find(x => x.condition.roomId == room.id);
-          if(assignment) {
-            this.assignmentsToRoomAndDay[room.id + "-" + day] = assignment.profile.name;
-          }
-          else {
-            this.assignmentsToRoomAndDay[room.id + "-" + day] = "--";
-          }
-        }
-      }
+      // for(let day of this.days) {
+      //   let dailySchedule: DailySchedule = this.weeklySchedule.days[day];
+      //
+      //   for(let room of this.rooms) {
+      //     var assignment = dailySchedule.assignments.find(x => x.condition.roomId == room.id);
+      //     if(assignment) {
+      //       this.assignmentsToRoomAndDay[room.id + "-" + day] = assignment.profile.name;
+      //     }
+      //     else {
+      //       this.assignmentsToRoomAndDay[room.id + "-" + day] = "--";
+      //     }
+      //   }
+      // }
   }
 }
