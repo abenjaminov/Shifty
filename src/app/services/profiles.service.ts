@@ -19,7 +19,7 @@ export class ProfilesService implements IShService<Profile>
   load(): Promise<Profile[]> {
     this.state = ServiceState.loading;
     
-    var result = this.stateService.fetchMany(Profile).then((x:Profile[]) => {
+    var result = this.stateService.fetch<Profile[]>(Profile).then((x:Profile[]) => {
       this.state = ServiceState.ready;
 
       return x;

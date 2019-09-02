@@ -1,6 +1,6 @@
 import { Injectable, Inject, forwardRef } from '@angular/core';
 import { IShService, ServiceState } from './models';
-import { Condition } from '../models';
+import {Condition, Profile} from '../models';
 import { StateService, IStateObject } from './state.service';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class ConditionService implements IShService<Condition> {
   load(): Promise<Condition[]> {
     this.state = ServiceState.loading;
     
-    var result = this.stateService.fetchMany(Condition).then((x:Condition[]) => {
+    var result = this.stateService.fetch<Condition[]>(Condition).then((x:Condition[]) => {
       this.state = ServiceState.ready;
 
       return x;

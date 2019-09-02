@@ -19,6 +19,7 @@ class StateMap {
   data: any[] | any;
   apiConfig : ApiConfig;
   cacheName: string;
+  mapToState: (data: any) => void;
 }
 
 export enum AppStatus {
@@ -32,7 +33,7 @@ class AppState {
   tags: Tag[] = [];
   rooms: Room[] = [];
   conditions: Condition[] = [];
-  weeklySchedules: WeeklySchedule[];
+  weeklySchedules: Map<string, WeeklySchedule> = new Map<string, WeeklySchedule>();
 }
 
 export interface IConstructor {
@@ -51,7 +52,7 @@ export class StateService
   constructor(
     @Inject(forwardRef(() => HttpClient)) private httpClient: HttpClient,
     @Inject(forwardRef(() => CacheService)) private cacheService: CacheService
-    ) { 
+    ) {
 
     this.initServiceMap();
     this.loadApp();
@@ -63,31 +64,50 @@ export class StateService
     this.serviceMap.set(Tag, {
       data : this.appState.tags,
       cacheName : 'tags',
-      apiConfig :  { controller : 'tags' }
+      apiConfig :  { controller : 'tags' },
+      mapToState: data => {
+        this.appState.tags.length = 0;
+        this.appState.tags.push(...data);
+      }
     });
 
     this.serviceMap.set(Profile, {
       data: this.appState.profiles,
       cacheName : 'profiles',
-      apiConfig : { controller : 'profiles' }
+      apiConfig : { controller : 'profiles' },
+      mapToState: data => {
+        this.appState.profiles.length = 0;
+        this.appState.profiles.push(...data);
+      }
     });
 
     this.serviceMap.set(Room, {
       data: this.appState.rooms,
       cacheName : 'rooms',
-      apiConfig : { controller : 'rooms' }
+      apiConfig : { controller : 'rooms' },
+      mapToState: data => {
+        this.appState.rooms.length = 0;
+        this.appState.rooms.push(...data);
+      }
     });
 
     this.serviceMap.set(Condition, {
       data: this.appState.conditions,
       cacheName : 'conditions',
-      apiConfig : { controller : 'conditions' }
+      apiConfig : { controller : 'conditions' },
+      mapToState: data => {
+        this.appState.conditions.length = 0;
+        this.appState.conditions.push(...data);
+      }
     });
 
     this.serviceMap.set(WeeklySchedule, {
       data: this.appState.weeklySchedules,
       cacheName : 'schedule',
-      apiConfig : { controller : 'schedule' }
+      apiConfig : { controller : 'schedule' },
+      mapToState: (data: WeeklySchedule) => {
+        this.appState.weeklySchedules.set(data.id, data);
+      }
     });
   }
 
@@ -95,82 +115,44 @@ export class StateService
     this.appState.appStatus = AppStatus.ready;
   }
 
-  fetch(T: IConstructor) : Promise<IStateObject> {
-    let result = new Promise<IStateObject>((resolve, reject) => {
-        this.appState.appStatus = AppStatus.loading;
+  async fetch<RT>(T: IConstructor) : Promise<RT> {
+      this.appState.appStatus = AppStatus.loading;
 
-        let mappedState = this.getStateMap(T);
-
-        let url = `/api/${mappedState.apiConfig.controller}`;
-
-        let cache = this.cacheService.getOrCreate(mappedState.cacheName);
-
-        let cachedObject = cache.get(url);
-        if(cachedObject) {
-
-          mappedState.data = cachedObject;
-
-          this.appState.appStatus = AppStatus.ready;
-
-          resolve(mappedState.data);
-
-          return;
-        }
-
-        this.httpClient.get(url).toPromise().then((result:HttpResult) => {
-          mappedState.data = result.data;
-
-          cache.set(url, mappedState.data);
-
-          resolve(mappedState.data);
-        }).catch(error => {
-          reject(error);
-        }).finally(() => {
-          this.appState.appStatus = AppStatus.ready;
-        })
+    let result = await this.fetchInternal(T).catch(error => {
+        // TODO : Display error
+        console.error(error);
+        return undefined;
     });
 
-    return result;
+      this.appState.appStatus = AppStatus.ready;
+
+      return result;
   }
 
-  fetchMany(T:IConstructor) : Promise<IStateObject[]>{
-      let result = new Promise<IStateObject[]>((resolve, reject) => {
-        this.appState.appStatus = AppStatus.loading;
+  async fetchInternal<RT>(T:IConstructor) : Promise<RT> {
+    let mappedState = this.getStateMap(T);
 
-         var mappedState = this.getStateMap(T);
+    let url = `/api/${mappedState.apiConfig.controller}`;
 
-         var url = `/api/${mappedState.apiConfig.controller}`;
+    let cache = this.cacheService.getOrCreate(mappedState.cacheName);
 
-        var cache = this.cacheService.getOrCreate(mappedState.cacheName);
+    let cachedData = cache.get(url);
+    if(cachedData) {
 
-        var cachedObjects = cache.get(url);
-        if(cachedObjects) {
+      mappedState.mapToState(cachedData);
 
-          mappedState.data.length = 0;
-          mappedState.data.push(...cachedObjects);
+      this.appState.appStatus = AppStatus.ready;
 
-          this.appState.appStatus = AppStatus.ready;
+      return mappedState.data;
+    }
 
-          resolve(mappedState.data);
+    let result: HttpResult = await this.httpClient.get<HttpResult>(url).toPromise<HttpResult>();
 
-          return;
-        }
+    mappedState.mapToState(result.data)
 
-        this.httpClient.get(url).toPromise().then((result:HttpResult) => {
-          mappedState.data.length = 0;
-          mappedState.data.push(...result.data);
+    cache.set(url, Object.assign([], mappedState.data));
 
-          cache.set(url, Object.assign([], mappedState.data));
-
-          resolve(mappedState.data);
-        }).catch(error => {
-          reject(error);
-        }).finally(() => {
-          this.appState.appStatus = AppStatus.ready;
-        })
-    });
-
-    return result;
+    return mappedState.data;
   }
 
   getState(T: IConstructor): IStateObject[] {
@@ -207,7 +189,7 @@ export class StateService
         this.appState.appStatus = AppStatus.loading;
 
         this.httpClient.put(`/api/${stateMap.apiConfig.controller}`, obj).toPromise().then(x => {
-          
+
           this.cacheService.clear(stateMap.cacheName)
 
           oldObject = obj;
@@ -231,7 +213,7 @@ export class StateService
       this.appState.appStatus = AppStatus.loading;
 
       this.httpClient.post(`/api/${stateMap.apiConfig.controller}`, obj).toPromise().then(x => {
-        
+
         this.cacheService.clear(stateMap.cacheName)
 
         stateMap.data.push(obj);
@@ -241,7 +223,7 @@ export class StateService
       }).finally(() => {
         this.appState.appStatus = AppStatus.ready;
       })
-      
+
     });
 
     return result;

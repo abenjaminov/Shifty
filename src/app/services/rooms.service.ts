@@ -18,7 +18,7 @@ export class RoomsService implements IShService<Room> {
   load(): Promise<Room[]> {
     this.state = ServiceState.loading;
     
-    var result = this.stateService.fetchMany(Room).then((x:Room[]) => {
+    var result = this.stateService.fetch<Room[]>(Room).then((x:Room[]) => {
       this.state = ServiceState.ready;
 
       return x;

@@ -19,7 +19,7 @@ export class TagsService implements IShService<Tag> {
   load(): Promise<Tag[]> {
     this.state = ServiceState.loading;
     
-    var result = this.stateService.fetchMany(Tag).then((x:Tag[]) => {
+    var result = this.stateService.fetch<Tag[]>(Tag).then((x:Tag[]) => {
       this.state = ServiceState.ready;
 
       return x;

@@ -75,7 +75,7 @@ export class WeeklySchedule implements IStateObject {
     days: {[day: string] : DailySchedule} = {};
     startDate: Date;
     endDate: Date;
-    id: string | number;
+    id: string;
 }
 
 export function createEnumList(enumType) {

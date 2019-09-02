@@ -1,6 +1,6 @@
 import {forwardRef, Inject, Injectable} from '@angular/core';
 import {IShService, ServiceState} from "./models";
-import {DailySchedule, Day, Tag, WeeklySchedule} from "../models";
+import {DailySchedule, Day, Profile, Tag, WeeklySchedule} from "../models";
 import {StateService} from "./state.service";
 
 @Injectable({
@@ -14,10 +14,10 @@ export class ScheduleService {
       @Inject(forwardRef(() => StateService))  private stateService: StateService
   ) { }
 
-  load(): Promise<WeeklySchedule> {
+  load(date: Date): Promise<WeeklySchedule> {
     this.state = ServiceState.loading;
 
-    let result = this.stateService.fetch(WeeklySchedule).then((x:WeeklySchedule) => {
+    let result = this.stateService.fetch<WeeklySchedule>(WeeklySchedule).then((x:WeeklySchedule) => {
       this.state = ServiceState.ready;
 
       this.fixDailySchedule(x.days[Day.Sunday]);
