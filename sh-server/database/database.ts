@@ -1,6 +1,6 @@
 import dbConnection from './connection';
 import { Connection, QueryOptions } from 'mysql';
-import { TypesHelper } from '../models/models';
+import { TypesHelper, twoDigits } from '../models/models';
 import { ReflectionHelper, IOneToManyMapping, ISimpleMapping, MappingType, IOneToManyDbMapping, IMappedPropertiesMetaData, InterfaceDescriminator, IOneToOneMapping } from '../models/reflection';
 
 interface IConstructor {
@@ -97,7 +97,7 @@ export class DbContext {
                     var andFilter = orFilter[j];
 
                     var simpleProp = simpleMappedProperties[andFilter.property];
-                    var dbValueText = this.getDbValueText(simpleProp.type, andFilter.value);
+                    var dbValueText = this.connection.escape(this.getDbValueText(simpleProp.type, andFilter.value));
 
                     where += `Z.${simpleProp.dbColumnName} = ${dbValueText}${j < orFilter.length - 1 ? ' AND ' : ''}`;
                 }
@@ -277,8 +277,9 @@ export class DbContext {
             values.push([]);
 
             for(let prop of Reflect.ownKeys(simpleMappedProps)) {
-                if(!simpleMappedProps[prop.toString()].isPrimaryKey) {
-                    values[values.length - 1].push(item[prop] ? item[prop].toString() : null);
+                var mappedProp = simpleMappedProps[prop.toString()];
+                if(!mappedProp.isPrimaryKey) {
+                    values[values.length - 1].push(item[prop] ? this.getDbValueText(mappedProp.type, item[prop]) : null);
                 }
             }
         }
@@ -416,15 +417,28 @@ export class DbContext {
     }
 
     getDbValueText(mappingType: MappingType, value: any): string {
-        if(mappingType == MappingType.string || mappingType == MappingType.date) {
-            return`'${value}'`
+        if(mappingType == MappingType.string) {
+            return `${value}`;
+        }
+        else if (mappingType == MappingType.date) {
+            return `${this.toMysqlFormat(value)}`;
         }
         else if(mappingType == MappingType.number) {
-            return `${value}`
+            return value;
         }
 
         return '';
     }
+
+    /**
+     * …and then create the method to output the date string as desired.
+     * Some people hate using prototypes this way, but if you are going
+     * to apply this to more than one Date object, having it as a prototype
+     * makes sense.
+     **/
+    toMysqlFormat(date: Date) {
+        return date.getUTCFullYear() + "-" + twoDigits(1 + date.getUTCMonth()) + "-" + twoDigits(date.getUTCDate());
+    };
 
     close() {
         if(!this.connection) return;

@@ -273,3 +273,14 @@ export class WeeklySchedule {
     startDate: Date;
     endDate: Date;
 }
+
+/**
+ * You first need to create a formatting function to pad numbers to two digits…
+ **/
+export function twoDigits(d: number) {
+    if(0 <= d && d < 10) return "0" + d.toString();
+    if(-10 < d && d < 0) return "-0" + (-1*d).toString();
+    return d.toString();
+}
+
+
