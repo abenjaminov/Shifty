@@ -77,9 +77,9 @@ export class GeneticEnviroment {
         profile.professions.push(Senior);
         profiles.push(profile);
 
-        profile = new Profile();profile.id = "2"; profile.name = "Profile 2";
-        profile.professions.push(Senior);
-        profiles.push(profile);
+        //profile = new Profile();profile.id = "2"; profile.name = "Profile 2";
+        //profile.professions.push(Senior);
+        //profiles.push(profile);
         profile = new Profile();profile.id = "3"; profile.name = "Profile 3";
         profile.professions.push(Senior);
         profiles.push(profile);
@@ -89,9 +89,9 @@ export class GeneticEnviroment {
         profile = new Profile();profile.id = "5"; profile.name = "Profile 5";
         profile.professions.push(Senior);
         profiles.push(profile);
-        profile = new Profile();profile.id = "6"; profile.name = "Profile 6";
-        profile.professions.push(Senior);
-        profiles.push(profile);
+        // profile = new Profile();profile.id = "6"; profile.name = "Profile 6";
+        // profile.professions.push(Senior);
+        // profiles.push(profile);
 
         profile = new Profile();profile.id = "7"; profile.name = "Profile 7";
         profile.professions.push(Intern);
@@ -127,9 +127,9 @@ export class GeneticEnviroment {
         profile = new Profile();profile.id = "17"; profile.name = "Profile 17";
         profile.professions.push(SeniorA);
         profiles.push(profile);
-        profile = new Profile();profile.id = "18"; profile.name = "Profile 18";
-        profile.professions.push(SeniorA);
-        profiles.push(profile);
+        // profile = new Profile();profile.id = "18"; profile.name = "Profile 18";
+        // profile.professions.push(SeniorA);
+        // profiles.push(profile);
         profile = new Profile();profile.id = "19"; profile.name = "Profile 19";
         profile.professions.push(SeniorA);
         profiles.push(profile);
@@ -147,9 +147,9 @@ export class GeneticEnviroment {
         profile = new Profile();profile.id = "23"; profile.name = "Profile 23";
         profile.professions.push(SeniorC);
         profiles.push(profile);
-        profile = new Profile();profile.id = "24"; profile.name = "Profile 24";
-        profile.professions.push(SeniorC);
-        profiles.push(profile);
+        // profile = new Profile();profile.id = "24"; profile.name = "Profile 24";
+        // profile.professions.push(SeniorC);
+        // profiles.push(profile);
 
         var solution = GEV.run(profiles, rooms);
 

@@ -25,7 +25,6 @@ export class ScheduleService {
       this.state = ServiceState.ready;
 
       for(let day of this.dayNames) {
-        weeklySchedule.days[day] = Object.assign(new DailySchedule(), weeklySchedule.days[day]);
         let dailySchedule = weeklySchedule.days[day];
 
         this.fixDailySchedule(dailySchedule);

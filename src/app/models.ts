@@ -6,10 +6,14 @@ export class Tag {
 }
 
 export class Profile implements IStateObject {
-    id : string | number;
+    id : string;
     name: string;
     professions: Tag[] = [];
     profilePic:string;
+
+    isEmpty(): boolean {
+        return this.id.indexOf("EMPTY") != -1;
+    }
 }
 
 export class Room implements IStateObject {

@@ -1,5 +1,5 @@
 import {Injectable, Inject, forwardRef} from '@angular/core';
-import {Profile, Tag, Room, Condition, WeeklySchedule} from '../models';
+import {Profile, Tag, Room, Condition, WeeklySchedule, DailySchedule} from '../models';
 import { HttpClient } from '@angular/common/http';
 import { CacheService } from './cache.service';
 
@@ -11,8 +11,13 @@ export interface IStateObject {
   id:string | number;
 }
 
+interface ApiControllerRoute {
+  path: string;
+}
+
 interface ApiConfig {
   controller : string;
+  routes: Array<ApiControllerRoute>;
 }
 
 class StateMap {
@@ -64,9 +69,9 @@ export class StateService
     this.serviceMap.set(Tag, {
       data : this.appState.tags,
       cacheName : 'tags',
-      apiConfig :  { controller : 'tags' },
+      apiConfig :  { controller : 'tags', routes: [] },
       mapToState: data => {
-        let dataCopy = Object.assign([], data);
+        let dataCopy = Object.assign([], data).map(dc => Object.assign(new Tag(), dc));
         this.appState.tags.length = 0;
         this.appState.tags.push(...dataCopy);
         return this.appState.tags;
@@ -76,9 +81,9 @@ export class StateService
     this.serviceMap.set(Profile, {
       data: this.appState.profiles,
       cacheName : 'profiles',
-      apiConfig : { controller : 'profiles' },
+      apiConfig : { controller : 'profiles', routes: [] },
       mapToState: data => {
-        let dataCopy = Object.assign([], data);
+        let dataCopy = Object.assign([], data).map(dc => Object.assign(new Profile(), dc));
         this.appState.profiles.length = 0;
         this.appState.profiles.push(...dataCopy);
         return this.appState.profiles;
@@ -88,9 +93,9 @@ export class StateService
     this.serviceMap.set(Room, {
       data: this.appState.rooms,
       cacheName : 'rooms',
-      apiConfig : { controller : 'rooms' },
+      apiConfig : { controller : 'rooms', routes: [] },
       mapToState: data => {
-        let dataCopy = Object.assign([], data);
+        let dataCopy = Object.assign([], data).map(dc => Object.assign(new Room(), dc));
         this.appState.rooms.length = 0;
         this.appState.rooms.push(...dataCopy);
         return this.appState.rooms;
@@ -100,9 +105,9 @@ export class StateService
     this.serviceMap.set(Condition, {
       data: this.appState.conditions,
       cacheName : 'conditions',
-      apiConfig : { controller : 'conditions' },
+      apiConfig : { controller : 'conditions', routes: [] },
       mapToState: data => {
-        let dataCopy = Object.assign([], data);
+        let dataCopy = Object.assign([], data).map(dc => Object.assign(new Condition(), dc));
         this.appState.conditions.length = 0;
         this.appState.conditions.push(...dataCopy);
         return this.appState.conditions;
@@ -112,8 +117,15 @@ export class StateService
     this.serviceMap.set(WeeklySchedule, {
       data: this.appState.weeklySchedules,
       cacheName : 'schedule',
-      apiConfig : { controller : 'schedule' },
+      apiConfig : { controller : 'schedule',
+                    routes: []},
       mapToState: (data: WeeklySchedule) => {
+        var keys = Object.keys(data.days)
+
+        keys.forEach(key => {
+          data.days[key] = Object.assign(new DailySchedule(), data.days[key]);
+        });
+
         this.appState.weeklySchedules.set(data.id, data);
         return this.appState.weeklySchedules.get(data.id);
       }
