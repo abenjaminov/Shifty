@@ -40,12 +40,15 @@ app.use('/api/*', (req: Request ,res,next) => {
     // Override json so that the context can be closed
     res.json = function(body?: any) {
         var context = RoutesCommon.getContextFromRequest(req);
-        context.close();
+        if(context)
+        {
+            context.close();
+        }
 
         return realJson.call(this, body);
     };
 
-    (req as any).tenant = "Zedek";
+    (req as any).tenant = "ZedekMC";
 
     DbContext.getContext((req as any).tenant).then(context => {
         req.dbContext = context;
