@@ -1,6 +1,6 @@
 import { Chromosome, Gene, Population } from "./genetic.models";
-import { Profile, Room, ConditionImportance, Tag, Condition } from "../models/models";
-import Enumerable, { IEnumerable } from "linq";
+import { Profile, Room, ConditionImportance, Tag, Condition, ConditionType } from "../models/models";
+import Enumerable, { IEnumerable, IGrouping } from "linq";
 import { DbContext } from "../database/database";
 
 class NormalizedFitness
@@ -168,17 +168,28 @@ export class GeneticEnviroment {
         });
     }
 
-    filterRelevantProfilesForToday(profiles: Profile[]) {
+    fixRooms(rooms: Array<Room>) {
+        let roomsInternal = Object.assign([], rooms);
 
+        for(let room of rooms) {
+            room.conditions = room.conditions.filter(c => c.type != ConditionType.Permanent);
+        }
+
+        return roomsInternal;
     }
 
+
+
     run(profiles: Profile[], rooms: Room[]) : Chromosome | undefined {
-        var crossoverProbability = 0.35;
+        try {
+            var crossoverProbability = 0.35;
         var mutationProbability = 1;
         var elitismRate = 0.2;
 
-        var population = this.generatePopulation(profiles,rooms,20);
-        var maxPopulationFitness = this.calculateMaximumAvailableFitness(profiles, rooms);
+        let roomsInternal = this.fixRooms(rooms);
+
+        var population = this.generatePopulation(profiles,roomsInternal,20);
+        var maxPopulationFitness = this.calculateMaximumAvailableFitness(profiles, roomsInternal);
 
         population.calculateFitness();
         var bestPopulation = new Population(0);
@@ -193,7 +204,7 @@ export class GeneticEnviroment {
                     couple = { chromosome1: population.chromosomes[0], chromosome2: population.chromosomes[1] };
                 }
 
-                couple = this.crossover(couple, crossoverProbability);
+                //couple = this.crossover(couple, crossoverProbability);
 
                 this.mutation(couple.chromosome1, mutationProbability);
                 this.mutation(couple.chromosome2, mutationProbability);
@@ -216,6 +227,11 @@ export class GeneticEnviroment {
         }
 
         var bestChromosome = Enumerable.from(population.chromosomes).orderByDescending((x: { fitness: any; }) => x.fitness).first()
+        }
+        catch(error) {
+            console.log(error);
+        }
+        
 
         return bestChromosome;
     }
@@ -247,7 +263,7 @@ export class GeneticEnviroment {
 
                 if(replacement) {
                     var temp = replacement.profile;
-                    replacement.profile = gene.profile;
+                     replacement.profile = gene.profile;
                     gene.profile = temp;
 
                     mutatedGenes.push(gene);
@@ -285,16 +301,23 @@ export class GeneticEnviroment {
         child2.genes.push(...parent1SecondPart);
         child2.genes.push(...parent2ThirdPart);
 
-        var doubleChild1Ids = Enumerable.from(child1.genes).groupBy((x: Gene ) => x.profile.id).where((x: { count: () => number; }) => x.count() > 1).select((x: { key: () => string; }) => x.key()).toArray();
-        var doubleChild2Ids = Enumerable.from(child2.genes).groupBy((x: Gene ) => x.profile.id).where((x: { count: () => number; }) => x.count() > 1).select((x: { key: () => string; }) => x.key()).toArray();
+        var doubleChild1Indexes = Enumerable.from(child1.genes).select((g,i) => {
+            return {gene: g, index: i}
+        }).groupBy((x: any ) => x.gene.profile.id).where((x: IGrouping<string, any>) => x.count() > 1).
+            selectMany((x: IGrouping<string, any>) => x.toArray().map(a => a.index)).toArray();
+
+        var doubleChild2Indexes = Enumerable.from(child2.genes).select((g,i) => {
+            return {gene: g, index: i}
+        }).groupBy((x: any ) => x.gene.profile.id).where((x: IGrouping<string, any>) => x.count() > 1).
+            selectMany((x: IGrouping<string, any>) => x.toArray().map(a => a.index)).toArray();
 
         var firstChildIndex = 0;
         var secondChildIndex = 0;
 
-        for (let i = 0; i < doubleChild1Ids.length; i++)
+        for (let i = 0; i < doubleChild1Indexes.length; i++)
         {
-            firstChildIndex = Enumerable.from(child1.genes).indexOf((x: Gene ) => x.profile.id == doubleChild1Ids[i]);
-            secondChildIndex = Enumerable.from(child2.genes).indexOf((x: Gene ) => x.profile.id == doubleChild2Ids[i]);
+            firstChildIndex = doubleChild1Indexes[i];
+            secondChildIndex = doubleChild2Indexes[i];
 
             var temp = child2.genes[secondChildIndex].profile;
             child2.genes[secondChildIndex].profile = child1.genes[firstChildIndex].profile;

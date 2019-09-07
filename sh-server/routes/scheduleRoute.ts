@@ -1,8 +1,9 @@
 import { ScheduleService } from "../services/schedule.service";
 import { RoutesCommon } from "./routeCommon";
-import { Profile, Assignment, Room, DailySchedule, Day } from "../models/models";
+import { Profile, Assignment, Room, DailySchedule, Day, ConditionType, Condition } from "../models/models";
 import { GeneticEnviroment } from "../genetics/evniroment";
 import { Router, Request } from "express";
+import Enumerable from 'linq';
 
 var express = require('express');
 var router: Router = express.Router();
@@ -30,19 +31,38 @@ router.get('/run', async (req: Request,res,next) => {
     var assignments: Array<Assignment> = []
 
     for (let index = 0; index < dates.length; index++) {
+        let day = scheduleService.getDayByDate(dates[index]);
+        var permananetProfilesForThisDay = Enumerable.from(rooms).selectMany(r => r.conditions).where(c => c.type == ConditionType.Permanent && c.day == day);
+
+        profileIdsNotAllowedForThisDay = profileIdsNotAllowedForThisDay.concat(permananetProfilesForThisDay.select(c => c.profileId).toArray());
+
         var profilesForThisDay = profiles.filter(p => profileIdsNotAllowedForThisDay.findIndex(pid => pid == p.id) == -1);
         let geneticEnv = new GeneticEnviroment();
 
-        var solutionForThisDay = geneticEnv.run(profilesForThisDay, rooms);
+        var solutionForThisDay = geneticEnv.run(profilesForThisDay, rooms); 
+
+        let roomsDictionary = Enumerable.from(rooms).toDictionary(r => r.id);
 
         for(let gene of solutionForThisDay.genes) {
-            var assignment = new Assignment();
+            let assignment = new Assignment();
             let date = dates[index];
             assignment.date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
             assignment.profileId = gene.profile.id;
             
-            var room = rooms.find(r => r.id == gene.roomId);
-            var condition = room.conditions.find(c => c.importance == gene.importance && c.professionId == gene.profession.id);
+            let room = roomsDictionary.get(gene.roomId);
+            var condition = room.conditions.find((c: Condition) => c.importance == gene.importance && c.professionId == gene.profession.id);
+            assignment.conditionId = condition.id;
+
+            assignments.push(assignment);
+        }
+
+        for(let condition of permananetProfilesForThisDay) {
+            let assignment = new Assignment();
+            let date = dates[index];
+
+            assignment.date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            assignment.profileId = condition.profileId;
+
             assignment.conditionId = condition.id;
 
             assignments.push(assignment);
