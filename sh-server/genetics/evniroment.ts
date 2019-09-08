@@ -204,7 +204,7 @@ export class GeneticEnviroment {
                     couple = { chromosome1: population.chromosomes[0], chromosome2: population.chromosomes[1] };
                 }
 
-                //couple = this.crossover(couple, crossoverProbability);
+                couple = this.crossover(couple, crossoverProbability);
 
                 this.mutation(couple.chromosome1, mutationProbability);
                 this.mutation(couple.chromosome2, mutationProbability);
@@ -304,15 +304,35 @@ export class GeneticEnviroment {
         var doubleChild1Indexes = Enumerable.from(child1.genes).select((g,i) => {
             return {gene: g, index: i}
         }).groupBy((x: any ) => x.gene.profile.id).where((x: IGrouping<string, any>) => x.count() > 1).
-            selectMany((x: IGrouping<string, any>) => x.toArray().map(a => a.index)).toArray();
+            selectMany((x: IGrouping<string, any>) => x.toArray().splice(0,1).map(a => a.index)).toArray();
 
         var doubleChild2Indexes = Enumerable.from(child2.genes).select((g,i) => {
             return {gene: g, index: i}
         }).groupBy((x: any ) => x.gene.profile.id).where((x: IGrouping<string, any>) => x.count() > 1).
-            selectMany((x: IGrouping<string, any>) => x.toArray().map(a => a.index)).toArray();
+            selectMany((x: IGrouping<string, any>) => x.toArray().splice(0,1).map(a => a.index)).toArray();
 
         var firstChildIndex = 0;
         var secondChildIndex = 0;
+
+        let moreDoubles: Array<number>, lessDoubles: Array<number>;
+        let moreDoublesChild: Chromosome, lessDoublesChild : Chromosome;
+
+        if(doubleChild1Indexes.length > doubleChild2Indexes.length) {
+            moreDoubles = doubleChild1Indexes;
+            lessDoubles = doubleChild2Indexes;
+
+            moreDoublesChild = child1;
+            lessDoublesChild = child2;
+        }
+        else {
+            moreDoubles = doubleChild2Indexes;
+            lessDoubles = doubleChild1Indexes;
+
+            moreDoublesChild = child2;
+            lessDoublesChild = child1;
+        }
+
+        // TODO : Transfer profiles between genes
 
         for (let i = 0; i < doubleChild1Indexes.length; i++)
         {
