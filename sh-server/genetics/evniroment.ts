@@ -183,50 +183,51 @@ export class GeneticEnviroment {
     run(profiles: Profile[], rooms: Room[]) : Chromosome | undefined {
         try {
             var crossoverProbability = 0.35;
-        var mutationProbability = 1;
-        var elitismRate = 0.2;
+            var mutationProbability = 1;
+            var elitismRate = 0.2;
 
-        let roomsInternal = this.fixRooms(rooms);
+            let roomsInternal = this.fixRooms(rooms);
 
-        var population = this.generatePopulation(profiles,roomsInternal,20);
-        var maxPopulationFitness = this.calculateMaximumAvailableFitness(profiles, roomsInternal);
-
-        population.calculateFitness();
-        var bestPopulation = new Population(0);
-
-        while(population.fitness < maxPopulationFitness) {
-            var newPopulation = new Population(population.generation + 1);
-
-            while(newPopulation.chromosomes.length < population.chromosomes.length) {
-                var couple = this.selection(population);
-
-                if(!couple) {
-                    couple = { chromosome1: population.chromosomes[0], chromosome2: population.chromosomes[1] };
-                }
-
-                couple = this.crossover(couple, crossoverProbability);
-
-                this.mutation(couple.chromosome1, mutationProbability);
-                this.mutation(couple.chromosome2, mutationProbability);
-
-                newPopulation.chromosomes.push(couple.chromosome1, couple.chromosome2);
-            }
-
-            newPopulation.calculateFitness();
-
-            newPopulation = this.elitism(population, newPopulation, elitismRate);
-
-            population = newPopulation;
+            var population = this.generatePopulation(profiles,roomsInternal,20);
+            var maxPopulationFitness = this.calculateMaximumAvailableFitness(profiles, roomsInternal);
 
             population.calculateFitness();
+            var bestPopulation = new Population(0);
 
-            console.log("Generation : " + population.generation + " Fitness : " + population.fitness);
+            while(population.fitness < maxPopulationFitness) {
+                var newPopulation = new Population(population.generation + 1);
 
-            if (population.fitness > bestPopulation.fitness)
-                    bestPopulation = population;
-        }
+                while(newPopulation.chromosomes.length < population.chromosomes.length) {
+                    var couple = this.selection(population);
 
-        var bestChromosome = Enumerable.from(population.chromosomes).orderByDescending((x: { fitness: any; }) => x.fitness).first()
+                    if(!couple) {
+                        couple = { chromosome1: population.chromosomes[0], chromosome2: population.chromosomes[1] };
+                    }
+
+                    couple = this.crossover(couple, crossoverProbability);
+
+                    this.mutation(couple.chromosome1, mutationProbability);
+                    this.mutation(couple.chromosome2, mutationProbability);
+
+                    newPopulation.chromosomes.push(couple.chromosome1, couple.chromosome2);
+                }
+
+                newPopulation.calculateFitness();
+
+                newPopulation = this.elitism(population, newPopulation, elitismRate);
+
+                population = newPopulation;
+
+                population.calculateFitness();
+
+                console.log("Generation : " + population.generation + " Fitness : " + population.fitness);
+
+                if (population.fitness > bestPopulation.fitness)
+                        bestPopulation = population;
+            }
+
+            var bestChromosome = Enumerable.from(population.chromosomes).orderByDescending((x: { fitness: any; }) => x.fitness).first();
+            bestChromosome.genes = Enumerable.from(bestChromosome.genes).where(g => !g.isEmpty).toArray();
         }
         catch(error) {
             console.log(error);
@@ -234,6 +235,15 @@ export class GeneticEnviroment {
         
 
         return bestChromosome;
+    }
+
+    private printGene(gene: Gene) {
+        var matches = gene.profile.professions.find(p => p.id == gene.profession.id);
+        var geneString = (matches ? "MATCHES" : "DOESNT MATCH") + " -- Profession: " + gene.profession.name;
+        var profileProfessions = gene.profile.professions.map(p => p.name).join(",");
+
+        geneString += " Profile Professions: " + profileProfessions;
+        console.log(geneString);
     }
 
     elitism(oldPopulation: Population, newPopulation: Population, elitismRate: number): Population {
@@ -253,7 +263,7 @@ export class GeneticEnviroment {
     mutation(chromosome: Chromosome, mutationProbability: number) {
         var mutatedGenes: Gene[] = [];
 
-        var notGoodOrNiceToHaveGenes = Enumerable.from(chromosome.genes).where((g: Gene) => !g.isGood() || g.importance == ConditionImportance.NiceToHave);
+        var notGoodOrNiceToHaveGenes = Enumerable.from(chromosome.genes).where((g: Gene) => !g.isGood());
 
         for(let gene of notGoodOrNiceToHaveGenes) {
             var random = Math.random();
@@ -304,35 +314,15 @@ export class GeneticEnviroment {
         var doubleChild1Indexes = Enumerable.from(child1.genes).select((g,i) => {
             return {gene: g, index: i}
         }).groupBy((x: any ) => x.gene.profile.id).where((x: IGrouping<string, any>) => x.count() > 1).
-            selectMany((x: IGrouping<string, any>) => x.toArray().splice(0,1).map(a => a.index)).toArray();
+            selectMany((x: IGrouping<string, any>) => x.toArray().map(a => a.index)).toArray();
 
         var doubleChild2Indexes = Enumerable.from(child2.genes).select((g,i) => {
             return {gene: g, index: i}
         }).groupBy((x: any ) => x.gene.profile.id).where((x: IGrouping<string, any>) => x.count() > 1).
-            selectMany((x: IGrouping<string, any>) => x.toArray().splice(0,1).map(a => a.index)).toArray();
+            selectMany((x: IGrouping<string, any>) => x.toArray().map(a => a.index)).toArray();
 
         var firstChildIndex = 0;
         var secondChildIndex = 0;
-
-        let moreDoubles: Array<number>, lessDoubles: Array<number>;
-        let moreDoublesChild: Chromosome, lessDoublesChild : Chromosome;
-
-        if(doubleChild1Indexes.length > doubleChild2Indexes.length) {
-            moreDoubles = doubleChild1Indexes;
-            lessDoubles = doubleChild2Indexes;
-
-            moreDoublesChild = child1;
-            lessDoublesChild = child2;
-        }
-        else {
-            moreDoubles = doubleChild2Indexes;
-            lessDoubles = doubleChild1Indexes;
-
-            moreDoublesChild = child2;
-            lessDoublesChild = child1;
-        }
-
-        // TODO : Transfer profiles between genes
 
         for (let i = 0; i < doubleChild1Indexes.length; i++)
         {
@@ -418,7 +408,7 @@ export class GeneticEnviroment {
     generatePopulation(profiles: Profile[], rooms: Room[], numberOfChromosomes: number) {
         var result = new Population(0);
 
-        var geneTemplates = this.getGeneTemplates(rooms);
+        var geneTemplates = this.getGeneTemplates(rooms, profiles.length);
 
         var missingProfiles = geneTemplates.length - profiles.length;
         var emptyProfiles: Profile[] = [];
@@ -459,7 +449,7 @@ export class GeneticEnviroment {
         return result;
     }
 
-    getGeneTemplates(rooms: Room[]) {
+    getGeneTemplates(rooms: Room[], numOfProfiles: number) {
         var geneTemplates: Gene[] = [];
 
         for(let room of rooms) {
@@ -469,6 +459,16 @@ export class GeneticEnviroment {
 
                     geneTemplates.push(geneTemplate);
                 }
+            }
+        }
+
+        if(geneTemplates.length < numOfProfiles) {
+            let diff = numOfProfiles - geneTemplates.length;
+
+            for (let index = 0; index < diff; index++) {
+                let emptyGene = Gene.Empty(index);
+
+                geneTemplates.push(emptyGene);
             }
         }
 

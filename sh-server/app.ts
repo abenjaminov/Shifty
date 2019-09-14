@@ -57,7 +57,7 @@ app.use('/api/*', (req: Request ,res,next) => {
 
         next();
     }).catch(error => {
-        res.status(500).json("Error establishing connection");
+        res.status(500).json("Error establishing connection and context");
     });
 })
 

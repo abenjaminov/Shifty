@@ -15,6 +15,16 @@ export class Gene {
     isGood() {
         return this.profile.professions.find((x:Tag) => x.id == this.profession.id) != undefined;
     }
+
+    get isEmpty() {
+        return this.roomId === -1;
+    }
+
+    static Empty(number: number): Gene {
+        var gene = new Gene(-1,Tag.Empty(), undefined, undefined, 0);
+
+        return gene;
+    }
 }
 
 export class Chromosome {
@@ -22,17 +32,15 @@ export class Chromosome {
     fitness: number = 0;
 
     findGeneForSwitch(geneToSwitch: Gene): Gene | undefined {
-        var availableGenes = this.genes.filter(g => !g.isGood() || g.importance == ConditionImportance.NiceToHave);
+        var availableGenes = this.genes.filter(g => !g.isGood());
 
         for(let gene of availableGenes) {
             if(gene != geneToSwitch) {
-                var sourceHasProfession = geneToSwitch.profile.professions.find((p:Tag) => gene.profession.id == p.id);
                 var candidateHasProfession = gene.profile.professions.find((p:Tag) => geneToSwitch.profession.id == p.id);
 
-                if((geneToSwitch.profile.isEmpty || sourceHasProfession) && 
-                    (gene.profile.isEmpty || candidateHasProfession)) {
+                if((gene.profile.isEmpty || candidateHasProfession)) {
                         return gene;
-                    }
+                }
             }
         }
 

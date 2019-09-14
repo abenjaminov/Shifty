@@ -183,6 +183,17 @@ export class Profile {
 export class Tag {
     @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping, dbColumnName: "id", type: MappingType.number, isPrimaryKey:true }) id! : number;
     @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "name", type: MappingType.string, isPrimaryKey:false }) name!: string;
+
+    private static emptyTag: Tag;
+    static Empty(): Tag {
+        if(!Tag.emptyTag) {
+            Tag.emptyTag = new Tag();
+            Tag.emptyTag.id = -1;
+            Tag.emptyTag.name = "Empty Tag";
+        }
+
+        return Tag.emptyTag;
+    }
 }
 
 @Table("Rooms")

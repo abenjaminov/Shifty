@@ -32,9 +32,9 @@ router.get('/run', async (req: Request,res,next) => {
 
     for (let index = 0; index < dates.length; index++) {
         let day = scheduleService.getDayByDate(dates[index]);
-        var permananetProfilesForThisDay = Enumerable.from(rooms).selectMany(r => r.conditions).where(c => c.type == ConditionType.Permanent && c.day == day);
+        var permananetProfilesForThisDay = Enumerable.from(rooms).selectMany(r => r.conditions).where(c => c.type === ConditionType.Permanent && c.day == day).toArray();
 
-        profileIdsNotAllowedForThisDay = profileIdsNotAllowedForThisDay.concat(permananetProfilesForThisDay.select(c => c.profileId).toArray());
+        profileIdsNotAllowedForThisDay = profileIdsNotAllowedForThisDay.concat(permananetProfilesForThisDay.map(c => c.profileId));
 
         var profilesForThisDay = profiles.filter(p => profileIdsNotAllowedForThisDay.findIndex(pid => pid == p.id) == -1);
         let geneticEnv = new GeneticEnviroment();
