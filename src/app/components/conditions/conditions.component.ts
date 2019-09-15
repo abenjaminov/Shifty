@@ -178,15 +178,16 @@ export class ConditionsComponent implements OnInit {
     condition.amount = 1;
 
     if(this.selectedConditionType.id == ConditionType.Room) {
-      condition.roomId = this.selectedRoom.id,
-      condition.professionId = this.selectedTag.id,
-      condition.importance = ConditionImportance[this.conditionImportances[this.selectedImportanceIndex]]
+      condition.roomId = this.selectedRoom.id;
+      condition.professionId = this.selectedTag.id;
+      condition.importance = ConditionImportance[this.conditionImportances[this.selectedImportanceIndex]];
     }
     else if (this.selectedConditionType.id == ConditionType.Permanent) {
       condition.roomId = this.selectedRoom.id;
       condition.profileId = this.selectedProfile.id.toString();
+      condition.professionId = this.selectedTag.id;
       condition.day = Day[this.selectedDay.id];
-      condition.importance = ConditionImportance[this.conditionImportances[this.selectedImportanceIndex]]
+      condition.importance = ConditionImportance[this.conditionImportances[this.selectedImportanceIndex]];
     }
     else if(this.selectedConditionType.id == ConditionType.Rotation) {
       

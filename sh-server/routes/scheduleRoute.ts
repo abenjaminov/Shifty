@@ -32,14 +32,16 @@ router.get('/run', async (req: Request,res,next) => {
 
     for (let index = 0; index < dates.length; index++) {
         let day = scheduleService.getDayByDate(dates[index]);
-        var permananetProfilesForThisDay = Enumerable.from(rooms).selectMany(r => r.conditions).where(c => c.type === ConditionType.Permanent && c.day == day).toArray();
+        var permanentConditionsForThisDay = Enumerable.from(rooms).selectMany(r => r.conditions).where(c => c.type === ConditionType.Permanent && c.day == day).toArray();
 
-        profileIdsNotAllowedForThisDay = profileIdsNotAllowedForThisDay.concat(permananetProfilesForThisDay.map(c => c.profileId));
+        profileIdsNotAllowedForThisDay = profileIdsNotAllowedForThisDay.concat(permanentConditionsForThisDay.map(c => c.profileId));
 
         var profilesForThisDay = profiles.filter(p => profileIdsNotAllowedForThisDay.findIndex(pid => pid == p.id) == -1);
         let geneticEnv = new GeneticEnviroment();
 
-        var solutionForThisDay = geneticEnv.run(profilesForThisDay, rooms); 
+        let roomsForDay = prepRoomsForRun(rooms, permanentConditionsForThisDay);
+
+        var solutionForThisDay = geneticEnv.run(profilesForThisDay, roomsForDay); 
 
         let roomsDictionary = Enumerable.from(rooms).toDictionary(r => r.id);
 
@@ -56,7 +58,7 @@ router.get('/run', async (req: Request,res,next) => {
             assignments.push(assignment);
         }
 
-        for(let condition of permananetProfilesForThisDay) {
+        for(let condition of permanentConditionsForThisDay) {
             let assignment = new Assignment();
             let date = dates[index];
 
@@ -83,13 +85,38 @@ router.get('/run', async (req: Request,res,next) => {
     }
 });
 
+var prepRoomsForRun = (rooms: Array<Room>, permanentConditionsForThisDay: Array<Condition>) => {
+    let roomsInternal: Array<Room> = Object.assign([], rooms.map(r => Object.assign({}, r)));
+
+    for(let room of roomsInternal) {
+        room.conditions = room.conditions.filter(c => c.type != ConditionType.Permanent);
+    }
+
+    for(let permanentCondition of permanentConditionsForThisDay) {
+        let room = roomsInternal.find(r => r.id == permanentCondition.roomId);
+
+        if(!room) {
+            // TODO : Log Error
+        }
+        else {
+            let conditionWithSameProfession = room.conditions.find(c => c.professionId == permanentCondition.professionId);
+
+            if(conditionWithSameProfession) {
+                room.conditions = room.conditions.filter(x => x.id != conditionWithSameProfession.id)
+            }
+        }
+    }
+
+    return roomsInternal;
+}
+
 router.get('/test', async (req,res,next) => {
     var solution = GeneticEnviroment.test();
 
     res.json(solution);
 });
 
-router.get('/:date?', (req,res,next) => {
+router.get('/:date?', async (req,res,next) => {
     let scheduleService = new ScheduleService(RoutesCommon.getContextFromRequest(req));
 
     var firstDate = undefined;
@@ -99,9 +126,9 @@ router.get('/:date?', (req,res,next) => {
         firstDate = new Date(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2]));
     }
 
-    scheduleService.getWeeklySchedule(firstDate).then(x => {
-        res.send({data : x});
-    })
+    let weeklySchedule = await scheduleService.getWeeklySchedule(firstDate)
+    
+    res.json({data : weeklySchedule});
 });
 
 

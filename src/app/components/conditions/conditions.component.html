@@ -15,7 +15,7 @@
             <sh-dropdown [options]="days" [(selectedOption)]="selectedDay"></sh-dropdown>
           </div>
         </div>
-        <div class="condition-profession condition-property" *ngIf="selectedConditionType && selectedConditionType.id == 'Room'">
+        <div class="condition-profession condition-property" *ngIf="selectedConditionType && (selectedConditionType.id == 'Room' || selectedConditionType.id == 'Permanent')">
             <div class="title">Profession:</div>
             <sh-dropdown [options]="tags" [(selectedOption)]="selectedTag"></sh-dropdown>
         </div>

@@ -168,15 +168,7 @@ export class GeneticEnviroment {
         });
     }
 
-    fixRooms(rooms: Array<Room>) {
-        let roomsInternal = Object.assign([], rooms);
-
-        for(let room of rooms) {
-            room.conditions = room.conditions.filter(c => c.type != ConditionType.Permanent);
-        }
-
-        return roomsInternal;
-    }
+    
 
 
 
@@ -186,10 +178,8 @@ export class GeneticEnviroment {
             var mutationProbability = 1;
             var elitismRate = 0.2;
 
-            let roomsInternal = this.fixRooms(rooms);
-
-            var population = this.generatePopulation(profiles,roomsInternal,20);
-            var maxPopulationFitness = this.calculateMaximumAvailableFitness(profiles, roomsInternal);
+            var population = this.generatePopulation(profiles,rooms,20);
+            var maxPopulationFitness = this.calculateMaximumAvailableFitness(profiles, rooms);
 
             population.calculateFitness();
             var bestPopulation = new Population(0);
