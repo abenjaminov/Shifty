@@ -5,11 +5,19 @@ export class Tag {
     name: string;
 }
 
+export class Absence {
+    id: number;
+    profileId: string;
+    startDate: Date;
+    endDate: Date;
+}
+
 export class Profile implements IStateObject {
     id : string;
     name: string;
     professions: Tag[] = [];
     profilePic:string;
+    absences: Absence[] = [];
 
     isEmpty(): boolean {
         return this.id.indexOf("EMPTY") != -1;

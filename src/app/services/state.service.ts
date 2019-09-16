@@ -139,7 +139,7 @@ export class StateService
   async fetch<RT>(T: IConstructor) : Promise<RT> {
       this.appState.appStatus = AppStatus.loading;
 
-    let result = await this.fetchInternal(T).catch(error => {
+    let result = await this.fetchInternal<RT>(T).catch(error => {
         // TODO : Display error
         console.error(error);
         return undefined;

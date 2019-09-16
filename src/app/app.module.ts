@@ -18,6 +18,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { LoadingComponent } from './components/loading/loading.component';
 import { ConditionsComponent } from './components/conditions/conditions.component';
 import { ToggleComponent } from './components/toggle/toggle.component'
+import {NoopAnimationsModule} from "@angular/platform-browser/animations";
+import {MatDatepickerModule} from "@angular/material/datepicker";
+import {MatInputModule} from "@angular/material/input";
+import {MatNativeDateModule} from "@angular/material/core";
 
 @NgModule({
   declarations: [
@@ -38,7 +42,11 @@ import { ToggleComponent } from './components/toggle/toggle.component'
     SHGridModule,
     RouterModule,
     AngularFontAwesomeModule,
-    HttpClientModule
+    HttpClientModule,
+    NoopAnimationsModule,
+    MatDatepickerModule,
+    MatInputModule,
+    MatNativeDateModule
   ],
   providers: [StateService, NavigationService],
   bootstrap: [AppComponent]

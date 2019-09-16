@@ -357,21 +357,23 @@ export class DbContext {
 
             // Build delete from connection table
             // --> Delete ProfilesProfessions (connTable) WHERE ProfileId (connToMainProp) = typetoText(item[primaryKey])
-            var ownKeys = Reflect.ownKeys(oneToManyPropMappings);
-            var deleteQuery = "DELETE FROM ";
+            var ownKeys = Reflect.ownKeys(oneToManyPropMappings).filter(ownKey => oneToManyPropMappings[ownKey.toString()].db.connTable != oneToManyPropMappings[ownKey.toString()].db.sourceTable);
 
             var mainPrimaryKeyMapping: ISimpleMapping = simpleMappedProps[mainPrimaryJsonKey];
 
+            let deletePromises = [];
+
             for(let key of ownKeys) {
                 var oneToManyMapping: IOneToManyDbMapping = oneToManyPropMappings[key.toString()].db;
+
                 var typeText = this.getDbValueText(mainPrimaryKeyMapping.type, item[mainPrimaryJsonKey]);
-                deleteQuery += `${oneToManyMapping.connTable} WHERE ${oneToManyMapping.connToMainProp} = ${typeText}`;
+                let deleteQuery = `DELETE FROM ${oneToManyMapping.connTable} WHERE ${oneToManyMapping.connToMainProp} = ${typeText}`;
+
+                deletePromises.push(this.deleteQueryToPromise(deleteQuery));
             }
 
             // Execute delete
-            this.connection.query(deleteQuery, (err,result) => {
-                if(err) reject(err);
-
+            Promise.all(deletePromises).then((result) => {
                 // Build insert connection table
                 // INSERT INTO ProfilesProfessions (connTable) VALUES(ProfileId [primaryKey value text], ProfessionId [primary key value text])
 
@@ -410,10 +412,24 @@ export class DbContext {
                         }
                     });
                 }
+            }).catch(err => {
+                reject(err);
             })
         });
 
         return updateOneToManyPromise;
+    }
+
+    deleteQueryToPromise(deleteQuery: string): Promise<any> {
+        let result = new Promise((resolve, reject) => {
+            this.connection.query(deleteQuery, (err, result) => {
+                if(err) reject(err);
+
+                resolve(result);
+            })
+        })
+
+        return result;
     }
 
     getDbValueText(mappingType: MappingType, value: any): string {

@@ -158,11 +158,52 @@ var profileProfessionsMapping: IOneToManyMapping = {
     }
 }
 
+var profileAbsenceMapping: IOneToManyMapping = {
+    descriminator: InterfaceDescriminator.IOneToManyMapping,
+    jsonProperty: "absences",
+    sourceType: "Absence",
+    db : {
+        descriminator: InterfaceDescriminator.IOneToManyDbMapping,
+        sourceTable: "Absences",
+        sourceProp: "id",
+        sourceAlias: "abs",
+        sourceAdditionalData: ["profileId", "startDate", "endDate"],
+
+        connTable: "Absences",
+        connAlias: "conn_abs",
+        connToSourceProp: "id",
+        connToMainProp: "profileId"
+    },
+    toItemsMap: (primaryKeyValues: string[], results: any[]) => {
+        var map: Map<string, Absence[]> = new Map<string, Absence[]>();
+
+        for(let id of primaryKeyValues) {
+            var absences = results.filter(x => x.id == id && x["abs_id"] != null);
+            var absenceInstances: Absence[] = [];
+            for(let abstence of absences) {
+                let absInstance: Absence = {
+                    id : abstence["abs_id"],
+                    profileId : abstence["abs_profileId"],
+                    startDate : abstence["abs_startDate"],
+                    endDate : abstence["abs_endDate"]
+                }
+                absenceInstances.push(absInstance);
+            }
+
+            map.set(id, absenceInstances);
+        }
+
+        return map;
+    }
+}
+
 @Table("Profiles")
 export class Profile {
     @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "id", type: MappingType.string, isPrimaryKey:true }) id! : string;
     @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "name", type: MappingType.string, isPrimaryKey:false }) name!: string;
     @Mapped(profileProfessionsMapping) professions: Tag[] = [];
+    @Mapped(profileAbsenceMapping) absences: Absence[] = [];
+
     profilePic:string = "";
 
     get isEmpty() {
@@ -255,11 +296,20 @@ export class Assignment {
     profile: Profile;
 }
 
+@Table("Absences")
+export class Absence {
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "id", type: MappingType.number, isPrimaryKey:true }) id: number;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "profileId", type: MappingType.string }) profileId: string;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "startDate", type: MappingType.date }) startDate: Date;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "endDate", type: MappingType.date }) endDate: Date;
+}
+
 export class TypesHelper {
     static typesMapping: {[typeName:string] : Function} = {"Tag" : Tag,
                                                            "Condition": Condition,
                                                            "Profile" : Profile,
-                                                            "Profession" : Tag};
+                                                            "Profession" : Tag,
+                                                            "Absence" : Absence};
 }
 
 export enum Day {

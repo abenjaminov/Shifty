@@ -23,7 +23,7 @@ router.get('/run', async (req: Request,res,next) => {
 
     var prevDay = lastWeeksSchedule.days[Day.Saturday];
 
-    // TODO : Take care of other conditions such as vacations and more
+    // TODO : Take care of other conditions such as absences and more
     let profileIdsNotAllowedForThisDay = prevDay.assignments.filter(a => a.condition.isLockedForNextDay).map(a => a.profileId);
 
     var dates = scheduleService.getDatesOfWeek();
