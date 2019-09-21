@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto-js';
 
 export class AuthenticationResult {
     authorized: boolean;
@@ -34,5 +35,9 @@ export class AuthenticationService {
         }
     }
 
-    
+    verifyPassword(rawPassword:string, hashedPassword:string, passPhrase:string) {
+        let decryptedPassword = crypto.AES.decrypt(hashedPassword, passPhrase).toString();
+
+        return rawPassword == decryptedPassword;
+    }    
 }
