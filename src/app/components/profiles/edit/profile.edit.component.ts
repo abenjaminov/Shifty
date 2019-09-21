@@ -1,7 +1,7 @@
 import {Component, forwardRef, Inject, Input} from '@angular/core';
 import { ProfilesService } from 'src/app/services/profiles.service';
 import {ActivatedRoute, Router} from "@angular/router";
-import {Absence, Profile, Tag} from 'src/app/models';
+import {Absence, createEnumList, Day, NonWorkingDay, Profile, Tag} from 'src/app/models';
 import {DropdownOption} from "../../dropdown/dropdown.component";
 import { TagsService } from 'src/app/services/tags.service';
 import { NavigationService } from 'src/app/services/navigation.service';
@@ -15,14 +15,23 @@ import * as Enumerable from 'linq';
     providers: [ProfilesService, TagsService]
   })
   export class ProfileEditComponent {
+    // General Data
     profileToEdit: Profile;
     modifiedProfile : Profile;
-    tags: Tag[] = [];
-    selectedOption: DropdownOption;
 
+    // Professions
+    tags: Tag[] = [];
+    selectedTag: DropdownOption;
+
+    // Absence
     selectedStartDate: Date;
     selectedEndDate: Date;
     nextAbsence: string;
+    today: Date;
+
+    // Working Days
+    nonWorkingDays: Array<any>
+
 
     constructor(
         @Inject(forwardRef(() => ActivatedRoute)) private activatedRoute: ActivatedRoute,
@@ -54,16 +63,25 @@ import * as Enumerable from 'linq';
 
               this.tags = tags.filter(t => profileTagIds.indexOf(t.id) == -1)
 
+              if(!this.today) {
+                  this.today = new Date();
+                  this.today.setHours(0,0,0,0);
+              }
+
               this.setNextAbsence();
+
+              this.nonWorkingDays = createEnumList(Day).map(d => {
+                  return {
+                      isSelected: this.modifiedProfile.nonWorkingDays.find(x => x.day == d) != undefined,
+                      day:d
+                  }
+              });
           }
         })
     }
 
     setNextAbsence() {
-        var today = new Date();
-        today.setHours(0,0,0,0);
-
-        var closestAbs = Enumerable.from(this.modifiedProfile.absences).where(ab => ab.startDate >= today).orderBy(ab => today.getTime() - ab.startDate.getTime()).firstOrDefault(undefined);
+        var closestAbs = Enumerable.from(this.modifiedProfile.absences).where(ab => ab.startDate >= this.today).orderBy(ab => this.today.getTime() - ab.startDate.getTime()).firstOrDefault(undefined);
 
         if(closestAbs) {
             this.nextAbsence = `${closestAbs.startDate.toDateString()} - ${closestAbs.endDate.toDateString()}`
@@ -71,9 +89,9 @@ import * as Enumerable from 'linq';
     }
     
     addProfession() {
-        if(!this.selectedOption) { return; }
+        if(!this.selectedTag) { return; }
 
-        var tag = this.tags.find(tag => tag.id.toString() == this.selectedOption.id);
+        var tag = this.tags.find(tag => tag.id.toString() == this.selectedTag.id);
 
         if(!this.modifiedProfile.professions) {
             this.modifiedProfile.professions = [];
@@ -93,6 +111,15 @@ import * as Enumerable from 'linq';
     }
 
     onSaveClicked() {
+
+        let nonWorkingDaysValues = Enumerable.from(this.nonWorkingDays).where(nwd => nwd.isSelected).select(nwd => nwd.day).toArray().join('');
+
+        let oldNonWorkingDaysValues = Enumerable.from(this.modifiedProfile.nonWorkingDays).select(nwd => nwd.day).toArray().join('');
+
+        if(nonWorkingDaysValues !== oldNonWorkingDaysValues) {
+            this.modifiedProfile.nonWorkingDays = this.nonWorkingDays.filter(nwd => nwd.isSelected).map(nwd => new NonWorkingDay(nwd.day, this.modifiedProfile.id));
+        }
+
         this.profilesService.saveProfile(this.modifiedProfile).then(x => {
           this.navigationService.navigateTo("/profiles");
         });
@@ -111,14 +138,33 @@ import * as Enumerable from 'linq';
     }
 
     submitAbsence() {
+        if(!this.selectedStartDate || !this.selectedEndDate) return;
         var absence = new Absence();
 
-        absence.startDate = this.selectedStartDate;
-        absence.endDate = this.selectedEndDate;
+        absence.startDate = this.toUtcDate(this.selectedStartDate);
+        absence.endDate = this.toUtcDate(this.selectedEndDate);
         absence.profileId = this.modifiedProfile.id;
 
         this.modifiedProfile.absences.push(absence);
 
         this.setNextAbsence();
+
+        this.selectedStartDate = undefined;
+        this.selectedEndDate = undefined;
+    }
+
+    toUtcDate(date: Date) {
+        return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    }
+
+    dateClass = (d: Date) => {
+        const date = d.getDate();
+
+        // Highlight the 1st and 20th day of each month.
+        return Enumerable.from(this.modifiedProfile.absences).any(abs => d >= abs.startDate && d <= abs.endDate) ? 'abscent-date' : undefined;
+    }
+
+    nonWorkingDayClicked(nonWorkingDay: any) {
+        nonWorkingDay.isSelected = !nonWorkingDay.isSelected;
     }
 }

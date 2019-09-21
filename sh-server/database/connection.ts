@@ -3,6 +3,7 @@ import mySql, { Connection, MysqlError } from 'mysql';
 var getConnection = (tenant:string) => {
     var createConnectionPromise = new Promise<Connection> ((resolve, reject) => {
         var connection: Connection = mySql.createConnection({
+            multipleStatements: true,
             host: '35.246.240.151',
             user: 'root',
             password: 'X7yikbxgckx1',

@@ -21,10 +21,9 @@ router.get('/run', async (req: Request,res,next) => {
 
     let lastWeeksSchedule = await scheduleService.getWeeklySchedule(lastWeekDate);
 
-    var prevDay = lastWeeksSchedule.days[Day.Saturday];
+    var prevDayAssignments = Object.assign([], lastWeeksSchedule.days[Day.Saturday].assignments);
 
-    // TODO : Take care of other conditions such as absences and more
-    let profileIdsNotAllowedForThisDay = prevDay.assignments.filter(a => a.condition.isLockedForNextDay).map(a => a.profileId);
+    
 
     var dates = scheduleService.getDatesOfWeek();
 
@@ -32,14 +31,20 @@ router.get('/run', async (req: Request,res,next) => {
 
     for (let index = 0; index < dates.length; index++) {
         let day = scheduleService.getDayByDate(dates[index]);
-        var permanentConditionsForThisDay = Enumerable.from(rooms).selectMany(r => r.conditions).where(c => c.type === ConditionType.Permanent && c.day == day).toArray();
 
+        var permanentConditionsForThisDay = Enumerable.from(rooms).selectMany(r => r.conditions).where(c => c.type === ConditionType.Permanent && c.day == day).toArray();
+        // TODO : Take care of other conditions such as absences and more
+        let profileIdsNotAllowedForThisDay = prevDayAssignments.filter(a => a.condition.isLockedForNextDay).map(a => a.profileId);
         profileIdsNotAllowedForThisDay = profileIdsNotAllowedForThisDay.concat(permanentConditionsForThisDay.map(c => c.profileId));
 
         var profilesForThisDay = profiles.filter(p => profileIdsNotAllowedForThisDay.findIndex(pid => pid == p.id) == -1);
+        profilesForThisDay = Enumerable.from(profilesForThisDay).where(p => Enumerable.from(p.absences).all(abs => !scheduleService.isBetween(dates[index], abs.startDate, abs.endDate))).toArray();
+        profilesForThisDay = Enumerable.from(profilesForThisDay).where(p => Enumerable.from(p.nonWorkingDays).all(nwd => nwd.day != day)).toArray();
         let geneticEnv = new GeneticEnviroment();
 
         let roomsForDay = prepRoomsForRun(rooms, permanentConditionsForThisDay);
+
+        prevDayAssignments = [];
 
         var solutionForThisDay = geneticEnv.run(profilesForThisDay, roomsForDay); 
 
@@ -54,7 +59,9 @@ router.get('/run', async (req: Request,res,next) => {
             let room = roomsDictionary.get(gene.roomId);
             var condition = room.conditions.find((c: Condition) => c.importance == gene.importance && c.professionId == gene.profession.id);
             assignment.conditionId = condition.id;
+            assignment.condition = condition;
 
+            prevDayAssignments.push(assignment);
             assignments.push(assignment);
         }
 
@@ -66,7 +73,9 @@ router.get('/run', async (req: Request,res,next) => {
             assignment.profileId = condition.profileId;
 
             assignment.conditionId = condition.id;
+            assignment.condition = condition;
 
+            prevDayAssignments.push(assignment);
             assignments.push(assignment);
         }
     }
@@ -111,9 +120,9 @@ var prepRoomsForRun = (rooms: Array<Room>, permanentConditionsForThisDay: Array<
 }
 
 router.get('/test', async (req,res,next) => {
-    var solution = GeneticEnviroment.test();
+    //var solution = GeneticEnviroment.test();
 
-    res.json(solution);
+    res.json(["solution","For","The","Genetics"]);
 });
 
 router.get('/:date?', async (req,res,next) => {

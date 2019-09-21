@@ -2,6 +2,9 @@ import {Component, forwardRef, Inject, OnInit} from '@angular/core';
 import {createEnumList, DailySchedule, Day, Profile, Room, WeeklySchedule} from "../../models";
 import {RoomsService} from "../../services/rooms.service";
 import {ScheduleService} from "../../services/schedule.service";
+import {NavigationService} from "../../services/navigation.service";
+import {MatBottomSheet} from "@angular/material/bottom-sheet";
+import {AbsentComponent} from "../absent/absent.component";
 
 @Component({
   selector: 'app-home',
@@ -20,6 +23,8 @@ export class HomeComponent implements OnInit {
   constructor(
       @Inject(forwardRef(() => RoomsService)) private roomsService: RoomsService,
       @Inject(forwardRef(() => ScheduleService)) private scheduleService: ScheduleService,
+      @Inject(forwardRef(() => NavigationService)) private navigationService: NavigationService,
+      @Inject(forwardRef(() => MatBottomSheet)) private _bottomSheet: MatBottomSheet
   ) {
   }
 
@@ -31,24 +36,18 @@ export class HomeComponent implements OnInit {
       this.weeklySchedule = result[1];
 
       this.title = this.weeklySchedule.days[Day.Sunday].dateString + " - " + this.weeklySchedule.days[Day.Saturday].dateString;
-
-      this.mapRoomsPerDayAssignment();
     })
   }
 
-  mapRoomsPerDayAssignment() {
-      // for(let day of this.days) {
-      //   let dailySchedule: DailySchedule = this.weeklySchedule.days[day];
-      //
-      //   for(let room of this.rooms) {
-      //     var assignment = dailySchedule.assignments.find(x => x.condition.roomId == room.id);
-      //     if(assignment) {
-      //       this.assignmentsToRoomAndDay[room.id + "-" + day] = assignment.profile.name;
-      //     }
-      //     else {
-      //       this.assignmentsToRoomAndDay[room.id + "-" + day] = "--";
-      //     }
-      //   }
-      // }
+  profileClicked(profile: Profile) {
+    this.navigationService.navigateTo('/profiles/' + profile.id.toString());
+  }
+
+  onShowAbsent(day: string) {
+    let date = this.weeklySchedule.days[day].date;
+
+    this._bottomSheet.open(AbsentComponent, {
+      data: {day: day, date: date}
+    })
   }
 }

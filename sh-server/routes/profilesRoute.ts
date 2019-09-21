@@ -1,8 +1,9 @@
 import * as express from 'express';
 import { Router } from 'express';
 import { RoutesCommon } from './routeCommon';
-import { Profile, Absence } from '../models/models';
+import { Profile, Absence, NonWorkingDay } from '../models/models';
 import { IFilterStatement } from '../database/database';
+import { toUtcDate } from '../models/helpers';
 
 var router: Router = express.Router(); 
 
@@ -28,8 +29,8 @@ router.get('/:id?', (req , res) => {
 
 router.put('/', async (req , res) => {
   var profile = req.body;
-  
-  // TODO : Fix dates for absences
+
+  fixProfileBeforeSave(profile);
 
   var context = RoutesCommon.getContextFromRequest(req);
   context.connection.beginTransaction();
@@ -37,7 +38,12 @@ router.put('/', async (req , res) => {
   try {
     await context.update(Profile, profile);
     await context.updateOneToManyMappings(Profile, profile);
-    await context.insert(Absence, profile.absences);
+    
+    await context.deleteConnections(Absence, "profileId", profile.id,profile.absences.filter(x => x.id).map(x => x.id));
+    await context.updateOrInsert(Absence, profile.absences);
+
+    await context.deleteConnections(NonWorkingDay, "profileId", profile.id, profile.nonWorkingDays.filter(x => x.id).map(x => x.id));
+    await context.updateOrInsert(NonWorkingDay, profile.nonWorkingDays);
 
     context.connection.commit();
 
@@ -48,5 +54,17 @@ router.put('/', async (req , res) => {
     res.status(500).send();
   }
 })
+
+function fixProfileBeforeSave(profile: any) {
+  if(profile.absences && profile.absences.length > 0) {
+    for(let absence of profile.absences) {
+      let startDate = new Date(absence.startDate);
+      let endDate = new Date(absence.endDate);
+
+      absence.startDate = toUtcDate(startDate);
+      absence.endDate = toUtcDate(endDate);
+    }
+  }
+}
 
 module.exports = router;

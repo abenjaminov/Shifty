@@ -28,3 +28,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     }
 
 }
+
+.abscent-date {
+    > div {
+        background: rgba(186, 178, 181,0.2);
+        border-radius: 50%;
+    }
+}

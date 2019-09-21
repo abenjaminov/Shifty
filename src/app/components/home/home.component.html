@@ -1,23 +1,25 @@
 <div class="sh-home">
     <sh-view [titleText]="title">
         <div class="schedule" viewContent>
-            <div class="row">
-                <div class="title">
+            <div class="row title-row">
+                <div class="cell title">
                     Rooms
                 </div>
                 <div class="cell title" *ngFor="let day of this.days">
-                    {{day}}
+                    <span>{{day}}</span>
+                    <div class="show-absent" (click)="onShowAbsent(day)">Absent</div>
                 </div>
             </div>
             <div>
-               <div class="row room" *ngFor="let room of this.rooms">
-                    <div class="title room-name">
+               <div class="row" *ngFor="let room of this.rooms">
+                    <div class="cell title room-name">
                         {{room.name}}
                     </div>
-                    <div class="cell daily-assignments" *ngFor="let day of this.days">
+                    <div class="cell content" *ngFor="let day of this.days">
                         <div class="assignment" *ngFor="let asgn of this.weeklySchedule.days[day].assignmentsByRoom.get(room.id)">
-                            <div [ngClass]="{'required' : asgn.condition.importance == 'Required', 'nice-to-have' : asgn.condition.importance == 'Nice To Have'}">{{asgn.condition.importance[0]}}</div>
-                            <div class="assignment-text">{{asgn.profile.name}}</div>
+                            <div class="assignment-text" (click)="profileClicked(asgn.profile)"
+                                 [matTooltip]="asgn.condition.importance + ' - ' + asgn.condition.profession.name"
+                                 matTooltipPosition="above">{{asgn.profile.name}}</div>
                         </div>
                     </div>
                </div>

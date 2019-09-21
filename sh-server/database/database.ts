@@ -1,7 +1,8 @@
 import dbConnection from './connection';
-import { Connection, QueryOptions } from 'mysql';
+import { Connection, QueryOptions, Query } from 'mysql';
 import { TypesHelper, twoDigits } from '../models/models';
 import { ReflectionHelper, IOneToManyMapping, ISimpleMapping, MappingType, IOneToManyDbMapping, IMappedPropertiesMetaData, InterfaceDescriminator, IOneToOneMapping } from '../models/reflection';
+import { stringify } from 'querystring';
 
 interface IConstructor {
     [key:string] : any;
@@ -40,13 +41,13 @@ export class DbContext {
         deepSelect: boolean = false, 
         filters: IFilterStatement[] = []): Promise<Array<T>> {
 
-        var selectPromise = new Promise<Array<T>>((resolve, reject) => {
-            var mappedProperties = ReflectionHelper.getMappedProperties(type);
-            var tableName = ReflectionHelper.getTableName(type);
+        let selectPromise = new Promise<Array<T>>((resolve, reject) => {
+            let mappedProperties = ReflectionHelper.getMappedProperties(type);
+            let tableName = ReflectionHelper.getTableName(type);
 
-            var foreignData = Reflect.ownKeys(mappedProperties).map(x => mappedProperties[x.toString()]);
+            let foreignData = Reflect.ownKeys(mappedProperties).map(x => mappedProperties[x.toString()]);
             
-            var primaryDbKey:string = foreignData.find(x => x.isPrimaryKey).dbColumnName;
+            let primaryDbKey:string = foreignData.find(x => x.isPrimaryKey).dbColumnName;
 
             if(!primaryDbKey) {
                 // TODO : Log
@@ -54,11 +55,11 @@ export class DbContext {
                 reject("Context.Select -> No Primary key found for " + tableName);
             }
 
-            var oneToManyMappings: IOneToManyMapping[] = foreignData.filter(x => x.descriminator == InterfaceDescriminator.IOneToManyMapping);            
-            var oneToOneMappings: IOneToOneMapping[] = foreignData.filter(x => x.descriminator == InterfaceDescriminator.IOneToOneMapping);
+            let oneToManyMappings: IOneToManyMapping[] = foreignData.filter(x => x.descriminator == InterfaceDescriminator.IOneToManyMapping);            
+            let oneToOneMappings: IOneToOneMapping[] = foreignData.filter(x => x.descriminator == InterfaceDescriminator.IOneToOneMapping);
 
-            var join = "";
-            var select: Array<string> = [];
+            let join = "";
+            let select: Array<string> = [];
 
             if(withForeignData) {
                 var typeToDeepTypes: Map<string, DeepType> = new Map<string, DeepType>();
@@ -86,18 +87,18 @@ export class DbContext {
                 }
             }
 
-            var simpleMappedProperties = ReflectionHelper.getSimpleMappedProperties(type);
+            let simpleMappedProperties = ReflectionHelper.getSimpleMappedProperties(type);
 
-            var where = '';
+            let where = '';
 
             for(let i = 0; i < filters.length; i++) {
-                var orFilter = filters[i].dataFilters;
+                let orFilter = filters[i].dataFilters;
 
                 for(let j = 0; j < orFilter.length; j++) {
-                    var andFilter = orFilter[j];
+                    let andFilter = orFilter[j];
 
-                    var simpleProp = simpleMappedProperties[andFilter.property];
-                    var dbValueText = this.connection.escape(this.getDbValueText(simpleProp.type, andFilter.value));
+                    let simpleProp = simpleMappedProperties[andFilter.property];
+                    let dbValueText = this.connection.escape(this.getDbValueText(simpleProp.type, andFilter.value, true));
 
                     where += `Z.${simpleProp.dbColumnName} = ${dbValueText}${j < orFilter.length - 1 ? ' AND ' : ''}`;
                 }
@@ -105,7 +106,7 @@ export class DbContext {
                 where += i < filters.length - 1 ? " OR " : "" ;
             }
 
-            var query = `SELECT Z.*${select.length > 0 ? ',' : ''} ${select.join(",")} FROM ${tableName} Z ${join} WHERE ${where == '' ? '1 = 1' : where}`;
+            let query = `SELECT Z.*${select.length > 0 ? ',' : ''} ${select.join(",")} FROM ${tableName} Z ${join} WHERE ${where == '' ? '1 = 1' : where}`;
 
             this.connection.query(query, (err: any, result: Array<T>, fields: any) => {
                 if(err) {
@@ -113,21 +114,21 @@ export class DbContext {
                     reject(err);
                 }
 
-                var distinctResult = this.distinctResult(mappedProperties, primaryDbKey, result);
+                let distinctResult = this.distinctResult(mappedProperties, primaryDbKey, result);
 
                 for(let foreignMap of oneToManyMappings) { 
-                    var items = foreignMap.toItemsMap(distinctResult.map(x => x[primaryDbKey]), result);
+                    let items = foreignMap.toItemsMap(distinctResult.map(x => x[primaryDbKey]), result);
                     distinctResult.forEach(resItem => {
-                        var thisItems = items.get(resItem[primaryDbKey]);
+                        let thisItems = items.get(resItem[primaryDbKey]);
 
                         (resItem as any)[foreignMap.jsonProperty] = thisItems;
                     })
                 }
 
                 for(let oneToOneMapping of oneToOneMappings) {
-                    var itemMap = oneToOneMapping.toItemMap(distinctResult.map(x => x[primaryDbKey]), result);
+                    let itemMap = oneToOneMapping.toItemMap(distinctResult.map(x => x[primaryDbKey]), result);
                     distinctResult.forEach(resItem => {
-                        var thisItem = itemMap.get(resItem[primaryDbKey]);
+                        let thisItem = itemMap.get(resItem[primaryDbKey]);
 
                         (resItem as any)[oneToOneMapping.jsonProperty] = thisItem;
                     })
@@ -139,7 +140,7 @@ export class DbContext {
                         for(let oneToOneMapping of deepType.oneToOneMappings) {
                             let objects = distinctResult.map(dr => dr[deepType.jsonProperty]);
                             if(objects.length > 0) {
-                                var ids: any[];
+                                let ids: any[];
                                 if(Array.isArray(objects[0])) {
                                     ids = objects.map(value => value.map((innerValues: any) => innerValues[deepType.keyDbColumn])).reduce((total: any[], o) => total.concat(o));    
                                 }
@@ -147,18 +148,18 @@ export class DbContext {
                                     ids = objects.map(x => x[deepType.keyDbColumn]);        
                                 }
 
-                                var itemMap = oneToOneMapping.toItemMap(ids, result, deepType.typeAlias);
+                                let itemMap = oneToOneMapping.toItemMap(ids, result, deepType.typeAlias);
 
                                 objects.forEach((resItem: any) => {
                                     if(Array.isArray(resItem)) {
                                         resItem.forEach((innerResItem: any) => {
-                                            var thisItem = itemMap.get(innerResItem[`${deepType.keyDbColumn}`]);
+                                            let thisItem = itemMap.get(innerResItem[`${deepType.keyDbColumn}`]);
             
                                             (innerResItem as any)[oneToOneMapping.jsonProperty] = thisItem;
                                         })
                                     }
                                     else {
-                                        var thisItem = itemMap.get(resItem[`${deepType.typeAlias}_${deepType.keyDbColumn}`]);
+                                        let thisItem = itemMap.get(resItem[`${deepType.typeAlias}_${deepType.keyDbColumn}`]);
             
                                         (resItem as any)[oneToOneMapping.jsonProperty] = thisItem;
                                     }
@@ -238,15 +239,15 @@ export class DbContext {
     }
 
     distinctResult(mappedProperties: IMappedPropertiesMetaData, primaryKey: string, result: any) {
-        var ownKeys = Reflect.ownKeys(mappedProperties);
-        var regularPropertyKeys = ownKeys.filter((x:any) => mappedProperties[x].descriminator == InterfaceDescriminator.ISimpleMapping);
+        let ownKeys = Reflect.ownKeys(mappedProperties);
+        let regularPropertyKeys = ownKeys.filter((x:any) => mappedProperties[x].descriminator == InterfaceDescriminator.ISimpleMapping);
 
-        var items: any[] = Array.from(new Set(result.map((x:any) => x[primaryKey]))).map((pKey:any) => {
-            var resItem = result.find((x:any) => x[primaryKey] == pKey);
-            var mappedItem:any = {};
+        let items: any[] = Array.from(new Set(result.map((x:any) => x[primaryKey]))).map((pKey:any) => {
+            let resItem = result.find((x:any) => x[primaryKey] == pKey);
+            let mappedItem:any = {};
             
             for(let regularPropKey of regularPropertyKeys) {
-                var prop = mappedProperties[regularPropKey.toString()].dbColumnName;
+                let prop = mappedProperties[regularPropKey.toString()].dbColumnName;
 
                 mappedItem[regularPropKey] = resItem[prop];
             }
@@ -257,15 +258,15 @@ export class DbContext {
         return items;
     }
 
-    insert<T>(type: IConstructor, items: any[]): Promise<Array<T>> {
-        var table = ReflectionHelper.getTableName(type);
+    async insert<T>(type: IConstructor, items: any[]): Promise<Array<T>> {
+        if(items.length == 0) { return [] }
+        let table = ReflectionHelper.getTableName(type);
         
-        var values: any[] = [];
+        let values: any[] = [];
 
-        var simpleMappedProps = ReflectionHelper.getSimpleMappedProperties(type);
+        let simpleMappedProps = ReflectionHelper.getSimpleMappedProperties(type);
 
-        var params: string[] = [];
-        var dbProperties:string[] = [];
+        let dbProperties:string[] = [];
         
         for(let prop of Reflect.ownKeys(simpleMappedProps)) {
             if(!simpleMappedProps[prop.toString()].isPrimaryKey) {
@@ -275,67 +276,132 @@ export class DbContext {
 
         for(let item of items) {
             values.push([]);
+            let primaryProp = Reflect.ownKeys(simpleMappedProps).find(smp => simpleMappedProps[smp.toString()].isPrimaryKey).toString();
+
+            if(item[primaryProp] != undefined) {
+                await this.update(type, item);
+            }
 
             for(let prop of Reflect.ownKeys(simpleMappedProps)) {
-                var mappedProp = simpleMappedProps[prop.toString()];
+                let mappedProp = simpleMappedProps[prop.toString()];
                 if(!mappedProp.isPrimaryKey) {
-                    values[values.length - 1].push(item[prop] ? this.getDbValueText(mappedProp.type, item[prop]) : null);
+                    values[values.length - 1].push(item[prop] ? this.getDbValueText(mappedProp.type, item[prop], true) : null);
                 }
             }
         }
 
-        var query = "INSERT INTO " + table + "(" + dbProperties.join(",") + ") VALUES ?";
-        
-        var insertPromise = new Promise<Array<T>>((resolve, reject) => {
-            this.connection.query(query, [values], (err: any, result: any, fields: any) => {
-                if(err) reject(err);
+        let query = "INSERT INTO " + table + "(" + dbProperties.join(",") + ") VALUES ?";
 
-                resolve(result);
-            });
-        });
-    
-        return insertPromise;
+        let result = await this.queryToPromise(query,[values]);
+
+        return result;
     }
 
-    update<T extends IConstructor>(type: T, item: any): Promise<T> {
-        var updatePromise = new Promise<T>((resolve, reject) => {
-            var table = ReflectionHelper.getTableName(type);
+    async updateOrInsert<T extends IConstructor>(type: T, items:Array<any>) {
+        let table = ReflectionHelper.getTableName(type);
 
-            var simpleMappedProps = ReflectionHelper.getSimpleMappedProperties(type);
+        let itemsToInsert: Array<any> = [];
+        let values: any[] = [];
 
-            var set = "";
-            var where = "";
+        let simpleMappedProps = ReflectionHelper.getSimpleMappedProperties(type);
+
+        let updateCommands = [];
+
+        let primaryProp = Reflect.ownKeys(simpleMappedProps).find(smp => simpleMappedProps[smp.toString()].isPrimaryKey).toString();
+
+        if(items.length > 0) {
+            for(let item of items) {
+                values.push([]);
+                if(item[primaryProp] != undefined) {
+                    let updateQuery = await this.update(type, item, true);
+                    updateCommands.push(updateQuery);
+                }
+                else {
+                    itemsToInsert.push(item);
+                }
+            }
+    
+            let promises: Promise<any>[] = [this.queryToPromise(updateCommands.join(' ')), this.insert(type, itemsToInsert)];
+    
+            await Promise.all(promises)
+        }
+
+        return "No Items";
+    }
+
+    async update<T extends IConstructor>(type: T, item: any, returnQueryString?:boolean): Promise<string | Query> {
+            let table = ReflectionHelper.getTableName(type);
+
+            let simpleMappedProps = ReflectionHelper.getSimpleMappedProperties(type);
+
+            let set = [];
+            let where = "";
             
             for(let prop of Reflect.ownKeys(simpleMappedProps)) {
-                var simpleProp: ISimpleMapping = simpleMappedProps[prop.toString()];
+                let simpleProp: ISimpleMapping = simpleMappedProps[prop.toString()];
 
-                var dbValueText = this.getDbValueText(simpleProp.type, item[prop]);
+                let dbValueText = this.getDbValueText(simpleProp.type, item[prop]);
 
-                where = `${simpleProp.dbColumnName} = ${dbValueText}`;
+                if(simpleProp.isPrimaryKey) {
+                    where = `${simpleProp.dbColumnName} = ${dbValueText}`;
+                }
+                else {
+                    set.push(`${simpleProp.dbColumnName} = ${dbValueText}`);
+                }
             }
 
-            var query = `UPDATE ${table} SET ${set} WHERE ${where}`;
-            this.connection.query(query, (err: any, result: any, fields: any) => {
-                resolve(result);
-            });
-        });
-    
-        return updatePromise;
+            let query = `UPDATE ${table} SET ${set.join(',')} WHERE ${where};`;
+
+            if(returnQueryString) {
+                return query;
+            }
+            else {
+                let result = await this.queryToPromise(query);
+
+                return result;
+            }
+    }
+
+    async deleteConnections<T extends IConstructor>(type: T, connProp:string, connValue:any, valuesToKeep?: any[]) {
+        let simpleMappedProps = ReflectionHelper.getSimpleMappedProperties(type);
+        let tableName = ReflectionHelper.getTableName(type);
+
+        let connectionKeyMapping: ISimpleMapping = simpleMappedProps[connProp];
+        let typeText = this.getDbValueText(connectionKeyMapping.type, connValue);
+        let deleteQuery = `DELETE FROM ${tableName} WHERE ${connectionKeyMapping.dbColumnName} = ${typeText}`;
+
+        if(valuesToKeep && valuesToKeep.length > 0) {
+            let primaryJsonKey = Reflect.ownKeys(simpleMappedProps).find(x => simpleMappedProps[x.toString()].isPrimaryKey);
+            primaryJsonKey = primaryJsonKey.toString();
+
+            let primaryKeyMapping: ISimpleMapping = simpleMappedProps[primaryJsonKey];
+
+            let valuesToKeepQueryAddition = [];
+
+            for(let valueToKeep of valuesToKeep) {
+                let addition = `${primaryKeyMapping.dbColumnName} <> ${this.getDbValueText(primaryKeyMapping.type, valueToKeep)}`
+                valuesToKeepQueryAddition.push(addition);
+            }
+
+            deleteQuery += ` AND ${valuesToKeepQueryAddition.join(' AND ')}`;
+        }
+
+        await this.queryToPromise(deleteQuery);
     }
 
     deleteSimple<T extends IConstructor>(type: T, keyValue: any): Promise<T> {
-        var deletePromise = new Promise<T>((resolve, reject) => {
-            var simpleMappedProps = ReflectionHelper.getSimpleMappedProperties(type);
+        let deletePromise = new Promise<T>((resolve, reject) => {
+            let simpleMappedProps = ReflectionHelper.getSimpleMappedProperties(type);
 
-            var primaryJsonKey = Reflect.ownKeys(simpleMappedProps).find(x => simpleMappedProps[x.toString()].isPrimaryKey) || '';
+            let primaryJsonKey = Reflect.ownKeys(simpleMappedProps).find(x => simpleMappedProps[x.toString()].isPrimaryKey) || '';
             primaryJsonKey = primaryJsonKey.toString();
 
-            var tableName = ReflectionHelper.getTableName(type);
+            let tableName = ReflectionHelper.getTableName(type);
 
-            var primaryKeyMapping: ISimpleMapping = simpleMappedProps[primaryJsonKey];
+            let primaryKeyMapping: ISimpleMapping = simpleMappedProps[primaryJsonKey];
 
-            var typeText = this.getDbValueText(primaryKeyMapping.type, keyValue);
-            var deleteQuery = `DELETE FROM ${tableName} WHERE ${primaryKeyMapping.dbColumnName} = ${typeText}`;
+            let typeText = this.getDbValueText(primaryKeyMapping.type, keyValue);
+            let deleteQuery = `DELETE FROM ${tableName} WHERE ${primaryKeyMapping.dbColumnName} = ${typeText}`;
 
             this.connection.query(deleteQuery, (err,result) => {
                 if(err) reject(err);
@@ -348,28 +414,28 @@ export class DbContext {
     }
 
     updateOneToManyMappings<T extends IConstructor>(type: T, item: T): Promise<T> {
-        var updateOneToManyPromise = new Promise<T>((resolve, reject) => {
-            var oneToManyPropMappings = ReflectionHelper.getOneToManyMappedProperties(type);
-            var simpleMappedProps = ReflectionHelper.getSimpleMappedProperties(type);
+        let updateOneToManyPromise = new Promise<T>((resolve, reject) => {
+            let oneToManyPropMappings = ReflectionHelper.getOneToManyMappedProperties(type);
+            let simpleMappedProps = ReflectionHelper.getSimpleMappedProperties(type);
             
-            var mainPrimaryJsonKey = Reflect.ownKeys(simpleMappedProps).find(x => simpleMappedProps[x.toString()].isPrimaryKey) || '';
+            let mainPrimaryJsonKey = Reflect.ownKeys(simpleMappedProps).find(x => simpleMappedProps[x.toString()].isPrimaryKey) || '';
             mainPrimaryJsonKey = mainPrimaryJsonKey.toString();
 
             // Build delete from connection table
             // --> Delete ProfilesProfessions (connTable) WHERE ProfileId (connToMainProp) = typetoText(item[primaryKey])
-            var ownKeys = Reflect.ownKeys(oneToManyPropMappings).filter(ownKey => oneToManyPropMappings[ownKey.toString()].db.connTable != oneToManyPropMappings[ownKey.toString()].db.sourceTable);
+            let ownKeys = Reflect.ownKeys(oneToManyPropMappings).filter(ownKey => oneToManyPropMappings[ownKey.toString()].db.connTable != oneToManyPropMappings[ownKey.toString()].db.sourceTable);
 
-            var mainPrimaryKeyMapping: ISimpleMapping = simpleMappedProps[mainPrimaryJsonKey];
+            let mainPrimaryKeyMapping: ISimpleMapping = simpleMappedProps[mainPrimaryJsonKey];
 
             let deletePromises = [];
 
             for(let key of ownKeys) {
-                var oneToManyMapping: IOneToManyDbMapping = oneToManyPropMappings[key.toString()].db;
+                let oneToManyMapping: IOneToManyDbMapping = oneToManyPropMappings[key.toString()].db;
 
-                var typeText = this.getDbValueText(mainPrimaryKeyMapping.type, item[mainPrimaryJsonKey]);
+                let typeText = this.getDbValueText(mainPrimaryKeyMapping.type, item[mainPrimaryJsonKey]);
                 let deleteQuery = `DELETE FROM ${oneToManyMapping.connTable} WHERE ${oneToManyMapping.connToMainProp} = ${typeText}`;
 
-                deletePromises.push(this.deleteQueryToPromise(deleteQuery));
+                deletePromises.push(this.queryToPromise(deleteQuery));
             }
 
             // Execute delete
@@ -377,27 +443,27 @@ export class DbContext {
                 // Build insert connection table
                 // INSERT INTO ProfilesProfessions (connTable) VALUES(ProfileId [primaryKey value text], ProfessionId [primary key value text])
 
-                var insertsRemaining = 0;
+                let insertsRemaining = 0;
 
                 for(let key of ownKeys) {
-                    var insert = "";
-                    var oneToManyMapping: IOneToManyMapping = oneToManyPropMappings[key.toString()];
+                    let insert = "";
+                    let oneToManyMapping: IOneToManyMapping = oneToManyPropMappings[key.toString()];
                     insert += `INSERT INTO ${oneToManyMapping.db.connTable} (${oneToManyMapping.db.connToMainProp}, ${oneToManyMapping.db.connToSourceProp}) VALUES ?`;
 
-                    var oneToManyMapValues: any[] = item[key.toString()];
+                    let oneToManyMapValues: any[] = item[key.toString()];
 
                     // oneToManyMapping.sourceType
-                    var sourceType = TypesHelper.typesMapping[oneToManyMapping.sourceType];
+                    let sourceType = TypesHelper.typesMapping[oneToManyMapping.sourceType];
                     
-                    var simpleSourceTypeMappings = ReflectionHelper.getSimpleMappedProperties(sourceType);
-                    var sourcePrimaryJsonKey = Reflect.ownKeys(simpleSourceTypeMappings).find(x => simpleSourceTypeMappings[x.toString()].isPrimaryKey) || '';
-                    var sourcePrimaryKeyMapping: ISimpleMapping = simpleSourceTypeMappings[sourcePrimaryJsonKey.toString()]
+                    let simpleSourceTypeMappings = ReflectionHelper.getSimpleMappedProperties(sourceType);
+                    let sourcePrimaryJsonKey = Reflect.ownKeys(simpleSourceTypeMappings).find(x => simpleSourceTypeMappings[x.toString()].isPrimaryKey) || '';
+                    let sourcePrimaryKeyMapping: ISimpleMapping = simpleSourceTypeMappings[sourcePrimaryJsonKey.toString()]
 
-                    var values = [];
+                    let values = [];
 
                     for(let value of oneToManyMapValues) {
-                        var mainValue = item[mainPrimaryJsonKey.toString()];
-                        var sourceValue = value[sourcePrimaryJsonKey];
+                        let mainValue = item[mainPrimaryJsonKey.toString()];
+                        let sourceValue = value[sourcePrimaryJsonKey];
                         values.push([mainValue, sourceValue]);
                     }
                     insertsRemaining++;
@@ -420,9 +486,11 @@ export class DbContext {
         return updateOneToManyPromise;
     }
 
-    deleteQueryToPromise(deleteQuery: string): Promise<any> {
-        let result = new Promise((resolve, reject) => {
-            this.connection.query(deleteQuery, (err, result) => {
+    queryToPromise(query: string, values? : any): Promise<any> {
+        let result = new Promise<any>((resolve, reject) => {
+            if(query == "") { resolve([]) }
+
+            this.connection.query(query,values, (err, result) => {
                 if(err) reject(err);
 
                 resolve(result);
@@ -432,12 +500,12 @@ export class DbContext {
         return result;
     }
 
-    getDbValueText(mappingType: MappingType, value: any): string {
+    getDbValueText(mappingType: MappingType, value: any, raw?: boolean): string {
         if(mappingType == MappingType.string) {
-            return `${value}`;
+            return raw ? `${value}` : `'${value}'`;
         }
         else if (mappingType == MappingType.date) {
-            return `${this.toMysqlFormat(value)}`;
+            return raw ? `${this.toMysqlFormat(value)}` : `'${this.toMysqlFormat(value)}'`;
         }
         else if(mappingType == MappingType.number) {
             return value;
@@ -463,7 +531,7 @@ export class DbContext {
     }
 
     queryValuePromise(options: string, values: any): Promise<any> {
-        var promise = new Promise<any>((resolve, reject) => {
+        let promise = new Promise<any>((resolve, reject) => {
             this.connection.query(options,values, (err, result) => {
                 resolve({err, result});
             })
@@ -472,19 +540,9 @@ export class DbContext {
         return promise;
     }
 
-    queryPromise(options: string): Promise<any> {
-        var promise = new Promise<any>((resolve, reject) => {
-            this.connection.query(options, (err, result) => {
-                resolve({err, result});
-            })
-        })
-
-        return promise;
-    }
-
     static getContext(tenant: string): Promise<DbContext> {
-        var getContextPromise = new Promise<DbContext>((resolve,reject) => {
-            var newContext: DbContext = new DbContext();
+        let getContextPromise = new Promise<DbContext>((resolve,reject) => {
+            let newContext: DbContext = new DbContext();
     
             dbConnection.getConnection(tenant).then((connection : Connection) => {
                 newContext.connection = connection;

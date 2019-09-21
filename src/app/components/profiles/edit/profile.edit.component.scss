@@ -55,9 +55,27 @@
         }
     }
 
-    .profile-secondary-info {
-        border:1px solid black;
+    .non-working-days {
         display: flex;
-        flex:2;
+        flex-direction: row;
+        flex: 1;
+
+        .non-working-day {
+            width: 100px;
+            height: 25px;
+            border: 1px solid black;
+            text-align: center;
+            margin-right: 10px;
+            cursor: pointer;
+
+            &:hover {
+                background: lightgray;
+            }
+
+            &.selected {
+                background: #373737;
+                color:white;
+            }
+        }
     }
 }

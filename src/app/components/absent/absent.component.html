@@ -1,0 +1,9 @@
+<div class="absent">
+  <div class="title">
+    Absent profiles for <span class="date-text">{{'  ' + date.toDateString()}}</span>
+  </div>
+  <div class="absent-profile" *ngFor="let profile of absentProfiles">
+    <span class="profile-name">{{profile.name}}</span>
+    <span class="description" [innerHTML]="profile.text"></span>
+  </div>
+</div>

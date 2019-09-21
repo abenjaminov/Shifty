@@ -9,6 +9,7 @@ import { ScheduleService } from './services/schedule.service';
 import { Router, Request } from "express";
 
 import x from './typings/index';
+import { CacheService } from './services/cache.service';
 
 var pino = require('express-pino-logger')();
 
@@ -28,14 +29,33 @@ app.use(pino);
 
 pino.logger.info("Hello");
 
-// app.use('/test', (req,res,next) => {
-// })
+var freePassRoutes = [
+    '/api/schedule/test',
+    '/api/clearthecacheforthisapp'
+]
+
+app.use('/api/clearthecacheforthisapp', (req,res) => {
+    var cacheService = new CacheService();
+
+    cacheService.clear();
+
+    res.json("Cache clear");
+})
 
 app.use('/api/*', (req: Request ,res,next) => {
     (req as any).log.info("-> " + req.originalUrl);
     
 
     var realJson = res.json;
+
+    if(req.method == "GET") {
+        var cacheService = new CacheService();
+        let result = cacheService.getValue(req.originalUrl)
+        if(result) {
+            res.json(result);
+            return;
+        }
+    }
 
     // Override json so that the context can be closed
     res.json = function(body?: any) {
@@ -45,10 +65,19 @@ app.use('/api/*', (req: Request ,res,next) => {
             context.close();
         }
 
+        if(req.method == "GET") {
+            cacheService.setValue(req.originalUrl, body);
+        }
+
         return realJson.call(this, body);
     };
 
     (req as any).tenant = "ZedekMC";
+
+    if(freePassRoutes.find(x => x === req.originalUrl) != undefined) {
+        next();
+        return;
+    }
 
     DbContext.getContext((req as any).tenant).then(context => {
         req.dbContext = context;

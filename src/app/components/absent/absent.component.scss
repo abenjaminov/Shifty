@@ -1,0 +1,25 @@
+.absent {
+  .title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+
+    .date-text {
+      font-weight: bold;
+      margin-left: 5px;
+    }
+  }
+
+  .absent-profile {
+    display: flex;
+
+    .profile-name {
+      font-size: 14px;
+    }
+
+    .description {
+      margin-left: 10px;
+    }
+  }
+}

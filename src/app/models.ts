@@ -12,12 +12,24 @@ export class Absence {
     endDate: Date;
 }
 
+export class NonWorkingDay {
+    id: number;
+    profileId: string;
+    day: string;
+
+    constructor(day:string, profileId:string, id?:number) {
+        this.day = day;
+        this.profileId = profileId;
+    }
+}
+
 export class Profile implements IStateObject {
     id : string;
     name: string;
     professions: Tag[] = [];
     profilePic:string;
     absences: Absence[] = [];
+    nonWorkingDays: NonWorkingDay[] = [];
 
     isEmpty(): boolean {
         return this.id.indexOf("EMPTY") != -1;

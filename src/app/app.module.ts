@@ -22,6 +22,10 @@ import {NoopAnimationsModule} from "@angular/platform-browser/animations";
 import {MatDatepickerModule} from "@angular/material/datepicker";
 import {MatInputModule} from "@angular/material/input";
 import {MatNativeDateModule} from "@angular/material/core";
+import {MatTooltipModule} from "@angular/material/tooltip";
+import {MatButtonModule} from "@angular/material/button";
+import { AbsentComponent } from './components/absent/absent.component';
+import {MatBottomSheetModule} from "@angular/material/bottom-sheet";
 
 @NgModule({
   declarations: [
@@ -34,7 +38,8 @@ import {MatNativeDateModule} from "@angular/material/core";
     DropdownComponent,
     LoadingComponent,
     ConditionsComponent,
-    ToggleComponent
+    ToggleComponent,
+    AbsentComponent
   ],
   imports: [
     BrowserModule,
@@ -46,8 +51,12 @@ import {MatNativeDateModule} from "@angular/material/core";
     NoopAnimationsModule,
     MatDatepickerModule,
     MatInputModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatTooltipModule,
+    MatButtonModule,
+    MatBottomSheetModule
   ],
+  entryComponents: [AbsentComponent],
   providers: [StateService, NavigationService],
   bootstrap: [AppComponent]
 })

@@ -84,4 +84,18 @@ export class ScheduleService {
 
         return datesOfWeek.map(date => new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())));
     }
+
+    isSameDay(date: Date, date2?: Date) {
+        if(!date2) {
+            date2 = new Date();
+        }
+
+        return date.getFullYear() == date2.getFullYear() && date.getMonth() == date2.getMonth() && date.getDate() == date2.getDate();
+    }
+
+    isBetween(date: Date, startDate: Date, endDate: Date) {
+        let result = date >= startDate && date <= endDate;
+
+        return result;
+    }
 }

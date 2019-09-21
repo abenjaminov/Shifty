@@ -25,7 +25,7 @@
                             </div>
                         </div>
                         <div class="add-professions">
-                           <sh-dropdown [options]="tags" [(selectedOption)]="selectedOption"></sh-dropdown>
+                           <sh-dropdown [options]="tags" [(selectedOption)]="selectedTag"></sh-dropdown>
                             <div class="sh-btn" (click)="addProfession()">
                                 ADD
                             </div>
@@ -37,9 +37,9 @@
                     <div>
                         <span>Start Date</span>
                         <mat-form-field>
-                            <input matInput [matDatepicker]="startDatePicker" placeholder="Absence start date" (dateChange)="this.startDateChanged($event)" disabled>
+                            <input matInput [matDatepicker]="startDatePicker" placeholder="Absence start date" [min]="today" (dateChange)="this.startDateChanged($event)" disabled>
                             <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
-                            <mat-datepicker touchUi #startDatePicker disabled="false"></mat-datepicker>
+                            <mat-datepicker touchUi #startDatePicker disabled="false" [dateClass]="dateClass"></mat-datepicker>
                         </mat-form-field>
                     </div>
 
@@ -48,7 +48,7 @@
                         <mat-form-field>
                             <input matInput [matDatepicker]="endDatePicker" placeholder="Absence end date" [min]="selectedStartDate" (dateChange)="this.endDateChanged($event)" disabled>
                             <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
-                            <mat-datepicker touchUi #endDatePicker disabled="false"></mat-datepicker>
+                            <mat-datepicker touchUi #endDatePicker disabled="false" [dateClass]="dateClass"></mat-datepicker>
                         </mat-form-field>
                     </div>
                     <div class="sh-btn" style="height: 25px;width: 150px;" (click)="submitAbsence()">
@@ -57,6 +57,13 @@
                     <div>
                         Next Absence : {{this.nextAbsence}}
                     </div>
+                </div>
+            </div>
+            <h3>Non Working Days</h3>
+            <div class="non-working-days">
+
+                <div class="non-working-day" *ngFor="let nonWorkingDay of this.nonWorkingDays" [ngClass]="{'selected' : nonWorkingDay.isSelected}" (click)="nonWorkingDayClicked(nonWorkingDay)">
+                    {{nonWorkingDay.day}}
                 </div>
             </div>
             <div class="profile-secondary-info">
