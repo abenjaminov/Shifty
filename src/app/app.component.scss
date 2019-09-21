@@ -5,20 +5,19 @@
 }
 
 .app-grid {
-  display: grid;
-  grid-template-columns: 200px auto;
+  display: flex;
   height: 100vh;
-  background-color: $base-color;
+  background-color: $theme-primary;
 
   .sidebar-container {
-    grid-column: 1;
-    box-shadow: 3px 0px  3px 0px $theme-dark-primary;
+    flex-basis: 200px;
+    box-shadow: 1px 0px  5px 0px $theme-primary;
     background:white;
     z-index: 1;
   }
 
   .content-container {
-    grid-column: 2;
+    flex: 1;
     align-items: center;
     justify-items: center;
     height: 100vh;

@@ -1,10 +1,10 @@
 import { Injectable, Inject, forwardRef } from '@angular/core';
-import { IShService, ServiceState } from './models';
+import { ServiceState } from './models';
 import { Tag, Profile } from '../models';
 import { StateService } from './state.service';
 
 @Injectable()
-export class TagsService implements IShService<Tag> {
+export class TagsService {
   
   state: ServiceState;
 
@@ -13,7 +13,7 @@ export class TagsService implements IShService<Tag> {
   }
 
   constructor(
-    @Inject(forwardRef(() => StateService))  private stateService: StateService
+      private stateService: StateService
     ) { }
 
   load(): Promise<Tag[]> {

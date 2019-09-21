@@ -1,14 +1,14 @@
 import { Injectable, Inject, forwardRef } from '@angular/core';
-import { IShService, ServiceState } from './models';
+import { ServiceState } from './models';
 import {Condition, Profile} from '../models';
 import { StateService, IStateObject } from './state.service';
 
 @Injectable()
-export class ConditionService implements IShService<Condition> {
+export class ConditionService {
   state: ServiceState;
 
   constructor(
-    @Inject(forwardRef(() => StateService))  private stateService: StateService
+      private stateService: StateService
     ) { }
 
   get conditions(): Condition[] {

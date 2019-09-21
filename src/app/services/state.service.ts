@@ -1,7 +1,9 @@
-import {Injectable, Inject, forwardRef} from '@angular/core';
-import {Profile, Tag, Room, Condition, WeeklySchedule, DailySchedule} from '../models';
-import { HttpClient } from '@angular/common/http';
-import { CacheService } from './cache.service';
+import {Injectable} from '@angular/core';
+import {Condition, DailySchedule, Profile, Room, Tag, WeeklySchedule} from '../models';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {CacheService} from './cache.service';
+import {AuthenticationService} from "./authentication.service";
+import {Events, EventsService} from "./events.service";
 
 interface HttpResult {
   data: any;
@@ -29,7 +31,8 @@ class StateMap {
 
 export enum AppStatus {
   loading = "loading",
-  ready = "Ready"
+  ready = "Ready",
+  error = "Error"
 }
 
 class AppState {
@@ -50,19 +53,25 @@ export interface IConstructor {
 })
 export class StateService
 {
-  private appState: AppState = new AppState();
+  public appState: AppState = new AppState();
 
   private serviceMap: Map<IConstructor, StateMap> = new Map<IConstructor,StateMap>();
 
   constructor(
-    @Inject(forwardRef(() => HttpClient)) private httpClient: HttpClient,
-    @Inject(forwardRef(() => CacheService)) private cacheService: CacheService
+    private httpClient: HttpClient,
+    private cacheService: CacheService,
+    private authenticationService: AuthenticationService,
+    private eventsService: EventsService
     ) {
 
     this.initServiceMap();
     this.loadApp();
 
     (window as any).ShState = this.appState;
+
+    this.eventsService.subscribe(Events.LoggedOut, () => {
+      this.appState.appStatus = AppStatus.ready;
+    })
   }
 
   private initServiceMap() {
@@ -140,9 +149,7 @@ export class StateService
       this.appState.appStatus = AppStatus.loading;
 
     let result = await this.fetchInternal<RT>(T).catch(error => {
-        // TODO : Display error
-        console.error(error);
-        return undefined;
+        throw error;
     });
 
       this.appState.appStatus = AppStatus.ready;
@@ -165,13 +172,29 @@ export class StateService
       return cachedData;
     }
 
-    let result: HttpResult = await this.httpClient.get<HttpResult>(url).toPromise<HttpResult>();
+    const headers = this.getHttpHeaders();
+    try {
+      let result: HttpResult = await this.httpClient.get<HttpResult>(url,{headers: headers}).toPromise<HttpResult>();
 
-    cachedData = mappedState.mapToState(result.data)
+      cachedData = mappedState.mapToState(result.data)
 
-    cache.set(url, cachedData);
+      cache.set(url, cachedData);
 
-    return cachedData;
+      return cachedData;
+    } catch (error) {
+      let typedError: HttpErrorResponse = error;
+
+      this.authenticationService.logout(false,"Session expired");
+
+      throw error;
+    }
+  }
+
+  getHttpHeaders() {
+    const headers:any = {};
+    headers.Authorization = `Bearer ${this.authenticationService.authedUserData.token}`;
+
+    return headers;
   }
 
   getState(T: IConstructor): IStateObject[] {

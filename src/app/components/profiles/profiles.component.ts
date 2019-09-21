@@ -1,7 +1,5 @@
 import {Component, forwardRef, Inject, OnInit} from '@angular/core';
-import {ShCellInfo, ShGridColumn} from "../../../shgrid/grid-column/grid-column.component";
 import {ProfilesService} from "../../services/profiles.service";
-import {ShGridActionColumn} from "../../../shgrid/grid-actions-column/grid-actions-column.component";
 import { Profile } from 'src/app/models';
 import {NavigationService} from "../../services/navigation.service";
 
@@ -9,49 +7,49 @@ import {NavigationService} from "../../services/navigation.service";
   selector: 'sh-profiles',
   templateUrl: './profiles.component.html',
   styleUrls: ['./profiles.component.scss'],
-  providers: [ProfilesService]
+  providers: []
 })
 export class ProfilesComponent implements OnInit {
 
-  public actionColumn: ShGridActionColumn;
-  private columns: ShGridColumn[] = [];
+  //public actionColumn: ShGridActionColumn;
+  //private columns: ShGridColumn[] = [];
 
   public profileToEdit: Profile;
 
   constructor(
-      @Inject(forwardRef(() => ProfilesService)) private profilesService: ProfilesService,
-      @Inject(forwardRef(() => NavigationService)) private navigationService: NavigationService
+      private profilesService: ProfilesService,
+      private navigationService: NavigationService
   ) {
 
   }
   ngOnInit() {
-    this.actionColumn = { header: { text: "Edit" }, cellInfos: [] };
+    //this.actionColumn = { header: { text: "Edit" }, cellInfos: [] };
 
-    var nameColumn: ShGridColumn = new ShGridColumn();
-    nameColumn.header = new ShCellInfo();
-    nameColumn.header.text = "Name";
-
-    var professionsColumn = new ShGridColumn();
-    professionsColumn.header = new ShCellInfo();
-    professionsColumn.header.text = "Professions";
+    // var nameColumn: ShGridColumn = new ShGridColumn();
+    // nameColumn.header = new ShCellInfo();
+    // nameColumn.header.text = "Name";
+    //
+    // var professionsColumn = new ShGridColumn();
+    // professionsColumn.header = new ShCellInfo();
+    // professionsColumn.header.text = "Professions";
 
     this.profilesService.load().then(profiles => {
-      this.profileToEdit = profiles[0];
-      profiles.forEach(x => {
-        this.actionColumn.cellInfos.push({
-          actions : [{
-            action: (index) => {
-              this.onEditProfile(this.profilesService.profiles[index]);
-            },
-            icon: "pencil"
-          }]
-        });
-        nameColumn.cellInfos.push({ text: x.name });
-        professionsColumn.cellInfos.push({ text: x.professions.map(p => p.name).join(', ') });
-      })
+      // this.profileToEdit = profiles[0];
+      // profiles.forEach(x => {
+      //   this.actionColumn.cellInfos.push({
+      //     actions : [{
+      //       action: (index) => {
+      //         this.onEditProfile(this.profilesService.profiles[index]);
+      //       },
+      //       icon: "pencil"
+      //     }]
+      //   });
+      //   nameColumn.cellInfos.push({ text: x.name });
+      //   professionsColumn.cellInfos.push({ text: x.professions.map(p => p.name).join(', ') });
+      // })
     });
 
-    this.columns.push(nameColumn, professionsColumn);
+    //this.columns.push(nameColumn, professionsColumn);
   }
 
   onEditProfile(profile: Profile) {

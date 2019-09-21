@@ -17,7 +17,7 @@ export class SidebarComponent implements OnInit {
   @Input() items: SidebarItem[];
   selectedItem:SidebarItem;
 
-  constructor(@Inject(forwardRef(() => Router)) private router: Router) {
+  constructor(private router: Router) {
     router.events.subscribe((event: Event) => {
       if (event instanceof NavigationEnd) {
         var navigationEndEvent = event as NavigationEnd;

@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import {Component, forwardRef, Inject} from '@angular/core';
+import {AuthenticationService} from "./services/authentication.service";
+import {StateService} from "./services/state.service";
 
 @Component({
   selector: 'app-root',
@@ -6,7 +8,7 @@ import { Component } from '@angular/core';
     <div>
       <sh-loading></sh-loading>
       <div class="app-grid">
-        <div class="sidebar-container">
+        <div class="sidebar-container" *ngIf="authenticationService.userAuthorized">
           <sh-sidebar></sh-sidebar>
         </div>
         <div class="content-container">
@@ -19,4 +21,6 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'Shifty';
+
+  constructor(public authenticationService: AuthenticationService, public stateService: StateService) {}
 }

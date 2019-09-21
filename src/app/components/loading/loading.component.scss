@@ -6,8 +6,8 @@
         text-align: center;
         line-height: 150px;
         width: 100px;
-        left: 50%;
-        background-color: $base-color;
+        left: calc(50% - 50px);
+        background-color: $theme-primary;
 }
 
 .lds-roller {
@@ -27,7 +27,7 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: $theme-dark-primary;
+    background: $theme-secondary;
     margin: -3px 0 0 -3px;
   }
   .lds-roller div:nth-child(1) {
@@ -94,4 +94,3 @@
       transform: rotate(360deg);
     }
   }
-  

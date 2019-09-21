@@ -31,11 +31,11 @@
           Add Condition
         </div>
       </div>
-      <div class="conditions-list" *ngIf="conditionsService.state == 'ready' && actionsColumn">
-        <sh-grid>
-          <sh-grid-column *ngFor="let col of this.conditionColumns" [columnSource]="col"></sh-grid-column>
-          <sh-grid-actions-column [columnSource]="actionsColumn"></sh-grid-actions-column>
-        </sh-grid>
+      <div class="conditions-list" *ngIf="conditionsService.state == 'ready'">
+<!--        <sh-grid>-->
+<!--          <sh-grid-column *ngFor="let col of this.conditionColumns" [columnSource]="col"></sh-grid-column>-->
+<!--          <sh-grid-actions-column [columnSource]="actionsColumn"></sh-grid-actions-column>-->
+<!--        </sh-grid>-->
       </div>
     </div>
   </sh-view>

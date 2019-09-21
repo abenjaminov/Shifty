@@ -5,16 +5,13 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HomeComponent } from './components/home/home.component';
-import { SHGridModule } from 'src/shgrid/shgrid.module';
 import { ViewComponent } from './components/view/view.component';
 import { RouterModule} from "@angular/router";
 import { ProfilesComponent } from './components/profiles/profiles.component';
-import { StateService } from './services/state.service';
 import { ProfileEditComponent } from './components/profiles/edit/profile.edit.component';
 import { DropdownComponent } from './components/dropdown/dropdown.component';
-import {NavigationService} from "./services/navigation.service";
 import {AngularFontAwesomeModule} from "angular-font-awesome";
-import { HttpClientModule } from '@angular/common/http';
+import {HttpClient, HttpClientModule} from '@angular/common/http';
 import { LoadingComponent } from './components/loading/loading.component';
 import { ConditionsComponent } from './components/conditions/conditions.component';
 import { ToggleComponent } from './components/toggle/toggle.component'
@@ -26,6 +23,13 @@ import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatButtonModule} from "@angular/material/button";
 import { AbsentComponent } from './components/absent/absent.component';
 import {MatBottomSheetModule} from "@angular/material/bottom-sheet";
+import { LoginComponent } from './components/login/login.component';
+import {FormsModule} from "@angular/forms";
+import {RoomsService} from "./services/rooms.service";
+import {ProfilesService} from "./services/profiles.service";
+import {TagsService} from "./services/tags.service";
+import {ConditionService} from "./services/conditions.service";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
 
 @NgModule({
   declarations: [
@@ -39,25 +43,27 @@ import {MatBottomSheetModule} from "@angular/material/bottom-sheet";
     LoadingComponent,
     ConditionsComponent,
     ToggleComponent,
-    AbsentComponent
+    AbsentComponent,
+    LoginComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    SHGridModule,
-    RouterModule,
-    AngularFontAwesomeModule,
-    HttpClientModule,
-    NoopAnimationsModule,
-    MatDatepickerModule,
-    MatInputModule,
-    MatNativeDateModule,
-    MatTooltipModule,
-    MatButtonModule,
-    MatBottomSheetModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        RouterModule,
+        AngularFontAwesomeModule,
+        HttpClientModule,
+        NoopAnimationsModule,
+        MatDatepickerModule,
+        MatInputModule,
+        MatNativeDateModule,
+        MatTooltipModule,
+        MatButtonModule,
+        MatBottomSheetModule,
+        FormsModule,
+        MatSnackBarModule
+    ],
   entryComponents: [AbsentComponent],
-  providers: [StateService, NavigationService],
+  providers: [HttpClient, ProfilesService, TagsService, RoomsService, ConditionService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

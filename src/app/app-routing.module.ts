@@ -4,14 +4,18 @@ import {HomeComponent} from "./components/home/home.component";
 import {ProfilesComponent} from "./components/profiles/profiles.component";
 import {ProfileEditComponent} from "./components/profiles/edit/profile.edit.component";
 import { ConditionsComponent } from './components/conditions/conditions.component';
+import {LoginComponent} from "./components/login/login.component";
 
 
 const routes: Routes = [{
+  path:"login",
+  component: LoginComponent
+},{
   path:"home",
   component: HomeComponent
 }, {
   path: "",
-  redirectTo: '/home',
+  redirectTo: '/login',
   pathMatch: 'full'
 }, {
   path: "profiles",

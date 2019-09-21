@@ -13,7 +13,7 @@ export class ScheduleService {
   dayNames: Array<string>;
 
   constructor(
-      @Inject(forwardRef(() => StateService))  private stateService: StateService
+        private stateService: StateService
   ) {
     this.dayNames = createEnumList(Day);
   }

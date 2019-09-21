@@ -34,10 +34,10 @@ import * as Enumerable from 'linq';
 
 
     constructor(
-        @Inject(forwardRef(() => ActivatedRoute)) private activatedRoute: ActivatedRoute,
-        @Inject(forwardRef(() => ProfilesService)) private profilesService: ProfilesService,
-        @Inject(forwardRef(() => TagsService)) private tagsService: TagsService,
-        @Inject(forwardRef(() => NavigationService)) private navigationService: NavigationService
+       private activatedRoute: ActivatedRoute,
+       private profilesService: ProfilesService,
+       private tagsService: TagsService,
+       private navigationService: NavigationService
     ) {
 
     }

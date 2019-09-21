@@ -11,7 +11,7 @@ export class LoadingComponent implements OnInit {
   AppStatus = AppStatus;
 
   constructor(
-    @Inject(forwardRef(() => StateService))  private stateService: StateService
+    public stateService: StateService
   ) { 
   }
 

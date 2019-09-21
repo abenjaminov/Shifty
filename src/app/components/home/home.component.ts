@@ -10,7 +10,7 @@ import {AbsentComponent} from "../absent/absent.component";
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  providers: [RoomsService, ScheduleService]
+  providers: []
 })
 export class HomeComponent implements OnInit {
   days: string[];
@@ -21,10 +21,10 @@ export class HomeComponent implements OnInit {
   assignmentsToRoomAndDay: {[key:string] : string} = {};
 
   constructor(
-      @Inject(forwardRef(() => RoomsService)) private roomsService: RoomsService,
-      @Inject(forwardRef(() => ScheduleService)) private scheduleService: ScheduleService,
-      @Inject(forwardRef(() => NavigationService)) private navigationService: NavigationService,
-      @Inject(forwardRef(() => MatBottomSheet)) private _bottomSheet: MatBottomSheet
+      private roomsService: RoomsService,
+      private scheduleService: ScheduleService,
+      private navigationService: NavigationService,
+      private _bottomSheet: MatBottomSheet
   ) {
   }
 

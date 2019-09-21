@@ -1,0 +1,22 @@
+<div class="login">
+  <div class="login-container">
+    <div class="title-content">
+      <span>Welcome</span>
+    </div>
+    <mat-form-field>
+      <input matInput placeholder="Customer code" [(ngModel)]="loginData.customerCode">
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput placeholder="Username" [(ngModel)]="loginData.username">
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput type="password" placeholder="Password" [(ngModel)]="loginData.password">
+    </mat-form-field>
+
+    <div class="login-actions">
+      <button mat-button (click)="onLoginClicked()">Login</button>
+    </div>
+  </div>
+</div>

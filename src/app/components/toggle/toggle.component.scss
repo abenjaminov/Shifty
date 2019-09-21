@@ -12,11 +12,11 @@
         cursor:pointer;
 
         &:hover {
-            background-color: $theme-a-dark-primary;
+            background-color: $theme-a-secondary;
         }
 
         &.selected {
-            border-bottom: 2px solid $theme-dark-primary;
+            border-bottom: 2px solid $theme-secondary;
         }
     }
 }

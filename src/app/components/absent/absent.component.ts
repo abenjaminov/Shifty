@@ -7,7 +7,7 @@ import * as Enumerable from 'linq';
   selector: 'sh-absent',
   templateUrl: './absent.component.html',
   styleUrls: ['./absent.component.scss'],
-  providers: [ProfilesService]
+  providers: []
 })
 export class AbsentComponent implements OnInit {
 
@@ -15,8 +15,7 @@ export class AbsentComponent implements OnInit {
   absentProfiles = []
   date: Date;
 
-  constructor(@Inject(MAT_BOTTOM_SHEET_DATA) public data: any,
-              @Inject(forwardRef(() => ProfilesService)) private profilesService: ProfilesService) {
+  constructor(@Inject(MAT_BOTTOM_SHEET_DATA) public data: any, private profilesService: ProfilesService) {
 
   }
 

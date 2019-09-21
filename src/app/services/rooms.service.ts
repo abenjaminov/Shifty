@@ -1,14 +1,14 @@
 import { Injectable, Inject, forwardRef } from '@angular/core';
-import { IShService, ServiceState } from './models';
 import { Room, Tag, Profile } from '../models';
 import { StateService, IStateObject } from './state.service';
+import {ServiceState} from "./models";
 
 @Injectable()
-export class RoomsService implements IShService<Room> {
+export class RoomsService {
   state: ServiceState;
 
   constructor(
-    @Inject(forwardRef(() => StateService))  private stateService: StateService
+      private stateService: StateService
     ) { }
 
   get rooms(): Room[] {

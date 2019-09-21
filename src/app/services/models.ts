@@ -3,8 +3,3 @@ export enum ServiceState {
     ready = "ready",
     error = "error"
 }
-
-export interface IShService<T> {
-    state: ServiceState;
-    load(): Promise<T[]>;
-}
