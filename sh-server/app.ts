@@ -71,7 +71,6 @@ app.use('/api/login', async (req,res) => {
             let username = req.body.username;
             let password = req.body.password;
 
-            // TODO : Verify password and username
             query = `SELECT * FROM USERS WHERE USERNAME = '${username}'`
 
             result = await context.queryToPromise(query);

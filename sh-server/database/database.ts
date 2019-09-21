@@ -3,6 +3,7 @@ import { Connection, QueryOptions, Query } from 'mysql';
 import { TypesHelper, twoDigits } from '../models/models';
 import { ReflectionHelper, IOneToManyMapping, ISimpleMapping, MappingType, IOneToManyDbMapping, IMappedPropertiesMetaData, InterfaceDescriminator, IOneToOneMapping } from '../models/reflection';
 import { stringify } from 'querystring';
+import { LogService } from '../services/logs.service';
 
 interface IConstructor {
     [key:string] : any;
@@ -31,9 +32,12 @@ export interface DeepType {
 export class DbContext {
     
     connection!: Connection;
+    logService: LogService;
 
     constructor() {
         this.select.bind(this);
+
+        this.logService = new LogService("Databse Context");
     }
 
     async select<T>(type: IConstructor, 
