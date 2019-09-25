@@ -49,63 +49,70 @@ app.use('/api/clearthecacheforthisapp', (req,res) => {
     res.json("Cache clear");
 })
 
+import crypto from 'crypto-js';
+
 app.use('/api/login', async (req,res) => {
     var logService = new LogService("Login");
     let customerCode = req.body.customerCode;
 
-    let authenticationService = new AuthenticationService();
-    res.json({token: authenticationService.getToken("obenjaminov"), username: 'z', customerCode: customerCode})
+    // let authenticationService = new AuthenticationService();
+    // res.json({token: authenticationService.getToken("obenjaminov"), username: 'z', customerCode: customerCode})
 
-    // try {
-    //     let tenantContext = await DbContext.getContext("Tenants");
+    try {
+        var tenantContext = await DbContext.getContext("Shared");    
 
-    //     let query = `SELECT * FROM TENANTS WHERE NAME = '${customerCode}'`;
+        let query = `SELECT * FROM Tenants WHERE name = '${customerCode}'`;
 
-    //     let result = await tenantContext.queryToPromise(query)
-    //     tenantContext.close();
+        let result = await tenantContext.queryToPromise(query)
 
-    //     if(result.length == 0) {
-    //         logService.warning(`Non existing customer code ${customerCode}`);
-    //         res.status(400).send("Non existing customer code");
-    //     }
-    //     else {
-    //         let context = await DbContext.getContext(customerCode)
+        if(result.length == 0) {
+            logService.warning(`Non existing customer code ${customerCode}`);
+            res.status(400).send("Non existing customer code");
+        }
+        else {
+            var context = await DbContext.getContext(customerCode)
 
-    //         let username = req.body.username;
-    //         let password = req.body.password;
+            let username = req.body.username;
+            let password = req.body.password;
 
-    //         query = `SELECT * FROM USERS WHERE USERNAME = '${username}'`
+            query = `SELECT * FROM Profiles WHERE username = '${username}'`
 
-    //         result = await context.queryToPromise(query);
+            result = await context.queryToPromise(query);
 
-    //         if(result.length == 0) {
-    //             logService.warning(`Non existing username ${username}`);
-    //             res.status(400).send("Non existing username");
-    //         }
-    //         else {
-    //             let user = result[0];
-    //             query = `SELECT * FROM PASSWORDS WHERE USERID = '${user.id}'`
+            if(result.length == 0) {
+                logService.warning(`Non existing username ${username}`);
+                res.status(400).send("Non existing username");
+            }
+            else {
+                let user = result[0];
+                query = `SELECT * FROM Passwords WHERE userId = '${user.id}'`
+                // let encrypted = crypto.AES.encrypt(password, customerCode);
+                // query = `UPDATE Passwords SET value = '${encrypted.toString()}'`;
 
-    //             result = await context.queryToPromise(query);
+                result = await context.queryToPromise(query);
 
-    //             let authenticationService = new AuthenticationService();
+                let authenticationService = new AuthenticationService();
 
-    //             let passverified = authenticationService.verifyPassword(password, result[0].value, customerCode);
+                let passverified = authenticationService.verifyPassword(password, result[0].value, customerCode);
 
-    //             if(passverified) {
-    //                 res.json({token: authenticationService.getToken("obenjaminov"), username: username, customerCode: customerCode})
-    //             }
-    //             else {
-    //                 // TODO : Restrict to 3 attempts
-    //                 logService.warning(`incorrect password ${password}`);
-    //                 res.status(400).send("Password incorrect");
-    //             }
-    //         }
-    //     }
-    // } catch (error) {
-    //     logService.error("Error while logging in", error);
-    //     res.status(500).send();
-    // }
+                if(passverified) {
+                    res.json({token: authenticationService.getToken("obenjaminov"), username: username, customerCode: customerCode})
+                }
+                else {
+                    // TODO : Restrict to 3 attempts
+                    logService.warning(`incorrect password ${password}`);
+                    res.status(400).send("Password incorrect");
+                }
+            }
+        }
+    } catch (error) {
+        logService.error("Error while logging in", error);
+        res.status(500).send();
+    }
+    finally {
+        tenantContext.close();
+        context.close();
+    }
 });
 
 app.use('/api/*', (req: Request ,res,next) => {

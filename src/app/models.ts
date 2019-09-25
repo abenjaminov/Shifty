@@ -55,6 +55,11 @@ export class Condition implements IStateObject {
     day?: Day;
     profileId?: string;
     isLockedForNextDay?: boolean = false;
+
+    // Not Mapped
+    profile?: Profile;
+    profession?: Tag;
+    room?: Room;
 }
 
 export class Assignment implements IStateObject {

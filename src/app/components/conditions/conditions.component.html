@@ -32,10 +32,57 @@
         </div>
       </div>
       <div class="conditions-list" *ngIf="conditionsService.state == 'ready'">
-<!--        <sh-grid>-->
-<!--          <sh-grid-column *ngFor="let col of this.conditionColumns" [columnSource]="col"></sh-grid-column>-->
-<!--          <sh-grid-actions-column [columnSource]="actionsColumn"></sh-grid-actions-column>-->
-<!--        </sh-grid>-->
+          <div viewContent class="table">
+              <div class="row title-row">
+                  <div class="cell">
+                      Type
+                  </div>
+                  <div class="cell">
+                      Room
+                  </div>
+                  <div class="cell">
+                      Profile
+                  </div>
+                  <div class="cell">
+                      Profession
+                  </div>
+                  <div class="cell">
+                      Day
+                  </div>
+                  <div class="cell">
+                      Importance
+                  </div>
+                  <div class="small-cell">
+                      Delete
+                  </div>
+              </div>
+              <div *ngFor="let condition of allConditions" class="row">
+                  <div class="cell">
+                      {{condition.type}}
+                  </div>
+                  <div class="cell">
+                      {{condition.room ? condition.room.name : ''}}
+                  </div>
+                  <div class="cell">
+                      {{condition.profile ? condition.profile.name : ''}}
+                  </div>
+                  <div class="cell">
+                      {{condition.profession ? condition.profession.name : ''}}
+                  </div>
+                  <div class="cell">
+                      {{condition.day ? condition.day : ''}}
+                  </div>
+                  <div class="cell">
+                      {{condition.importance ? condition.importance : ''}}
+                  </div>
+                  <div class="small-cell action-cell">
+                      <button mat-button (click)="onDeleteCondition(condition)">
+                          <fa name="trash"></fa>
+                      </button>
+
+                  </div>
+              </div>
+          </div>
       </div>
     </div>
   </sh-view>

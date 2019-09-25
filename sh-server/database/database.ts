@@ -514,6 +514,9 @@ export class DbContext {
         else if(mappingType == MappingType.number) {
             return value;
         }
+        else if(mappingType == MappingType.boolean) {
+            return value;
+        }
 
         return '';
     }
@@ -532,6 +535,7 @@ export class DbContext {
         if(!this.connection) return;
 
         this.connection.end();
+        this.connection = undefined;
     }
 
     queryValuePromise(options: string, values: any): Promise<any> {

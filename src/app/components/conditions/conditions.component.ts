@@ -79,7 +79,7 @@ export class ConditionsComponent implements OnInit {
       this.profiles = result[2];
       this.allConditions = result[3];
 
-      //this.createGridColumns();
+      this.fixConditionsForDisplay();
 
       this.conditionTypes = createEnumList(ConditionType).map((item) => {
         return {
@@ -98,71 +98,14 @@ export class ConditionsComponent implements OnInit {
     });
   }
 
-  // createGridColumns() {
-  //   this.conditionColumns.forEach(ac => {
-  //     ac.cellInfos.length = 0
-  //   });
-  //
-  //   var conditionTypeColumn: ShGridColumn = this.conditionColumns[0];
-  //   var roomColumn : ShGridColumn = this.conditionColumns[1];
-  //   var profileColumn : ShGridColumn = this.conditionColumns[2];
-  //   var professionColumn : ShGridColumn = this.conditionColumns[3];
-  //   var dayColumn : ShGridColumn = this.conditionColumns[4];
-  //   var importanceColumn : ShGridColumn = this.conditionColumns[5];
-  //   this.actionsColumn.cellInfos.length = 0;
-  //
-  //   for(let condition of this.allConditions) {
-  //     conditionTypeColumn.cellInfos.push({ text: condition.type });
-  //
-  //     let profile = this.profiles.find(p => p.id == condition.profileId) || {name: '--'};
-  //     let room = this.rooms.find(r => r.id == condition.roomId) || {name: '--'};
-  //     let profession = this.tags.find(p => p.id == condition.professionId) || {name: '--'};
-  //     let importance = condition.importance || '';
-  //     let day = condition.day || '';
-  //
-  //     if(room) {
-  //       roomColumn.cellInfos.push({ text: room.name });
-  //     } else {
-  //       roomColumn.cellInfos.push({ text: "--" });
-  //     }
-  //
-  //     if(profile) {
-  //       profileColumn.cellInfos.push({ text: profile.name });
-  //     } else {
-  //       profileColumn.cellInfos.push({ text: "--" });
-  //     }
-  //
-  //     if(profession) {
-  //       professionColumn.cellInfos.push({ text: profession.name });
-  //     }
-  //     else {
-  //       professionColumn.cellInfos.push({ text: "--" });
-  //     }
-  //
-  //     if(day) {
-  //       dayColumn.cellInfos.push({ text: day });
-  //     }
-  //     else {
-  //       dayColumn.cellInfos.push({ text: "--" });
-  //     }
-  //
-  //     if(importance) {
-  //       importanceColumn.cellInfos.push({ text: importance });
-  //     }
-  //     else {
-  //       importanceColumn.cellInfos.push({ text: "--" });
-  //     }
-  //
-  //     this.actionsColumn.cellInfos.push({
-  //       actions: [{
-  //         action: (index) => {
-  //           this.onDeleteCondition(this.allConditions[index]);
-  //         },
-  //         icon: "trash"
-  //       }]
-  //     })
-  //   }
-  // }
+  fixConditionsForDisplay() {
+    for(let condition of this.allConditions) {
+
+      condition.profile = this.profiles.find(p => p.id == condition.profileId);
+      condition.room = this.rooms.find(r => r.id == condition.roomId);
+      condition.profession = this.tags.find(p => p.id == condition.professionId);
+    }
+  }
 
   onDeleteCondition(condition:Condition) {
     this.conditionsService.deleteCondition(condition).then(x => {

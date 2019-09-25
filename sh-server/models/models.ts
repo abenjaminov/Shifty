@@ -125,6 +125,8 @@ var roomToConditionsMapping: IOneToManyMapping = {
 export class Profile {
     @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "id", type: MappingType.string, isPrimaryKey:true }) id! : string;
     @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "name", type: MappingType.string, isPrimaryKey:false }) name!: string;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "username", type: MappingType.string, isPrimaryKey:false }) username?: string;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "isAssigned", type: MappingType.boolean, isPrimaryKey:false }) isAssigned?: string;
     @Mapped(profileProfessionsMapping) professions: Tag[] = [];
     @Mapped(profileAbsenceMapping) absences: Absence[] = [];
     @Mapped(profileNonWorkingDayMapping) nonWorkingDays: NonWorkingDay[] = [];

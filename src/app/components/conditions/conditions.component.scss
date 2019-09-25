@@ -38,4 +38,47 @@
             margin: 0;
         }
     }
+
+    .table {
+        display: flex;
+        flex-direction: column;
+
+        .row {
+            display: flex;
+            border-bottom: 2px solid lightgray;
+            align-items: center;
+            padding-left: 10px;
+
+            &:hover {
+                background-color: lightgray;
+            }
+
+            &.title-row {
+                font-weight: bold;
+                font-size: 20px;
+                padding: 10px 0 10px 0;
+
+                &:hover {
+                    background-color: transparent;
+                }
+            }
+
+            .cell {
+                flex: 5 5 0;
+            }
+
+            .small-cell {
+                flex: 1 1 0;
+            }
+
+            .action-cell {
+                .mat-button {
+                    padding-left: 0px;
+                    padding-right: 0px;
+                    width: 20px;
+                    min-width: 0px;
+                }
+            }
+        }
+    }
 }

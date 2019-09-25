@@ -36,7 +36,7 @@ export class AuthenticationService {
     }
 
     verifyPassword(rawPassword:string, hashedPassword:string, passPhrase:string) {
-        let decryptedPassword = crypto.AES.decrypt(hashedPassword, passPhrase).toString();
+        let decryptedPassword = crypto.AES.decrypt(hashedPassword, passPhrase).toString(crypto.enc.Utf8);
 
         return rawPassword == decryptedPassword;
     }    

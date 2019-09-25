@@ -230,7 +230,9 @@ export class StateService
       if(oldObject) {
         this.appState.appStatus = AppStatus.loading;
 
-        this.httpClient.put(`/api/${stateMap.apiConfig.controller}`, obj).toPromise().then(x => {
+        const headers = this.getHttpHeaders();
+
+        this.httpClient.put(`/api/${stateMap.apiConfig.controller}`, obj, {headers: headers}).toPromise().then(x => {
 
           this.cacheService.clear(stateMap.cacheName)
 

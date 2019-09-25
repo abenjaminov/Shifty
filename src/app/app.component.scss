@@ -7,11 +7,11 @@
 .app-grid {
   display: flex;
   height: 100vh;
-  background-color: $theme-primary;
+  background-color: $theme-base;
 
   .sidebar-container {
     flex-basis: 200px;
-    box-shadow: 1px 0px  5px 0px $theme-primary;
+    box-shadow: 1px 0px  3px 0px black;
     background:white;
     z-index: 1;
   }
