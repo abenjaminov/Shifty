@@ -23,8 +23,6 @@ router.get('/run', async (req: Request,res,next) => {
 
     var prevDayAssignments = Object.assign([], lastWeeksSchedule.days[Day.Saturday].assignments);
 
-    
-
     var dates = scheduleService.getDatesOfWeek();
 
     var assignments: Array<Assignment> = []

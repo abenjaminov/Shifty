@@ -26,7 +26,7 @@ app.use(cookieParser())
 
 var freePassRoutes = [
     '/api/schedule/test',
-    '/api/clearthecacheforthisapp'
+    '/api/schedule/run',
 ]
 
 app.use("/api/*", (req, res, next) => {
@@ -53,68 +53,76 @@ app.use('/api/login', async (req,res) => {
     var logService = new LogService("Login");
     let customerCode = req.body.customerCode;
 
-    try {
-        let tenantContext = await DbContext.getContext("Tenants");
+    let authenticationService = new AuthenticationService();
+    res.json({token: authenticationService.getToken("obenjaminov"), username: 'z', customerCode: customerCode})
 
-        let query = `SELECT * FROM TENANTS WHERE NAME = '${customerCode}'`;
+    // try {
+    //     let tenantContext = await DbContext.getContext("Tenants");
 
-        let result = await tenantContext.queryToPromise(query)
-        tenantContext.close();
+    //     let query = `SELECT * FROM TENANTS WHERE NAME = '${customerCode}'`;
 
-        if(result.length == 0) {
-            logService.warning(`Non existing customer code ${customerCode}`);
-            res.status(400).send("Non existing customer code");
-        }
-        else {
-            let context = await DbContext.getContext(customerCode)
+    //     let result = await tenantContext.queryToPromise(query)
+    //     tenantContext.close();
 
-            let username = req.body.username;
-            let password = req.body.password;
+    //     if(result.length == 0) {
+    //         logService.warning(`Non existing customer code ${customerCode}`);
+    //         res.status(400).send("Non existing customer code");
+    //     }
+    //     else {
+    //         let context = await DbContext.getContext(customerCode)
 
-            query = `SELECT * FROM USERS WHERE USERNAME = '${username}'`
+    //         let username = req.body.username;
+    //         let password = req.body.password;
 
-            result = await context.queryToPromise(query);
+    //         query = `SELECT * FROM USERS WHERE USERNAME = '${username}'`
 
-            if(result.length == 0) {
-                logService.warning(`Non existing username ${username}`);
-                res.status(400).send("Non existing username");
-            }
-            else {
-                let user = result[0];
-                query = `SELECT * FROM PASSWORDS WHERE USERID = '${user.id}'`
+    //         result = await context.queryToPromise(query);
 
-                result = await context.queryToPromise(query);
+    //         if(result.length == 0) {
+    //             logService.warning(`Non existing username ${username}`);
+    //             res.status(400).send("Non existing username");
+    //         }
+    //         else {
+    //             let user = result[0];
+    //             query = `SELECT * FROM PASSWORDS WHERE USERID = '${user.id}'`
 
-                let authenticationService = new AuthenticationService();
+    //             result = await context.queryToPromise(query);
 
-                let passverified = authenticationService.verifyPassword(password, result[0].value, customerCode);
+    //             let authenticationService = new AuthenticationService();
 
-                if(passverified) {
-                    res.json({token: authenticationService.getToken("obenjaminov"), username: username, customerCode: customerCode})
-                }
-                else {
-                    // TODO : Restrict to 3 attempts
-                    logService.warning(`incorrect password ${password}`);
-                    res.status(400).send("Password incorrect");
-                }
-            }
-        }
-    } catch (error) {
-        logService.error("Error while logging in", error);
-        res.status(500).send();
-    }
+    //             let passverified = authenticationService.verifyPassword(password, result[0].value, customerCode);
+
+    //             if(passverified) {
+    //                 res.json({token: authenticationService.getToken("obenjaminov"), username: username, customerCode: customerCode})
+    //             }
+    //             else {
+    //                 // TODO : Restrict to 3 attempts
+    //                 logService.warning(`incorrect password ${password}`);
+    //                 res.status(400).send("Password incorrect");
+    //             }
+    //         }
+    //     }
+    // } catch (error) {
+    //     logService.error("Error while logging in", error);
+    //     res.status(500).send();
+    // }
 });
 
 app.use('/api/*', (req: Request ,res,next) => {
     var logService = new LogService("Authenticate");
     let authorizedResult = new AuthenticationService().authenticate(req.headers.authorization, req.body.username);
 
-    if(!authorizedResult.authorized) {
-        logService.warning(`Authentication failed for '${req.body.username}', token : '${req.headers.authorization}'`);
-        res.status(401).send("Sesson expired");
+    if(freePassRoutes.find(x => x === req.originalUrl) != undefined) {
+        next();
     }
     else {
-        next();
+        if(!authorizedResult.authorized) {
+            logService.warning(`Authentication failed for '${req.body.username}', token : '${req.headers.authorization}'`);
+            res.status(401).send("Sesson expired");
+        }
+        else {
+            next();
+        }
     }
 });
 
@@ -148,11 +156,6 @@ app.use('/api/*', (req: Request ,res,next) => {
     };
 
     (req as any).tenantName = "ZedekMC";
-
-    if(freePassRoutes.find(x => x === req.originalUrl) != undefined) {
-        next();
-        return;
-    }
 
     DbContext.getContext((req as any).tenantName).then(context => {
         req.dbContext = context;

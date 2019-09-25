@@ -4,5 +4,32 @@
 <!--      <sh-grid-actions-column [columnSource]="actionColumn"></sh-grid-actions-column>-->
 <!--      <sh-grid-column *ngFor="let col of this.columns" [columnSource]="col"></sh-grid-column>-->
 <!--    </sh-grid>-->
+    <div viewContent class="table">
+      <div class="row title-row">
+        <div class="cell">
+          Name
+        </div>
+        <div class="cell">
+          Professions
+        </div>
+        <div class="small-cell">
+          Edit
+        </div>
+      </div>
+      <div *ngFor="let profile of profiles" class="row">
+        <div class="cell">
+          {{profile.name}}
+        </div>
+        <div class="cell">
+          {{profile.professionsJoinedText}}
+        </div>
+        <div class="small-cell action-cell">
+          <button mat-button (click)="onEditProfile(profile)">
+            <fa name="pencil"></fa>
+          </button>
+
+        </div>
+      </div>
+    </div>
   </sh-view>
 </div>

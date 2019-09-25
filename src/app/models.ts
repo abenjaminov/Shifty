@@ -31,6 +31,9 @@ export class Profile implements IStateObject {
     absences: Absence[] = [];
     nonWorkingDays: NonWorkingDay[] = [];
 
+    // Not mapped
+    professionsJoinedText: string;
+
     isEmpty(): boolean {
         return this.id.indexOf("EMPTY") != -1;
     }

@@ -2,8 +2,16 @@
   <div class="title">
     Absent profiles for <span class="date-text">{{'  ' + date.toDateString()}}</span>
   </div>
-  <div class="absent-profile" *ngFor="let profile of absentProfiles">
-    <span class="profile-name">{{profile.name}}</span>
-    <span class="description" [innerHTML]="profile.text"></span>
+  <div class="absent-profiles-container" *ngIf="this.absentProfiles && this.absentProfiles.length > 0">
+    <div class="absent-profile" *ngFor="let profile of this.absentProfiles">
+      <span class="profile-name">{{profile.name}}</span>
+      <span class="description" [innerHTML]="profile.text"></span>
+    </div>
+  </div>
+  <div class="absent-profiles-container no-absence" *ngIf="this.absentProfiles && this.absentProfiles.length == 0">
+    No absence for this day
+  </div>
+  <div class="absent-profiles-container loading-absence" *ngIf="!this.absentProfiles">
+    Checking for absence...
   </div>
 </div>
