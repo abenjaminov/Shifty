@@ -49,14 +49,9 @@ app.use('/api/clearthecacheforthisapp', (req,res) => {
     res.json("Cache clear");
 })
 
-import crypto from 'crypto-js';
-
 app.use('/api/login', async (req,res) => {
     var logService = new LogService("Login");
     let customerCode = req.body.customerCode;
-
-    // let authenticationService = new AuthenticationService();
-    // res.json({token: authenticationService.getToken("obenjaminov"), username: 'z', customerCode: customerCode})
 
     try {
         var tenantContext = await DbContext.getContext("Shared");    

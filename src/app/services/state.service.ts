@@ -256,7 +256,9 @@ export class StateService
 
       this.appState.appStatus = AppStatus.loading;
 
-      this.httpClient.post(`/api/${stateMap.apiConfig.controller}`, obj).toPromise().then(x => {
+      const headers = this.getHttpHeaders();
+
+      this.httpClient.post(`/api/${stateMap.apiConfig.controller}`, obj, {headers: headers}).toPromise().then(x => {
 
         this.cacheService.clear(stateMap.cacheName)
 
@@ -278,7 +280,9 @@ export class StateService
       var stateMap = this.getStateMap(T);
       this.appState.appStatus = AppStatus.loading;
 
-      this.httpClient.delete(`/api/${stateMap.apiConfig.controller}/${id}`).toPromise().then(x => {
+      const headers = this.getHttpHeaders();
+
+      this.httpClient.delete(`/api/${stateMap.apiConfig.controller}/${id}`,{ headers: headers }).toPromise().then(x => {
         this.appState.appStatus = AppStatus.ready;
         this.cacheService.clear(stateMap.cacheName);
 
