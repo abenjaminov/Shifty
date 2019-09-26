@@ -27,6 +27,7 @@ app.use(cookieParser())
 var freePassRoutes = [
     '/api/schedule/test',
     '/api/schedule/run',
+    '/api/profiles',
 ]
 
 app.use("/api/*", (req, res, next) => {
