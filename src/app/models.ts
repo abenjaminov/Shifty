@@ -107,6 +107,7 @@ export class WeeklySchedule implements IStateObject {
     startDate: Date;
     endDate: Date;
     id: string;
+    numberOfAssignments: number;
 }
 
 export function createEnumList(enumType) {

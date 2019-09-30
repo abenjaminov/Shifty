@@ -4,10 +4,7 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {CacheService} from './cache.service';
 import {AuthenticationService} from "./authentication.service";
 import {Events, EventsService} from "./events.service";
-
-interface HttpResult {
-  data: any;
-}
+import {HttpResult, HttpService} from "./http.service";
 
 export interface IStateObject {
   id:string | number;
@@ -57,10 +54,10 @@ export class StateService
 
   private serviceMap: Map<IConstructor, StateMap> = new Map<IConstructor,StateMap>();
 
+  private numberOfRunningRequests = 0;
+
   constructor(
-    private httpClient: HttpClient,
-    private cacheService: CacheService,
-    private authenticationService: AuthenticationService,
+    private httpService: HttpService,
     private eventsService: EventsService
     ) {
 
@@ -145,56 +142,26 @@ export class StateService
     this.appState.appStatus = AppStatus.ready;
   }
 
-  async fetch<RT>(T: IConstructor) : Promise<RT> {
-      this.appState.appStatus = AppStatus.loading;
+  async fetch<RT>(T: IConstructor, params?:Array<string>) : Promise<RT> {
+      this.addLoading();
 
-    let result = await this.fetchInternal<RT>(T).catch(error => {
-        throw error;
-    });
+    let result = await this.fetchInternal<RT>(T, params);
 
-      this.appState.appStatus = AppStatus.ready;
+    this.removeLoading();
 
       return result;
   }
 
-  async fetchInternal<RT>(T:IConstructor) : Promise<RT> {
+  async fetchInternal<RT>(T:IConstructor, params?:Array<string>) : Promise<RT> {
     let mappedState = this.getStateMap(T);
 
     let url = `/api/${mappedState.apiConfig.controller}`;
 
-    let cache = this.cacheService.getOrCreate(mappedState.cacheName);
+    let data: HttpResult = await this.httpService.get(mappedState.cacheName,url,params);
 
-    let cachedData = cache.get(url);
-    if(cachedData) {
+    let mappedData = mappedState.mapToState(data)
 
-      mappedState.mapToState(cachedData);
-
-      return cachedData;
-    }
-
-    const headers = this.getHttpHeaders();
-    try {
-      let result: HttpResult = await this.httpClient.get<HttpResult>(url,{headers: headers}).toPromise<HttpResult>();
-
-      cachedData = mappedState.mapToState(result.data)
-
-      cache.set(url, cachedData);
-
-      return cachedData;
-    } catch (error) {
-      let typedError: HttpErrorResponse = error;
-
-      this.authenticationService.logout(false,"Session expired");
-
-      throw error;
-    }
-  }
-
-  getHttpHeaders() {
-    const headers:any = {};
-    headers.Authorization = `Bearer ${this.authenticationService.authedUserData.token}`;
-
-    return headers;
+    return mappedData;
   }
 
   getState(T: IConstructor): IStateObject[] {
@@ -213,6 +180,10 @@ export class StateService
     throw new Error("State map does not have a correct map");
   }
 
+  getCacheName(T: IConstructor) {
+    return this.getStateMap(T).cacheName;
+  }
+
   objectExists(T: IConstructor, obj: IStateObject) : IStateObject {
     var objects = this.getState(T);
 
@@ -221,82 +192,63 @@ export class StateService
     return object
   }
 
-  saveObject(T: IConstructor, obj: IStateObject): Promise<IStateObject> {
-    var result = new Promise<IStateObject>((resolve, reject) => {
+  async saveObject(T: IConstructor, obj: IStateObject): Promise<IStateObject> {
       var oldObject = this.objectExists(T, obj);
 
       var stateMap = this.getStateMap(T);
 
       if(oldObject) {
-        this.appState.appStatus = AppStatus.loading;
+        this.addLoading();
 
-        const headers = this.getHttpHeaders();
+        let result = await this.httpService.put(stateMap.cacheName,`/api/${stateMap.apiConfig.controller}`, obj);
 
-        this.httpClient.put(`/api/${stateMap.apiConfig.controller}`, obj, {headers: headers}).toPromise().then(x => {
+        oldObject = obj;
+        this.removeLoading();
 
-          this.cacheService.clear(stateMap.cacheName)
-
-          oldObject = obj;
-          resolve(obj);
-        }).catch(error => {
-          reject(error);
-        }).finally(() => {
-          this.appState.appStatus = AppStatus.ready;
-        })
+        return obj;
       }
-    });
-
-    return result;
   }
 
-  insertObject(T: IConstructor, obj: IStateObject): Promise<IStateObject> {
-    var result = new Promise<IStateObject>((resolve, reject) => {
+  async insertObject(T: IConstructor, obj: IStateObject): Promise<IStateObject> {
 
       var stateMap = this.getStateMap(T);
 
-      this.appState.appStatus = AppStatus.loading;
+      this.addLoading();
 
-      const headers = this.getHttpHeaders();
+      let result = await this.httpService.post(stateMap.cacheName, `/api/${stateMap.apiConfig.controller}`, obj);
 
-      this.httpClient.post(`/api/${stateMap.apiConfig.controller}`, obj, {headers: headers}).toPromise().then(x => {
+      stateMap.data.push(obj);
 
-        this.cacheService.clear(stateMap.cacheName)
+      this.removeLoading();
 
-        stateMap.data.push(obj);
-        resolve(obj);
-      }).catch(error => {
-        reject(error);
-      }).finally(() => {
-        this.appState.appStatus = AppStatus.ready;
-      })
-
-    });
-
-    return result;
+      return obj;
   }
 
-  deleteObject(T: IConstructor, id: any): Promise<boolean> {
-    var result = new Promise<boolean>((resolve,reject) => {
+  async deleteObject(T: IConstructor, id: any): Promise<boolean> {
       var stateMap = this.getStateMap(T);
-      this.appState.appStatus = AppStatus.loading;
+      this.addLoading();
 
-      const headers = this.getHttpHeaders();
+      let result = await this.httpService.delete(stateMap.cacheName,`/api/${stateMap.apiConfig.controller}`,id );
 
-      this.httpClient.delete(`/api/${stateMap.apiConfig.controller}/${id}`,{ headers: headers }).toPromise().then(x => {
-        this.appState.appStatus = AppStatus.ready;
-        this.cacheService.clear(stateMap.cacheName);
+      this.removeLoading();
 
-        var index = stateMap.data.findIndex(x => x.id == id);
-        stateMap.data = stateMap.data.splice(index,1);
+      var index = stateMap.data.findIndex(x => x.id == id);
+      stateMap.data = stateMap.data.splice(index,1);
 
-        resolve(true);
-      }).catch(error => {
-        reject(error);
-      }).finally(() => {
-        this.appState.appStatus = AppStatus.ready;
-      })
-    });
+      return true;
+  }
 
-    return result;
+  private addLoading() {
+    this.appState.appStatus = AppStatus.loading;
+
+    this.numberOfRunningRequests++;
+  }
+
+  private removeLoading() {
+    this.numberOfRunningRequests--;
+
+    if(this.numberOfRunningRequests == 0) {
+      this.appState.appStatus = AppStatus.ready;
+    }
   }
 }

@@ -30,6 +30,8 @@ import {ProfilesService} from "./services/profiles.service";
 import {TagsService} from "./services/tags.service";
 import {ConditionService} from "./services/conditions.service";
 import {MatSnackBarModule} from "@angular/material/snack-bar";
+import {MatDialogModule} from "@angular/material/dialog";
+import { QuestionDialogComponent } from './components/question-dialog/question-dialog.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +46,8 @@ import {MatSnackBarModule} from "@angular/material/snack-bar";
     ConditionsComponent,
     ToggleComponent,
     AbsentComponent,
-    LoginComponent
+    LoginComponent,
+    QuestionDialogComponent
   ],
     imports: [
         BrowserModule,
@@ -60,9 +63,10 @@ import {MatSnackBarModule} from "@angular/material/snack-bar";
         MatButtonModule,
         MatBottomSheetModule,
         FormsModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        MatDialogModule
     ],
-  entryComponents: [AbsentComponent],
+  entryComponents: [AbsentComponent,QuestionDialogComponent],
   providers: [HttpClient, ProfilesService, TagsService, RoomsService, ConditionService],
   bootstrap: [AppComponent]
 })

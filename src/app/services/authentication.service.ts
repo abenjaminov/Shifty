@@ -49,7 +49,7 @@ export class AuthenticationService {
 
       this.eventsService.emit(Events.UserAuthorized, this.authedUserData);
     }).catch(error => {
-
+        
     });
   }
 

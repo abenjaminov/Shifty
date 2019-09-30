@@ -30,6 +30,8 @@ export class ScheduleService {
         var assignmentsByDay = Enumerable.from(assignments).groupBy(a => a.date.toISOString()).toDictionary(a => a.key(), a => a.toArray());
 
         var weeklySchedule = new WeeklySchedule();
+        weeklySchedule.numberOfAssignments = assignments.length;
+        
         var dailySchedules: DailySchedule[] = [];
 
         for(let date of datesOfWeek) {
@@ -66,13 +68,18 @@ export class ScheduleService {
     getDatesOfWeek(startDate? :Date): Date[] {
         let datesOfWeek: Date[] = []
 
+        let firstDayOfWeek;
+
         if(!startDate) {
             var date = new Date();
             date = new Date(date.toISOString());
             startDate = new Date(date);
+            firstDayOfWeek = startDate.getUTCDate() - startDate.getUTCDay();
+        }
+        else {
+            firstDayOfWeek = startDate.getUTCDate();
         }
         
-        let firstDayOfWeek = startDate.getUTCDate() - startDate.getUTCDay();
         datesOfWeek.push(new Date(startDate.setUTCDate(firstDayOfWeek)));
 
         var firstDateOfWeek = datesOfWeek[0];

@@ -268,6 +268,7 @@ export class WeeklySchedule {
     days: {[day:string] : DailySchedule} = {};
     startDate: Date;
     endDate: Date;
+    numberOfAssignments: number;
 }
 
 /**

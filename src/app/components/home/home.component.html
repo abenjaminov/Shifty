@@ -1,5 +1,15 @@
 <div class="sh-home">
     <sh-view [titleText]="title">
+        <div viewActions class="actions">
+            <button mat-raised-button (click)="onPrevWeekClicked()">
+                <fa name="chevron-left"></fa>
+                <span>Previous week</span>
+            </button>
+            <button mat-raised-button (click)="onNextWeekClicked()">
+                <span>Next week</span>
+                <fa name="chevron-right"></fa>
+            </button>
+        </div>
         <div class="schedule" viewContent>
             <div class="row title-row">
                 <div class="cell title">
@@ -7,7 +17,7 @@
                 </div>
                 <div class="cell title" *ngFor="let day of this.days">
                     <span>{{day}}</span>
-                    <div class="show-absent" (click)="onShowAbsent(day)">Absent</div>
+                    <div class="show-absent" (click)="onShowAbsent(day)">Absences</div>
                 </div>
             </div>
             <div>

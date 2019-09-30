@@ -3,6 +3,7 @@ import {ServiceState} from "./models";
 import * as Enumerable from 'linq';
 import {createEnumList, DailySchedule, Day, Profile, Tag, WeeklySchedule} from "../models";
 import {StateService} from "./state.service";
+import {HttpService} from "./http.service";
 
 @Injectable({
   providedIn: 'root'
@@ -13,15 +14,40 @@ export class ScheduleService {
   dayNames: Array<string>;
 
   constructor(
-        private stateService: StateService
+        private stateService: StateService,
+        private httpService: HttpService
   ) {
     this.dayNames = createEnumList(Day);
   }
 
+  async calculateSchedule(date?: Date) {
+    this.state = ServiceState.loading;
+    let dateParams = undefined;
+
+    if(date) {
+      dateParams = [];
+      let dateParam = date.getFullYear() + ";" + date.getMonth() + ";" + date.getDate();
+      dateParams.push(dateParam);
+    }
+
+    let result = await this.httpService.get(undefined, 'api/schedule/run', dateParams);
+
+    this.httpService.clearCache(this.stateService.getCacheName(WeeklySchedule));
+
+    return result;
+  }
+
   load(date?: Date): Promise<WeeklySchedule> {
     this.state = ServiceState.loading;
+    let dateParams = undefined;
 
-    let result = this.stateService.fetch<WeeklySchedule>(WeeklySchedule).then((weeklySchedule:WeeklySchedule) => {
+    if(date) {
+      dateParams = [];
+      let dateParam = date.getFullYear() + ";" + date.getMonth() + ";" + date.getDate();
+      dateParams.push(dateParam);
+    }
+
+    let result = this.stateService.fetch<WeeklySchedule>(WeeklySchedule,dateParams).then((weeklySchedule:WeeklySchedule) => {
       this.state = ServiceState.ready;
 
       for(let day of this.dayNames) {

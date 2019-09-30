@@ -8,22 +8,35 @@ import Enumerable from 'linq';
 var express = require('express');
 var router: Router = express.Router();
 
-router.get('/run', async (req: Request,res,next) => {
+router.get('/run/:date?', async (req: Request,res,next) => {
     var context = RoutesCommon.getContextFromRequest(req);
 
     var profiles = await context.select<Profile>(Profile, true,true, []);
     var rooms = await context.select<Room>(Room, true,true, []);
 
-    var lastWeekDate = new Date();
-    lastWeekDate.setDate(lastWeekDate.getDate() - 7);
+    var firstDate = new Date();
+
+    if(req.params.date) {
+        var dateParts = req.params.date.split(";");
+        firstDate = new Date(Date.UTC(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2])));
+    }
+    else {
+        firstDate = new Date();
+        let firstDayOfWeek = firstDate.getUTCDate() - firstDate.getUTCDay()
+        firstDate = new Date(firstDate.setUTCDate(firstDayOfWeek))
+    }
+
+    firstDate.setDate(firstDate.getDate() - 7);
 
     var scheduleService = req.scheduleService;
 
-    let lastWeeksSchedule = await scheduleService.getWeeklySchedule(lastWeekDate);
+    let lastWeeksSchedule = await scheduleService.getWeeklySchedule(firstDate);
+
+    firstDate.setDate(firstDate.getDate() + 7);
 
     var prevDayAssignments = Object.assign([], lastWeeksSchedule.days[Day.Saturday].assignments);
 
-    var dates = scheduleService.getDatesOfWeek();
+    var dates = scheduleService.getDatesOfWeek(firstDate);
 
     var assignments: Array<Assignment> = []
 
@@ -130,7 +143,7 @@ router.get('/:date?', async (req,res,next) => {
 
     if(req.params.date) {
         var dateParts = req.params.date.split(";");
-        firstDate = new Date(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2]));
+        firstDate = new Date(Date.UTC(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2])));
     }
 
     let weeklySchedule = await scheduleService.getWeeklySchedule(firstDate)

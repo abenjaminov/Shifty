@@ -1,4 +1,25 @@
 .sh-home {
+  .actions {
+    display: flex;
+    width: 300px;
+    justify-content: space-between;
+
+    button {
+      padding: 0px;
+      width: 135px;
+      display: flex;
+      justify-content: space-between;
+
+      ::ng-deep .mat-button-wrapper {
+        width: 100%;
+        justify-content: space-between;
+        display: flex;
+        padding: 0px 15px;
+        align-items: center;
+      }
+    }
+  }
+
   .schedule {
     display: flex;
     flex-direction: column;
