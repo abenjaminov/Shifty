@@ -1,6 +1,7 @@
 import {  Condition } from "../models/models";
 import { Router } from "express-serve-static-core";
 import { RoutesCommon } from "./routeCommon";
+import { getHttpResposeJson } from "../models/helpers";
 
 var express = require('express');
 var router: Router = express.Router();
@@ -9,7 +10,7 @@ router.get('/', function(req, res, next) {
     var context = RoutesCommon.getContextFromRequest(req);
   
     context.select(Condition, true).then(conditions => {
-      res.json({data : conditions});
+      res.json(getHttpResposeJson(conditions, false));
     });
 });
 
@@ -19,7 +20,8 @@ router.post('/', (req,res,next) => {
     var context = RoutesCommon.getContextFromRequest(req);
 
     context.insert(Condition, [condition]).then(x => {
-        res.json({data : condition});
+        req.cacheService.clearByPrefix('/api/conditions');
+        res.json(getHttpResposeJson(condition, true));
     });
 });
 
@@ -29,10 +31,12 @@ router.delete('/:id',(req,res,next) => {
     var context = RoutesCommon.getContextFromRequest(req);
 
     context.deleteSimple(Condition, conditionId).then(x => {
-        res.json({ data: true });
+        req.cacheService.clearByPrefix('/api/conditions');
+        res.json(getHttpResposeJson(true, true));
     }).catch(err => {
         // TODO : Log
         console.error("Delete Condition " + err);
+        res.status(500).send();
     })
 });
 

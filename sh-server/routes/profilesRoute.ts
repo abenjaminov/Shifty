@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { RoutesCommon } from './routeCommon';
 import { Profile, Absence, NonWorkingDay } from '../models/models';
 import { IFilterStatement } from '../database/database';
-import { toUtcDate } from '../models/helpers';
+import { toUtcDate, getHttpResposeJson } from '../models/helpers';
 
 var router: Router = express.Router(); 
 
@@ -20,7 +20,7 @@ router.get('/:id?', (req , res) => {
   }
 
   context.select(Profile, true,true, filter).then(profiles => {
-    res.json({data : profiles});
+    res.json(getHttpResposeJson(profiles, false));
   }).catch(err => {
     console.error("Put Profile " + err);
     // TODO : Log Error
@@ -47,7 +47,9 @@ router.put('/', async (req , res) => {
 
     context.connection.commit();
 
-    res.json({data : profile});
+    req.cacheService.clearByPrefix('/api/profiles');
+
+    res.json(getHttpResposeJson(profile, true));
   } catch (error) {
     console.error("Put Profile " + error);
     context.connection.rollback();

@@ -97,4 +97,8 @@ export class HomeComponent implements OnInit {
 
     this.init();
   }
+
+  onExport() {
+    this.scheduleService.exportWeek(this.weeklySchedule.days[Day.Sunday].date);
+  }
 }

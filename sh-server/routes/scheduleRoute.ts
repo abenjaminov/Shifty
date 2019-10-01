@@ -4,6 +4,8 @@ import { Profile, Assignment, Room, DailySchedule, Day, ConditionType, Condition
 import { GeneticEnviroment } from "../genetics/evniroment";
 import { Router, Request } from "express";
 import Enumerable from 'linq';
+import { getHttpResposeJson } from "../models/helpers";
+import Excel from 'exceljs';
 
 var express = require('express');
 var router: Router = express.Router();
@@ -101,7 +103,9 @@ router.get('/run/:date?', async (req: Request,res,next) => {
         res.status(500).json("Error occured running scheduler");
     }
     else {
-        res.json("Success running scheduler");
+        req.cacheService.clearByPrefix('/api/schedule');
+
+        res.json(getHttpResposeJson("Success running scheduler", true));
     }
 });
 
@@ -133,7 +137,7 @@ var prepRoomsForRun = (rooms: Array<Room>, permanentConditionsForThisDay: Array<
 router.get('/test', async (req,res,next) => {
     //var solution = GeneticEnviroment.test();
 
-    res.json(["solution","For","The","Genetics"]);
+    res.json(getHttpResposeJson(["solution","For","The","Genetics"], false));
 });
 
 router.get('/:date?', async (req,res,next) => {
@@ -148,7 +152,20 @@ router.get('/:date?', async (req,res,next) => {
 
     let weeklySchedule = await scheduleService.getWeeklySchedule(firstDate)
     
-    res.json({data : weeklySchedule});
+    res.json(getHttpResposeJson(weeklySchedule, false));
+});
+
+router.get('/export/:date', async (req,res,next) => {
+    var workbook = new Excel.Workbook();
+    workbook.creator = "Shifty App";
+    var sheet = workbook.addWorksheet('Schedule', {views:[{xSplit: 1, ySplit:1}]});
+
+    res.setHeader('Content-Type', 'text/xlsx');
+    res.setHeader('Content-Disposition','attachment; filename=Schedule.xlsx');
+
+    workbook.xlsx.write(res).then(x => {
+        res.end();
+    });
 });
 
 

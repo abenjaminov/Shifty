@@ -18,4 +18,12 @@ export class CacheService {
     clear() {
         serverCache.flushAll();
     }
+
+    clearByPrefix(prefix: string) {
+        let keysToClear = serverCache.keys();
+
+        keysToClear = keysToClear.filter(key => key.startsWith(prefix));
+
+        serverCache.del(keysToClear);
+    }
 }

@@ -37,6 +37,18 @@ export class ScheduleService {
     return result;
   }
 
+
+  async exportWeek(date: Date) {
+    let dateParams = [];
+
+    let dateParam = date.getFullYear() + ";" + date.getMonth() + ";" + date.getDate();
+    dateParams.push(dateParam);
+
+    let result = await this.httpService.downloadFile('api/schedule/export', dateParams);
+
+    return result;
+  }
+
   load(date?: Date): Promise<WeeklySchedule> {
     this.state = ServiceState.loading;
     let dateParams = undefined;
@@ -89,4 +101,5 @@ export class ScheduleService {
   toDate(value: string) {
     return new Date(value);
   }
+
 }

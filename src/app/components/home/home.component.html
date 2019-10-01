@@ -1,11 +1,15 @@
 <div class="sh-home">
     <sh-view [titleText]="title">
         <div viewActions class="actions">
-            <button mat-raised-button (click)="onPrevWeekClicked()">
+            <button class="switch-week" mat-raised-button (click)="onPrevWeekClicked()">
                 <fa name="chevron-left"></fa>
                 <span>Previous week</span>
             </button>
-            <button mat-raised-button (click)="onNextWeekClicked()">
+            <button class="export" mat-raised-button (click)="onExport()">
+                <fa name="file"></fa>
+                <span>Export</span>
+            </button>
+            <button class="switch-week" mat-raised-button (click)="onNextWeekClicked()">
                 <span>Next week</span>
                 <fa name="chevron-right"></fa>
             </button>

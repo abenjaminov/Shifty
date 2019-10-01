@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {AuthenticationService} from "./authentication.service";
 import {CacheService} from "./cache.service";
+import * as fileSaver from 'file-saver';
 
 export interface HttpResult {
   data: any;
@@ -27,8 +28,20 @@ export class HttpService {
     this.cacheService.clear(cacheName);
   }
 
-  async get(cacheName:string, url:string, params? :Array<string>): Promise<HttpResult> {
+  async downloadFile(url:string, params?: Array<string>) {
+    url = `${url}` + `${params ? '/' + params.join('/') : ''}`;
+
     let headers = this.getHttpHeaders();
+
+    // @ts-ignore
+    let result = await this.httpClient.get<HttpResult>(url, {headers: headers, responseType: "blob" }).subscribe(x => {
+      const blob = new Blob([x], { type: 'text/xlsx' })
+      fileSaver.saveAs(blob, "schedule.xlsx");
+    });
+  }
+
+  async get(cacheName:string, url:string, params? :Array<string>): Promise<HttpResult> {
+
 
     url = `${url}` + `${params ? '/' + params.join('/') : ''}`;
 
@@ -45,6 +58,8 @@ export class HttpService {
     }
 
     try {
+      let headers = this.getHttpHeaders();
+
       let result = await this.httpClient.get<HttpResult>(url,{headers: headers}).toPromise<HttpResult>();
 
       if(cache) {
