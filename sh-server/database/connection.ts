@@ -3,7 +3,6 @@ import fs from 'fs';
 
 var getConnection = (tenant:string) => {
     var createConnectionPromise = new Promise<Connection> ((resolve, reject) => {
-        console.log(__dirname);
         var connection: Connection = mySql.createConnection({
             multipleStatements: true,
             host: '35.246.240.151',

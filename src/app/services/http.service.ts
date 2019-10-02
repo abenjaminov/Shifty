@@ -28,21 +28,20 @@ export class HttpService {
     this.cacheService.clear(cacheName);
   }
 
-  async downloadFile(url:string, params?: Array<string>) {
+  downloadFile(url:string, params?: Array<string>) {
     url = `${url}` + `${params ? '/' + params.join('/') : ''}`;
 
     let headers = this.getHttpHeaders();
 
     // @ts-ignore
-    let result = await this.httpClient.get<HttpResult>(url, {headers: headers, responseType: "blob" }).subscribe(x => {
-      const blob = new Blob([x], { type: 'text/xlsx' })
-      fileSaver.saveAs(blob, "schedule.xlsx");
+    this.httpClient.get<HttpResult>(url, {headers: headers, observe: "response", responseType: "blob" as "json" }).subscribe(x => {
+      let fileName = x.headers.get("content-disposition").split("filename=")[1];
+      const blob = new Blob([x.body as any], { type: 'text/xlsx' })
+      fileSaver.saveAs(blob, fileName);
     });
   }
 
   async get(cacheName:string, url:string, params? :Array<string>): Promise<HttpResult> {
-
-
     url = `${url}` + `${params ? '/' + params.join('/') : ''}`;
 
     let cache = undefined;

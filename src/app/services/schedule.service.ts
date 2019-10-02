@@ -1,8 +1,8 @@
-import {forwardRef, Inject, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {ServiceState} from "./models";
 import * as Enumerable from 'linq';
-import {createEnumList, DailySchedule, Day, Profile, Tag, WeeklySchedule} from "../models";
-import {StateService} from "./state.service";
+import {createEnumList, DailySchedule, Day, WeeklySchedule} from "../models";
+import {AppStatus, StateService} from "./state.service";
 import {HttpService} from "./http.service";
 
 @Injectable({
@@ -38,15 +38,14 @@ export class ScheduleService {
   }
 
 
-  async exportWeek(date: Date) {
+  exportWeek(date: Date) {
     let dateParams = [];
 
     let dateParam = date.getFullYear() + ";" + date.getMonth() + ";" + date.getDate();
     dateParams.push(dateParam);
 
-    let result = await this.httpService.downloadFile('api/schedule/export', dateParams);
+    this.httpService.downloadFile('api/schedule/export', dateParams);
 
-    return result;
   }
 
   load(date?: Date): Promise<WeeklySchedule> {
