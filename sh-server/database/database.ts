@@ -505,6 +505,10 @@ export class DbContext {
     }
 
     getDbValueText(mappingType: MappingType, value: any, raw?: boolean): string {
+        if(!value) {
+            return null;
+        }
+        
         if(mappingType == MappingType.string) {
             return raw ? `${value}` : `'${value}'`;
         }

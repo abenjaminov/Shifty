@@ -1,5 +1,181 @@
 .profile-edit {
     height: 100%;
+
+    .save-profile {
+        padding: 0px;
+        width: 85px;
+        display: flex;
+        justify-content: space-between;
+
+        ::ng-deep .mat-button-wrapper {
+            width: 100%;
+            justify-content: space-between;
+            display: flex;
+            padding: 0px 15px;
+            align-items: center;
+        }
+    }
+
+    .row {
+        display: flex;
+    }
+
+    .col {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .profile-info {
+        .profile-edit-main {
+            flex:1;
+
+            .basic {
+                display: flex;
+                align-items: center;
+
+                .profile-image img {
+                    width: 150px;
+                }
+
+                .profile-name {
+                    margin-left: 20px;
+                    span {
+                        font-size: 26px;
+                    }
+                }
+            }
+
+            .non-working-days-container {
+                .non-working-days {
+                    display: flex;
+                    flex-direction: row;
+                    flex: 1;
+                    width: 420px;
+                    flex-wrap: wrap;
+
+                    .non-working-day {
+                        width: 95px;
+                        height: 30px;
+                        margin-bottom: 5px;
+                        border: 1px solid black;
+                        text-align: center;
+                        margin-right: 5px;
+                        cursor: pointer;
+
+                        ::ng-deep .mat-button-toggle-label-content {
+                            line-height: 0px;
+                            padding: 0px;
+                        }
+
+                        &:hover {
+                            background: lightgray;
+                        }
+                    }
+                }
+            }
+        }
+
+        .profile-professions {
+            flex:1;
+
+            .title {
+                font-size: 26px;
+                font-weight: bold;
+                border-bottom: 1px solid black;
+                padding: 15px 0px 15px 20px;
+                margin-bottom: 15px;
+            }
+
+            .profession {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                height: 30px;
+                border-bottom: 2px solid lightgray;
+                padding: 5px 0px 5px 10px;
+
+                .remove-profession {
+                    font-size: 20px;
+                }
+            }
+
+            .add-profession-container {
+                .title {
+                    font-size: 20px;
+                }
+
+                .new-profession {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 0px 0px 15px 20px;
+
+                    .tags-list {
+                        width: 100%;
+                    }
+
+                    .add-profession {
+                        padding: 0px;
+                        display: flex;
+                        justify-content: space-between;
+
+                        ::ng-deep .mat-button-wrapper {
+                            width: 100%;
+                            justify-content: space-between;
+                            display: flex;
+                            padding: 0px 10px;
+                            align-items: center;
+                        }
+                    }
+                }
+            }
+
+
+        }
+
+        .absences {
+            .title {
+                font-size: 26px;
+                font-weight: bold;
+                border-bottom: 1px solid black;
+                padding: 15px 0px 15px 20px;
+                margin-bottom: 15px;
+            }
+
+            .add-period-container {
+                flex: 1;
+
+                .period-date {
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+
+                    .label {
+                        width: 75px;
+                    }
+
+                    .date-picker {
+                        margin-left: 50px;
+                    }
+                }
+            }
+
+            .period-list {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+
+                .absence {
+                    display: flex;
+
+                    .date {
+                        margin-right: 5px;
+                    }
+                }
+            }
+
+        }
+    }
 }
 
 .profile-edit-grid {

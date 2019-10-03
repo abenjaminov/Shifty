@@ -1,6 +1,6 @@
 import {Injectable, Inject, forwardRef} from '@angular/core';
 import {ServiceState} from "./models";
-import {Profile} from "../models";
+import {Absence, Profile} from "../models";
 import { StateService, IStateObject } from './state.service';
 import * as Enumerable from "linq";
 
@@ -43,8 +43,15 @@ export class ProfilesService
         for(let absence of profiles[index].absences) {
           absence.startDate = new Date(Date.parse(absence.startDate.toString()));
           absence.endDate = new Date(Date.parse(absence.endDate.toString()));
+
+          this.fixAbsence(absence);
         }
       }
     })
+  }
+
+  fixAbsence(absence: Absence) {
+    absence.startDateForDisplay = `${absence.startDate.getDate()}/${absence.startDate.getMonth() + 1}/${absence.startDate.getFullYear()}`
+    absence.endDateForDisplay = `${absence.endDate.getDate()}/${absence.endDate.getMonth() + 1}/${absence.endDate.getFullYear()}`
   }
 }

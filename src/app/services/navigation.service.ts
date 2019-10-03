@@ -1,4 +1,4 @@
-import {forwardRef, Inject, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Router} from "@angular/router";
 import {Events, EventsService} from "./events.service";
 
@@ -14,10 +14,16 @@ export class NavigationService {
   }
 
   navigateIn(path: string) {
-    this.router.navigate([this.router.url, `${path}`]);
+    this.navigateInternal([this.router.url, `${path}`]);
   }
 
   navigateTo(path: string) {
-    this.router.navigate([`${path}`]);
+    this.navigateInternal([`${path}`]);
+  }
+
+  navigateInternal(commands: Array<string>) {
+    this.router.navigate(commands).then(x => {
+      this.eventsService.emit(Events.NavigationEnd);
+    });
   }
 }

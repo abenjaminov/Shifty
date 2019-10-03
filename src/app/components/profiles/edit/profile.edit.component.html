@@ -1,74 +1,157 @@
 <div class="profile-edit" *ngIf="profileToEdit">
-    <sh-view [titleText]="profileToEdit.name">
+    <sh-view titleText="Edit Profile">
         <div viewActions>
-            <div class="sh-btn" (click)="onSaveClicked()">
-                Save
-            </div>
+            <button class="save-profile" mat-raised-button (click)="onSaveClicked()">
+                <fa name="save"></fa>
+                <span>Save</span>
+            </button>
         </div>
-        <div viewContent class="profile-edit-grid">
-            <div class="profile-info">
-                <div class="profile-image">
-                    <img src="../../../../assets/profile.png"/>
-                </div>
-                <div class="profile-main-info">
-                    <div class="info">
-                        <span class="property">Name :  </span>
-                        <input [value]="modifiedProfile.name" (change)="profileNameChanged($event)"/>
-                    </div>
-                    <div class="professions">
-                        <div class="title">Professions</div>
-                        <div class="profession" *ngFor="let profession of profileToEdit.professions; let i = index">
-                            <div>{{i + 1}}.</div>
-                            <div>{{profession.name}}</div>
-                            <div class="sh-btn" (click)="removeProfession(profession)">
-                                Remove
-                            </div>
+        <div viewContent class="profile-info">
+            <div class="row">
+                <div class="profile-edit-main">
+                    <div class="basic">
+                        <div class="profile-image">
+                            <img src="../../../../assets/profile.png"/>
                         </div>
-                        <div class="add-professions">
-                           <sh-dropdown [options]="tags" [(selectedOption)]="selectedTag"></sh-dropdown>
-                            <div class="sh-btn" (click)="addProfession()">
-                                ADD
-                            </div>
+                        <div class="profile-name">
+                            <span>{{modifiedProfile.name}}</span>
                         </div>
                     </div>
-
-                </div>
-                <div class="absences">
-                    <div>
-                        <span>Start Date</span>
-                        <mat-form-field>
-                            <input matInput [matDatepicker]="startDatePicker" placeholder="Absence start date" [min]="today" (dateChange)="this.startDateChanged($event)" disabled>
-                            <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
-                            <mat-datepicker touchUi #startDatePicker disabled="false" [dateClass]="dateClass"></mat-datepicker>
-                        </mat-form-field>
-                    </div>
-
-                    <div>
-                        <span>End Date</span>
-                        <mat-form-field>
-                            <input matInput [matDatepicker]="endDatePicker" placeholder="Absence end date" [min]="selectedStartDate" (dateChange)="this.endDateChanged($event)" disabled>
-                            <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
-                            <mat-datepicker touchUi #endDatePicker disabled="false" [dateClass]="dateClass"></mat-datepicker>
-                        </mat-form-field>
-                    </div>
-                    <div class="sh-btn" style="height: 25px;width: 150px;" (click)="submitAbsence()">
-                        Submit Absence
-                    </div>
-                    <div>
-                        Next Absence : {{this.nextAbsence}}
+                    <div class="non-working-days-container">
+                        <h3>Absent Days</h3>
+                        <div class="non-working-days">
+                            <mat-button-toggle class="non-working-day"
+                                               [checked]="nonWorkingDay.isSelected"
+                                               (change)="toggleChanged(nonWorkingDay, $event)"  *ngFor="let nonWorkingDay of this.nonWorkingDays">{{nonWorkingDay.day}}</mat-button-toggle>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <h3>Non Working Days</h3>
-            <div class="non-working-days">
-
-                <div class="non-working-day" *ngFor="let nonWorkingDay of this.nonWorkingDays" [ngClass]="{'selected' : nonWorkingDay.isSelected}" (click)="nonWorkingDayClicked(nonWorkingDay)">
-                    {{nonWorkingDay.day}}
+                <div class="profile-professions">
+                    <div class="title">Professions</div>
+                    <div class="profession" *ngFor="let profession of profileToEdit.professions; let i = index">
+                        <div>{{profession.name}}</div>
+                        <button class="remove-profession" mat-button (click)="onSaveClicked()">
+                            <fa name="trash"></fa>
+                        </button>
+                    </div>
+                    <div class="add-profession-container">
+                        <div class="title">Add Profession</div>
+                        <div class="new-profession">
+                           <sh-dropdown class="tags-list" [options]="tags" [(selectedOption)]="selectedTag"></sh-dropdown>
+                            <button class="add-profession" mat-button (click)="onSaveClicked()">
+                                <fa name="plus"></fa>
+                                <span>Add</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="profile-secondary-info">
-                <div></div>
+            <div class="col absences">
+                <div class="title">Absent Periods</div>
+                <div class="row">
+                    <div class="add-period-container">
+                        <div class="period-date">
+                            <span class="label">Start Date</span>
+                            <mat-form-field class="date-picker">
+                                <input matInput [matDatepicker]="startDatePicker" placeholder="Period start date" [min]="today" (dateChange)="this.startDateChanged($event)" disabled>
+                                <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+                                <mat-datepicker touchUi #startDatePicker disabled="false" [dateClass]="dateClass"></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="period-date">
+                            <span class="label">End Date</span>
+                            <mat-form-field class="date-picker">
+                                <input matInput [matDatepicker]="endDatePicker" placeholder="Period end date" [min]="selectedStartDate" (dateChange)="this.endDateChanged($event)" disabled>
+                                <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+                                <mat-datepicker touchUi #endDatePicker disabled="false" [dateClass]="dateClass"></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                        <button class="add-profession" mat-stroked-button (click)="submitAbsence()">
+                            Submit Absence
+                        </button>
+<!--                        <div>-->
+<!--                            Next Absence : {{this.nextAbsence}}-->
+<!--                        </div>-->
+                    </div>
+                    <div class="period-list">
+                        <div class="absence" *ngFor="let absence of this.modifiedProfile.absences">
+                            <div class="date">
+                                {{absence.startDateForDisplay}}
+                            </div>
+                            <div class="date">
+                                {{absence.endDateForDisplay}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+
+<!--        <div viewContent class="profile-edit-grid">-->
+<!--            <div class="profile-info">-->
+<!--                <div class="profile-image">-->
+<!--                    <img src="../../../../assets/profile.png"/>-->
+<!--                </div>-->
+<!--                <div class="profile-main-info">-->
+<!--                    <div class="info">-->
+<!--                        <span class="property">Name :  </span>-->
+<!--                        <input [value]="modifiedProfile.name" (change)="profileNameChanged($event)"/>-->
+<!--                    </div>-->
+<!--                    <div class="professions">-->
+<!--                        <div class="title">Professions</div>-->
+<!--                        <div class="profession" *ngFor="let profession of profileToEdit.professions; let i = index">-->
+<!--                            <div>{{i + 1}}.</div>-->
+<!--                            <div>{{profession.name}}</div>-->
+<!--                            <div class="sh-btn" (click)="removeProfession(profession)">-->
+<!--                                Remove-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="add-professions">-->
+<!--                           <sh-dropdown [options]="tags" [(selectedOption)]="selectedTag"></sh-dropdown>-->
+<!--                            <div class="sh-btn" (click)="addProfession()">-->
+<!--                                ADD-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+<!--                </div>-->
+<!--                <div class="absences">-->
+<!--                    <div>-->
+<!--                        <span>Start Date</span>-->
+<!--                        <mat-form-field>-->
+<!--                            <input matInput [matDatepicker]="startDatePicker" placeholder="Absence start date" [min]="today" (dateChange)="this.startDateChanged($event)" disabled>-->
+<!--                            <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>-->
+<!--                            <mat-datepicker touchUi #startDatePicker disabled="false" [dateClass]="dateClass"></mat-datepicker>-->
+<!--                        </mat-form-field>-->
+<!--                    </div>-->
+
+<!--                    <div>-->
+<!--                        <span>End Date</span>-->
+<!--                        <mat-form-field>-->
+<!--                            <input matInput [matDatepicker]="endDatePicker" placeholder="Absence end date" [min]="selectedStartDate" (dateChange)="this.endDateChanged($event)" disabled>-->
+<!--                            <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>-->
+<!--                            <mat-datepicker touchUi #endDatePicker disabled="false" [dateClass]="dateClass"></mat-datepicker>-->
+<!--                        </mat-form-field>-->
+<!--                    </div>-->
+<!--                    <div class="sh-btn" style="height: 25px;width: 150px;" (click)="submitAbsence()">-->
+<!--                        Submit Absence-->
+<!--                    </div>-->
+<!--                    <div>-->
+<!--                        Next Absence : {{this.nextAbsence}}-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <h3>Non Working Days</h3>-->
+<!--            <div class="non-working-days">-->
+
+<!--                <div class="non-working-day" *ngFor="let nonWorkingDay of this.nonWorkingDays" [ngClass]="{'selected' : nonWorkingDay.isSelected}" (click)="nonWorkingDayClicked(nonWorkingDay)">-->
+<!--                    {{nonWorkingDay.day}}-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="profile-secondary-info">-->
+<!--                <div></div>-->
+<!--            </div>-->
+<!--        </div>-->
     </sh-view>
 </div>

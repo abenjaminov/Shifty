@@ -7,6 +7,7 @@ import { TagsService } from 'src/app/services/tags.service';
 import { NavigationService } from 'src/app/services/navigation.service';
 import {MatDatepickerInputEvent} from "@angular/material/datepicker";
 import * as Enumerable from 'linq';
+import {MatButtonToggleChange} from "@angular/material/button-toggle";
 
 @Component({
     selector: 'sh-profile-edit',
@@ -145,6 +146,8 @@ import * as Enumerable from 'linq';
         absence.endDate = this.toUtcDate(this.selectedEndDate);
         absence.profileId = this.modifiedProfile.id;
 
+        this.profilesService.fixAbsence(absence);
+
         this.modifiedProfile.absences.push(absence);
 
         this.setNextAbsence();
@@ -164,7 +167,7 @@ import * as Enumerable from 'linq';
         return Enumerable.from(this.modifiedProfile.absences).any(abs => d >= abs.startDate && d <= abs.endDate) ? 'abscent-date' : undefined;
     }
 
-    nonWorkingDayClicked(nonWorkingDay: any) {
-        nonWorkingDay.isSelected = !nonWorkingDay.isSelected;
+    toggleChanged(nonWorkingDay: any, $event: MatButtonToggleChange) {
+        nonWorkingDay.isSelected = $event.source.checked;
     }
 }

@@ -32,6 +32,7 @@ import {ConditionService} from "./services/conditions.service";
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatDialogModule} from "@angular/material/dialog";
 import { QuestionDialogComponent } from './components/question-dialog/question-dialog.component';
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
 
 @NgModule({
   declarations: [
@@ -64,7 +65,8 @@ import { QuestionDialogComponent } from './components/question-dialog/question-d
         MatBottomSheetModule,
         FormsModule,
         MatSnackBarModule,
-        MatDialogModule
+        MatDialogModule,
+        MatButtonToggleModule
     ],
   entryComponents: [AbsentComponent,QuestionDialogComponent],
   providers: [HttpClient, ProfilesService, TagsService, RoomsService, ConditionService],

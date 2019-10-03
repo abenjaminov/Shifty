@@ -4,6 +4,7 @@ import {Subscription} from "rxjs";
 
 export enum Events {
   UserAuthorized = "UserAuthorized",
+  NavigationEnd = "NavigationEnd",
   LoggedOut = "LoggedOut"
 }
 

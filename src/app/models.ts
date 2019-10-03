@@ -10,6 +10,10 @@ export class Absence {
     profileId: string;
     startDate: Date;
     endDate: Date;
+
+    // Not mapped
+    startDateForDisplay: string;
+    endDateForDisplay: string;
 }
 
 export class NonWorkingDay {
