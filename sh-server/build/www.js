@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var app_1 = require("./app");
+const app_1 = require("./app");
 var debug = require('debug')('sh-server:server');
 var http = require('http');
 /**

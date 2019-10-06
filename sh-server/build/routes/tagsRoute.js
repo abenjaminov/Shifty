@@ -1,24 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const models_1 = require("../models/models");
+const routeCommon_1 = require("./routeCommon");
+const helpers_1 = require("../models/helpers");
 var express = require('express');
 var router = express.Router();
-var tagId = 0;
-var tags = [{ id: tagId++, name: "Senior" },
-    { id: tagId++, name: "Conventional" },
-    { id: tagId++, name: "RF" },
-    { id: tagId++, name: "CT Protocoling" },
-    { id: tagId++, name: "CT ER" },
-    { id: tagId++, name: "Chest" },
-    { id: tagId++, name: "Neuroradiology" },
-    { id: tagId++, name: "US" },
-    { id: tagId++, name: "MRI" },
-    { id: tagId++, name: "Pediatrics" },
-    { id: tagId++, name: "MSK" },
-    { id: tagId++, name: "Breast" },
-    { id: tagId++, name: "Angio" },
-    { id: tagId++, name: "Intern" }];
 router.get('/', function (req, res, next) {
-    res.json({ data: tags });
+    var context = routeCommon_1.RoutesCommon.getContextFromRequest(req);
+    context.select(models_1.Tag, true).then(tags => {
+        res.json(helpers_1.getHttpResposeJson(tags, true));
+    });
 });
-module.exports = router;
+exports.default = router;
 //# sourceMappingURL=tagsRoute.js.map
