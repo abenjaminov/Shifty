@@ -16,6 +16,7 @@ import tagsRouter from './routes/tagsRoute';
 import roomsRouter from './routes/roomsRoute';
 import conditionsRouter from './routes/conditionsRoute';
 import scheduleRouter from './routes/scheduleRoute';
+import { RoomsService } from './services/rooms.service';
 
 const app: express.Application = express();
 
@@ -29,15 +30,6 @@ console.log(appFolder)
 
 // Serve only the static files form the dist directory
 app.use(express.static(appFolder));
-
-// ---- SERVE APLICATION PATHS ---- //
-app.use('*', (req, res,next) => {
-    res.status(200).sendFile(`/`, {root: appFolder});
-});
-
-var freePassRoutes = [
-    '/api/schedule/test',
-]
 
 app.use("/api/*", (req, res, next) => {
     var logService = new LogService("App");
@@ -176,7 +168,7 @@ app.use('/api/*', (req: Request ,res,next) => {
         req.scheduleService = new ScheduleService(context);
         req.logService = logService;
         req.cacheService = cacheService;
-        //req.roomService = new RoomsService();
+        req.roomService = new RoomsService();
 
         next();
     }).catch(error => {
@@ -189,5 +181,10 @@ app.use('/api/tags', tagsRouter);
 app.use('/api/rooms', roomsRouter);
 app.use('/api/conditions', conditionsRouter);
 app.use('/api/schedule', scheduleRouter);
+
+// ---- SERVE APLICATION PATHS ---- //
+app.use('*', (req, res,next) => {
+    res.status(200).sendFile(`/`, {root: appFolder});
+});
 
 export { app };

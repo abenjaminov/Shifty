@@ -26,6 +26,7 @@ const tagsRoute_1 = __importDefault(require("./routes/tagsRoute"));
 const roomsRoute_1 = __importDefault(require("./routes/roomsRoute"));
 const conditionsRoute_1 = __importDefault(require("./routes/conditionsRoute"));
 const scheduleRoute_1 = __importDefault(require("./routes/scheduleRoute"));
+const rooms_service_1 = require("./services/rooms.service");
 const app = express_1.default();
 exports.app = app;
 app.use(body_parser_1.default.json());
@@ -35,13 +36,6 @@ const appFolder = __dirname + '/../../dist/Shifty';
 console.log(appFolder);
 // Serve only the static files form the dist directory
 app.use(express_1.default.static(appFolder));
-// ---- SERVE APLICATION PATHS ---- //
-app.use('*', (req, res, next) => {
-    res.status(200).sendFile(`/`, { root: appFolder });
-});
-var freePassRoutes = [
-    '/api/schedule/test',
-];
 app.use("/api/*", (req, res, next) => {
     var logService = new logs_service_1.LogService("App");
     let date = new Date();
@@ -150,7 +144,7 @@ app.use('/api/*', (req, res, next) => {
         req.scheduleService = new schedule_service_1.ScheduleService(context);
         req.logService = logService;
         req.cacheService = cacheService;
-        //req.roomService = new RoomsService();
+        req.roomService = new rooms_service_1.RoomsService();
         next();
     }).catch(error => {
         res.status(500).send("Error establishing connection and context");
@@ -161,4 +155,8 @@ app.use('/api/tags', tagsRoute_1.default);
 app.use('/api/rooms', roomsRoute_1.default);
 app.use('/api/conditions', conditionsRoute_1.default);
 app.use('/api/schedule', scheduleRoute_1.default);
+// ---- SERVE APLICATION PATHS ---- //
+app.use('*', (req, res, next) => {
+    res.status(200).sendFile(`/`, { root: appFolder });
+});
 //# sourceMappingURL=app.js.map
