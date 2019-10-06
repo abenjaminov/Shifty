@@ -110,26 +110,23 @@ export class ConditionsComponent implements OnInit {
   addCondition() {
     var condition = new Condition();
     condition.type = ConditionType[this.selectedConditionType.id];
+    condition.isLockedForNextDay = this.selectedIsLockedForNextDayIndex == 0;
+    condition.professionId = this.selectedTag.id;
+    condition.importance = ConditionImportance[this.conditionImportances[this.selectedImportanceIndex]];
     condition.amount = 1;
 
     if(this.selectedConditionType.id == ConditionType.Room) {
       condition.roomId = this.selectedRoom.id;
-      condition.professionId = this.selectedTag.id;
-      condition.importance = ConditionImportance[this.conditionImportances[this.selectedImportanceIndex]];
-      condition.isLockedForNextDay = this.selectedIsLockedForNextDayIndex == 0;
     }
     else if (this.selectedConditionType.id == ConditionType.Permanent) {
       condition.roomId = this.selectedRoom.id;
       condition.profileId = this.selectedProfile.id.toString();
-      condition.professionId = this.selectedTag.id;
       condition.day = Day[this.selectedDay.id];
-      condition.importance = ConditionImportance[this.conditionImportances[this.selectedImportanceIndex]];
-      condition.isLockedForNextDay = this.selectedIsLockedForNextDayIndex == 0;
+
     }
     else if(this.selectedConditionType.id == ConditionType.Rotation) {
       condition.description = this.description;
-      condition.importance = ConditionImportance[this.conditionImportances[this.selectedImportanceIndex]];
-      condition.isLockedForNextDay = this.selectedIsLockedForNextDayIndex == 0;
+      condition.roomId = new Date().getTime();
     }
 
     this.conditionsService.addCondition(condition).then(x => {

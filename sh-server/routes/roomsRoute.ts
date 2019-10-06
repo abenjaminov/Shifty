@@ -6,12 +6,19 @@ import { getHttpResposeJson } from "../models/helpers";
 var express = require('express');
 var router: Router = express.Router();
 
-router.get('/', function(req, res, next) {
+router.get('/', async (req, res, next) => {
   var context = RoutesCommon.getContextFromRequest(req);
   
-    context.select(Room, true, true).then(rooms => {
-      res.json(getHttpResposeJson(rooms, false));
-    });
+  try {
+    let rooms = await req.roomService.getRooms(context);
+
+    res.json(getHttpResposeJson(rooms, false));
+  }
+  catch (error) {
+    req.logService.error("Error getting rooms", error)
+    res.status(500).send().end();
+  }
+  
 });
 
 export default router;

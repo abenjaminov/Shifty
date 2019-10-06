@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "heroku-postbuild": "ng build --prod --aot",
-    "start-ng": "ng serve --port 2424 --proxy-config proxy.conf.json --aot",
+    "start-dev": "ng serve --port 2424 --proxy-config proxy.conf.json --aot",
     "start": "node ./sh-server/build/www.js",
     "build": "ng build --prod",
     "test": "ng test",

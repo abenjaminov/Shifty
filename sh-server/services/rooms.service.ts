@@ -29,11 +29,11 @@ export class RoomsService {
     async getRooms(context: DbContext): Promise<Array<Room>> {
         var rooms = await context.select<Room>(Room, true,true, []);
 
-        let rotationConditions: Array<Condition> = await context.select(Condition, false,false, [{ dataFilters: [{property: 'type', value: ConditionType.Rotation}] }]);
+        let rotationConditions: Array<Condition> = await context.select(Condition,true,false, [{ dataFilters: [{property: 'type', value: ConditionType.Rotation}] }]);
 
         let rotationRooms = rotationConditions.map(rc => {
             let room = new Room();
-            room.id = new Date().getTime();
+            room.id = rc.roomId;
             room.isDynamic = true;
             room.name = rc.description;
             room.conditions = [rc];

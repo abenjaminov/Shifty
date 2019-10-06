@@ -33,10 +33,10 @@ class RoomsService {
     getRooms(context) {
         return __awaiter(this, void 0, void 0, function* () {
             var rooms = yield context.select(models_1.Room, true, true, []);
-            let rotationConditions = yield context.select(models_1.Condition, false, false, [{ dataFilters: [{ property: 'type', value: models_1.ConditionType.Rotation }] }]);
+            let rotationConditions = yield context.select(models_1.Condition, true, false, [{ dataFilters: [{ property: 'type', value: models_1.ConditionType.Rotation }] }]);
             let rotationRooms = rotationConditions.map(rc => {
                 let room = new models_1.Room();
-                room.id = new Date().getTime();
+                room.id = rc.roomId;
                 room.isDynamic = true;
                 room.name = rc.description;
                 room.conditions = [rc];
