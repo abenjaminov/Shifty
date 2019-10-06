@@ -1,6 +1,7 @@
-import * as express from 'express';
-import * as cookieParser from 'cookie-parser';
-import * as bodyParser from 'body-parser'
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser'
+import path from 'path';
 import { DbContext } from './database/database';
 import { RoutesCommon } from './routes/routeCommon';
 import { ScheduleService } from './services/schedule.service';
@@ -21,6 +22,18 @@ const app: express.Application = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser())
+
+const appFolder = __dirname + '\\..\\dist\\Shifty';
+
+console.log(appFolder)
+
+// Serve only the static files form the dist directory
+app.use(express.static(appFolder));
+
+// ---- SERVE APLICATION PATHS ---- //
+app.use('*', (req, res,next) => {
+    res.status(200).sendFile(`/`, {root: appFolder});
+});
 
 var freePassRoutes = [
     '/api/schedule/test',
