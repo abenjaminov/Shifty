@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser())
 
-const appFolder = __dirname + '\\..\\dist\\Shifty';
+const appFolder = __dirname + '\\..\\..\\dist\\Shifty';
 
 console.log(appFolder)
 

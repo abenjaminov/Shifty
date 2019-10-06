@@ -31,7 +31,7 @@ exports.app = app;
 app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: false }));
 app.use(cookie_parser_1.default());
-const appFolder = __dirname + '\\..\\dist\\Shifty';
+const appFolder = __dirname + '\\..\\..\\dist\\Shifty';
 console.log(appFolder);
 // Serve only the static files form the dist directory
 app.use(express_1.default.static(appFolder));
