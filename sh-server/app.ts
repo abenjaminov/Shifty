@@ -1,7 +1,6 @@
-import express = require('express');
-import path = require('path');
+import express from 'express';
 import cookieParser = require('cookie-parser');
-import bodyParser = require('body-parser');
+import bodyParser from 'body-parser'
 import { DbContext } from './database/database';
 import { RoutesCommon } from './routes/routeCommon';
 import { ScheduleService } from './services/schedule.service';
@@ -10,18 +9,17 @@ import { CacheService } from './services/cache.service';
 import x from './typings/index'
 import { AuthenticationService } from './services/authentication.service';
 import { LogService, LoggerTypes } from './services/logs.service';
-import { runInNewContext } from 'vm';
 
-var profiles = require('./routes/profilesRoute');
-var tags = require('./routes/tagsRoute');
-var rooms = require('./routes/roomsRoute');
-var conditions = require('./routes/conditionsRoute');
-var schedule = require('./routes/scheduleRoute');
+import profilesRouter from './routes/profilesRoute';
+import tagsRouter from './routes/tagsRoute';
+import roomsRouter from './routes/roomsRoute';
+import conditionsRouter from './routes/conditionsRoute';
+import scheduleRouter from './routes/scheduleRoute';
 
 const app: express.Application = express();
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false })); 
+//app.use(bodyParser.urlencoded({ extended: false })); 
 app.use(cookieParser())
 
 var freePassRoutes = [
@@ -111,14 +109,13 @@ app.use('/api/login', async (req,res) => {
 
 app.use('/api/*', (req: Request ,res,next) => {
     var logService = new LogService("Authenticate");
-    let authorizedResult = new AuthenticationService().authenticate(req.headers.authorization, req.body.username);
-
-    
 
     if(req.headers["abenjaminov"] == 'LETMETHROUGH') {
         next();
     }
     else {
+        let authorizedResult = new AuthenticationService().authenticate(req.headers.authorization, req.body.username);
+
         if(!authorizedResult.authorized) {
             logService.warning(`Authentication failed for '${req.body.username}', token : '${req.headers.authorization}'`);
             res.status(401).send("Sesson expired");
@@ -166,6 +163,7 @@ app.use('/api/*', (req: Request ,res,next) => {
         req.scheduleService = new ScheduleService(context);
         req.logService = logService;
         req.cacheService = cacheService;
+        //req.roomService = new RoomsService();
 
         next();
     }).catch(error => {
@@ -173,10 +171,10 @@ app.use('/api/*', (req: Request ,res,next) => {
     });
 })
 
-app.use('/api/profiles', profiles);
-app.use('/api/tags', tags);
-app.use('/api/rooms', rooms);
-app.use('/api/conditions', conditions);
-app.use('/api/schedule', schedule);
+app.use('/api/profiles', profilesRouter);
+app.use('/api/tags', tagsRouter);
+app.use('/api/rooms', roomsRouter);
+app.use('/api/conditions', conditionsRouter);
+app.use('/api/schedule', scheduleRouter);
 
 export { app };

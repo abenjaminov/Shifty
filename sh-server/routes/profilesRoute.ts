@@ -1,10 +1,10 @@
-import * as express from 'express';
-import { Router } from 'express';
 import { RoutesCommon } from './routeCommon';
 import { Profile, Absence, NonWorkingDay } from '../models/models';
 import { IFilterStatement } from '../database/database';
 import { toUtcDate, getHttpResposeJson } from '../models/helpers';
+import { Router } from "express-serve-static-core";
 
+import * as express from 'express';
 var router: Router = express.Router(); 
 
 /* GET users listing. */
@@ -69,4 +69,4 @@ function fixProfileBeforeSave(profile: any) {
   }
 }
 
-module.exports = router;
+export default router;

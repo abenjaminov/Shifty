@@ -16,144 +16,144 @@ class ChromosomeCouple {
 export class GeneticEnviroment {
 
     static test() {
-        var GEV = new GeneticEnviroment();
+        // var GEV = new GeneticEnviroment();
 
-        var Senior:Tag = { id: 1,name:"Senior"};
-        var Intern:Tag = { id: 2,name:"Intern"};
-        var SeniorA:Tag = { id: 3,name:"Senior A"};
-        var SeniorB:Tag = { id: 4,name: "Senior B"};
-        var SeniorC:Tag = { id: 5,name: "Senior C"};
+        // var Senior:Tag = { id: 1,name:"Senior"};
+        // var Intern:Tag = { id: 2,name:"Intern"};
+        // var SeniorA:Tag = { id: 3,name:"Senior A"};
+        // var SeniorB:Tag = { id: 4,name: "Senior B"};
+        // var SeniorC:Tag = { id: 5,name: "Senior C"};
 
-        var rooms: Room[] = [];
-        rooms.push({ id: 1, name: "Room 1", conditions: []});
-        rooms[rooms.length - 1].conditions.push(new Condition(Senior, 1, ConditionImportance.Required));
-        rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, ConditionImportance.Required ));
-        rooms[rooms.length - 1].conditions.push(new Condition(Senior, 1, ConditionImportance.NiceToHave ));
+        // var rooms: Room[] = [];
+        // rooms.push({ id: 1, name: "Room 1", conditions: []});
+        // rooms[rooms.length - 1].conditions.push(new Condition(Senior, 1, ConditionImportance.Required));
+        // rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, ConditionImportance.Required ));
+        // rooms[rooms.length - 1].conditions.push(new Condition(Senior, 1, ConditionImportance.NiceToHave ));
 
-        rooms.push({ id: 2, name: "Room 2", conditions: []});
-        rooms[rooms.length - 1].conditions.push(new Condition(SeniorA, 1, ConditionImportance.Required ));
-        rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, ConditionImportance.Required ));
+        // rooms.push({ id: 2, name: "Room 2", conditions: []});
+        // rooms[rooms.length - 1].conditions.push(new Condition(SeniorA, 1, ConditionImportance.Required ));
+        // rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, ConditionImportance.Required ));
 
-        rooms.push({ id: 3, name: "Room 3", conditions: []});
-        rooms[rooms.length - 1].conditions.push(new Condition(SeniorB, 1, ConditionImportance.Required ));
-        rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, ConditionImportance.Required ));
+        // rooms.push({ id: 3, name: "Room 3", conditions: []});
+        // rooms[rooms.length - 1].conditions.push(new Condition(SeniorB, 1, ConditionImportance.Required ));
+        // rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, ConditionImportance.Required ));
 
-        rooms.push({ id: 4, name: "Room 4", conditions: []});
-        rooms[rooms.length - 1].conditions.push(new Condition(SeniorC, 1, ConditionImportance.Required ));
-        rooms[rooms.length - 1].conditions.push(new Condition(SeniorC, 1, ConditionImportance.NiceToHave ));
-        rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, ConditionImportance.Required ));
+        // rooms.push({ id: 4, name: "Room 4", conditions: []});
+        // rooms[rooms.length - 1].conditions.push(new Condition(SeniorC, 1, ConditionImportance.Required ));
+        // rooms[rooms.length - 1].conditions.push(new Condition(SeniorC, 1, ConditionImportance.NiceToHave ));
+        // rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, ConditionImportance.Required ));
 
-        rooms.push({ id: 5, name: "Room 5", conditions: []});
-        rooms[rooms.length - 1].conditions.push(new Condition(Senior, 1, ConditionImportance.Required ));
-        rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, ConditionImportance.NiceToHave ));
+        // rooms.push({ id: 5, name: "Room 5", conditions: []});
+        // rooms[rooms.length - 1].conditions.push(new Condition(Senior, 1, ConditionImportance.Required ));
+        // rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, ConditionImportance.NiceToHave ));
 
-        rooms.push({ id: 6, name: "Room 6", conditions: []});
-        rooms[rooms.length - 1].conditions.push(new Condition(SeniorA, 1, ConditionImportance.Required ));
-        rooms[rooms.length - 1].conditions.push(new Condition(SeniorA, 1, ConditionImportance.NiceToHave ));
+        // rooms.push({ id: 6, name: "Room 6", conditions: []});
+        // rooms[rooms.length - 1].conditions.push(new Condition(SeniorA, 1, ConditionImportance.Required ));
+        // rooms[rooms.length - 1].conditions.push(new Condition(SeniorA, 1, ConditionImportance.NiceToHave ));
 
-        rooms.push({ id: 7, name: "Room 7", conditions: []});
-        rooms[2].conditions.push(new Condition(SeniorB, 1, ConditionImportance.Required ));
-        rooms[2].conditions.push(new Condition(Intern, 1, ConditionImportance.Required ));
+        // rooms.push({ id: 7, name: "Room 7", conditions: []});
+        // rooms[2].conditions.push(new Condition(SeniorB, 1, ConditionImportance.Required ));
+        // rooms[2].conditions.push(new Condition(Intern, 1, ConditionImportance.Required ));
 
-        rooms.push({ id: 8, name: "Room 8", conditions: []});
-        rooms[rooms.length - 1].conditions.push(new Condition(SeniorC, 1, ConditionImportance.Required ));
-        rooms[rooms.length - 1].conditions.push(new Condition(Senior, 1, ConditionImportance.NiceToHave ));
-        rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, ConditionImportance.NiceToHave ));
+        // rooms.push({ id: 8, name: "Room 8", conditions: []});
+        // rooms[rooms.length - 1].conditions.push(new Condition(SeniorC, 1, ConditionImportance.Required ));
+        // rooms[rooms.length - 1].conditions.push(new Condition(Senior, 1, ConditionImportance.NiceToHave ));
+        // rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, ConditionImportance.NiceToHave ));
 
-        rooms.push({ id: 9, name: "Room 9", conditions: []});
-        rooms[rooms.length - 1].conditions.push(new Condition(Senior, 1, ConditionImportance.Required ));
-        rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, ConditionImportance.Required ));
-        rooms[rooms.length - 1].conditions.push(new Condition(Senior, 1, ConditionImportance.NiceToHave ));
+        // rooms.push({ id: 9, name: "Room 9", conditions: []});
+        // rooms[rooms.length - 1].conditions.push(new Condition(Senior, 1, ConditionImportance.Required ));
+        // rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, ConditionImportance.Required ));
+        // rooms[rooms.length - 1].conditions.push(new Condition(Senior, 1, ConditionImportance.NiceToHave ));
 
-        rooms.push({ id: 10, name: "Room 10", conditions: []});
-        rooms[rooms.length - 1].conditions.push(new Condition(SeniorA, 1, ConditionImportance.Required ));
-        rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, ConditionImportance.Required ));
+        // rooms.push({ id: 10, name: "Room 10", conditions: []});
+        // rooms[rooms.length - 1].conditions.push(new Condition(SeniorA, 1, ConditionImportance.Required ));
+        // rooms[rooms.length - 1].conditions.push(new Condition(Intern, 1, ConditionImportance.Required ));
 
-        var profiles: Profile[] = [];
+        // var profiles: Profile[] = [];
 
-        var profile: Profile = new Profile();
-        profile.id = "1";
-        profile.name = "Profile 1"
-        profile.professions.push(Senior);
-        profiles.push(profile);
-
-        //profile = new Profile();profile.id = "2"; profile.name = "Profile 2";
-        //profile.professions.push(Senior);
-        //profiles.push(profile);
-        profile = new Profile();profile.id = "3"; profile.name = "Profile 3";
-        profile.professions.push(Senior);
-        profiles.push(profile);
-        profile = new Profile();profile.id = "4"; profile.name = "Profile 4";
-        profile.professions.push(Senior);
-        profiles.push(profile);
-        profile = new Profile();profile.id = "5"; profile.name = "Profile 5";
-        profile.professions.push(Senior);
-        profiles.push(profile);
-        // profile = new Profile();profile.id = "6"; profile.name = "Profile 6";
+        // var profile: Profile = new Profile();
+        // profile.id = "1";
+        // profile.name = "Profile 1"
         // profile.professions.push(Senior);
         // profiles.push(profile);
 
-        profile = new Profile();profile.id = "7"; profile.name = "Profile 7";
-        profile.professions.push(Intern);
-        profiles.push(profile);
-        profile = new Profile();profile.id = "8"; profile.name = "Profile 8";
-        profile.professions.push(Intern);
-        profiles.push(profile);
-        profile = new Profile();profile.id = "9"; profile.name = "Profile 9";
-        profile.professions.push(Intern);
-        profiles.push(profile);
-        profile = new Profile();profile.id = "10"; profile.name = "Profile 10";
-        profile.professions.push(Intern);
-        profiles.push(profile);
-        profile = new Profile();profile.id = "11"; profile.name = "Profile 11";
-        profile.professions.push(Intern);
-        profiles.push(profile);
-        profile = new Profile();profile.id = "12"; profile.name = "Profile 12";
-        profile.professions.push(Intern);
-        profiles.push(profile);
-        profile = new Profile();profile.id = "13"; profile.name = "Profile 13";
-        profile.professions.push(Intern);
-        profiles.push(profile);
-        profile = new Profile();profile.id = "14"; profile.name = "Profile 14";
-        profile.professions.push(Intern);
-        profiles.push(profile);
-        profile = new Profile();profile.id = "15"; profile.name = "Profile 15";
-        profile.professions.push(Intern);
-        profiles.push(profile);
+        // //profile = new Profile();profile.id = "2"; profile.name = "Profile 2";
+        // //profile.professions.push(Senior);
+        // //profiles.push(profile);
+        // profile = new Profile();profile.id = "3"; profile.name = "Profile 3";
+        // profile.professions.push(Senior);
+        // profiles.push(profile);
+        // profile = new Profile();profile.id = "4"; profile.name = "Profile 4";
+        // profile.professions.push(Senior);
+        // profiles.push(profile);
+        // profile = new Profile();profile.id = "5"; profile.name = "Profile 5";
+        // profile.professions.push(Senior);
+        // profiles.push(profile);
+        // // profile = new Profile();profile.id = "6"; profile.name = "Profile 6";
+        // // profile.professions.push(Senior);
+        // // profiles.push(profile);
 
-        profile = new Profile();profile.id = "16"; profile.name = "Profile 16";
-        profile.professions.push(SeniorA);
-        profiles.push(profile);
-        profile = new Profile();profile.id = "17"; profile.name = "Profile 17";
-        profile.professions.push(SeniorA);
-        profiles.push(profile);
-        // profile = new Profile();profile.id = "18"; profile.name = "Profile 18";
+        // profile = new Profile();profile.id = "7"; profile.name = "Profile 7";
+        // profile.professions.push(Intern);
+        // profiles.push(profile);
+        // profile = new Profile();profile.id = "8"; profile.name = "Profile 8";
+        // profile.professions.push(Intern);
+        // profiles.push(profile);
+        // profile = new Profile();profile.id = "9"; profile.name = "Profile 9";
+        // profile.professions.push(Intern);
+        // profiles.push(profile);
+        // profile = new Profile();profile.id = "10"; profile.name = "Profile 10";
+        // profile.professions.push(Intern);
+        // profiles.push(profile);
+        // profile = new Profile();profile.id = "11"; profile.name = "Profile 11";
+        // profile.professions.push(Intern);
+        // profiles.push(profile);
+        // profile = new Profile();profile.id = "12"; profile.name = "Profile 12";
+        // profile.professions.push(Intern);
+        // profiles.push(profile);
+        // profile = new Profile();profile.id = "13"; profile.name = "Profile 13";
+        // profile.professions.push(Intern);
+        // profiles.push(profile);
+        // profile = new Profile();profile.id = "14"; profile.name = "Profile 14";
+        // profile.professions.push(Intern);
+        // profiles.push(profile);
+        // profile = new Profile();profile.id = "15"; profile.name = "Profile 15";
+        // profile.professions.push(Intern);
+        // profiles.push(profile);
+
+        // profile = new Profile();profile.id = "16"; profile.name = "Profile 16";
         // profile.professions.push(SeniorA);
         // profiles.push(profile);
-        profile = new Profile();profile.id = "19"; profile.name = "Profile 19";
-        profile.professions.push(SeniorA);
-        profiles.push(profile);
-
-        profile = new Profile();profile.id = "20"; profile.name = "Profile 20";
-        profile.professions.push(SeniorB);
-        profiles.push(profile);
-        profile = new Profile();profile.id = "21"; profile.name = "Profile 21";
-        profile.professions.push(SeniorB);
-        profiles.push(profile);
-
-        profile = new Profile();profile.id = "22"; profile.name = "Profile 22";
-        profile.professions.push(SeniorC);
-        profiles.push(profile);
-        profile = new Profile();profile.id = "23"; profile.name = "Profile 23";
-        profile.professions.push(SeniorC);
-        profiles.push(profile);
-        // profile = new Profile();profile.id = "24"; profile.name = "Profile 24";
-        // profile.professions.push(SeniorC);
+        // profile = new Profile();profile.id = "17"; profile.name = "Profile 17";
+        // profile.professions.push(SeniorA);
+        // profiles.push(profile);
+        // // profile = new Profile();profile.id = "18"; profile.name = "Profile 18";
+        // // profile.professions.push(SeniorA);
+        // // profiles.push(profile);
+        // profile = new Profile();profile.id = "19"; profile.name = "Profile 19";
+        // profile.professions.push(SeniorA);
         // profiles.push(profile);
 
-        var solution = GEV.run(profiles, rooms);
+        // profile = new Profile();profile.id = "20"; profile.name = "Profile 20";
+        // profile.professions.push(SeniorB);
+        // profiles.push(profile);
+        // profile = new Profile();profile.id = "21"; profile.name = "Profile 21";
+        // profile.professions.push(SeniorB);
+        // profiles.push(profile);
 
-        return solution;
+        // profile = new Profile();profile.id = "22"; profile.name = "Profile 22";
+        // profile.professions.push(SeniorC);
+        // profiles.push(profile);
+        // profile = new Profile();profile.id = "23"; profile.name = "Profile 23";
+        // profile.professions.push(SeniorC);
+        // profiles.push(profile);
+        // // profile = new Profile();profile.id = "24"; profile.name = "Profile 24";
+        // // profile.professions.push(SeniorC);
+        // // profiles.push(profile);
+
+        // var solution = GEV.run(profiles, rooms);
+
+        // return solution;
     }
 
     start(context: DbContext) {

@@ -101,6 +101,7 @@ var roomToConditionsMapping: IOneToManyMapping = {
             for(let cond of conditionsResult) {
                 var condition: Condition = {
                     id: cond["cond_id"],
+                    description: cond["cond_description"],
                     amount: cond["cond_amount"],
                     day: cond["cond_day"],
                     importance: cond["cond_importance"],
@@ -169,6 +170,9 @@ export class Room {
     @Mapped({descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "id", type: MappingType.number, isPrimaryKey:true }) id! : number;
     @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "name", type: MappingType.string, isPrimaryKey:false }) name!: string;
     @Mapped(roomToConditionsMapping) conditions: Condition[] = [];
+
+    // Not mapped from DB
+    isDynamic: boolean;
 }
 
 export enum ConditionType {
@@ -185,6 +189,7 @@ export enum ConditionImportance {
 @Table("Conditions")
 export class Condition {
     @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "id", type: MappingType.number, isPrimaryKey:true }) id:number;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "description", type: MappingType.string }) description:string;
     @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "type", type: MappingType.string }) type: ConditionType;
     @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "amount", type:MappingType.number}) amount: number = 1;
     @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "roomId", type:MappingType.number}) roomId?: number;
@@ -193,8 +198,7 @@ export class Condition {
     @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "day", type: MappingType.string}) day?: Day;
     @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "profileId", type:MappingType.string}) profileId?: string;
     @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "isLockedForNextDay", type:MappingType.boolean}) isLockedForNextDay?: boolean;
-    // TODO : Info
-
+    
     @Mapped(conditionToProfileMapping) profile?: Profile;
     @Mapped(conditionToProfessionMapping) profession?: Tag;
 
@@ -206,8 +210,6 @@ export class Condition {
 
     // Not mapped
     room?: Room;
-
-    // Not mapped - Permanent type
     
 }
 

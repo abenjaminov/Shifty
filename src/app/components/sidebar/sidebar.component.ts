@@ -1,5 +1,6 @@
 import {Component, forwardRef, Inject, Input, OnInit} from '@angular/core';
 import {Event, NavigationEnd, Router} from "@angular/router";
+import {AuthenticationService} from "../../services/authentication.service";
 
 export class SidebarItem {
   public isSelected?: boolean = false;
@@ -13,34 +14,39 @@ export class SidebarItem {
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit{
   @Input() items: SidebarItem[];
   selectedItem:SidebarItem;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private authenticationService: AuthenticationService) {
+    this.items = [
+      { text: "Home",link: "/home", isSelected : false },
+      { text: "Profiles",link: "/profiles", isSelected : false },
+      { text: "Conditions",link: "/conditions" }];
+
     router.events.subscribe((event: Event) => {
       if (event instanceof NavigationEnd) {
         var navigationEndEvent = event as NavigationEnd;
 
-        for (let i = 0; i< this.items.length; i++)
-        {
-          var item = this.items[i];
-
-          if(item.link == navigationEndEvent.urlAfterRedirects) {
-            this.itemClicked(item);
-            break;
-          }
-        }
+        this.selectItemByUrl(navigationEndEvent.urlAfterRedirects)
       }
     })
   }
 
   ngOnInit() {
-    this.items = [
-        { text: "Home",link: "/home", isSelected : false },
-      { text: "Profiles",link: "/profiles", isSelected : true },
-      { text: "Conditions",link: "/conditions" }];
+    this.selectItemByUrl(this.router.url)
+  }
 
+  selectItemByUrl(url:string) {
+    for (let i = 0; i< this.items.length; i++)
+    {
+      var item = this.items[i];
+
+      if(item.link == url) {
+        this.itemClicked(item);
+        break;
+      }
+    }
   }
 
   itemClicked(item: SidebarItem) {
@@ -49,5 +55,9 @@ export class SidebarComponent implements OnInit {
     });
 
     item.isSelected = true;
+  }
+
+  onLogoutClicked() {
+    this.authenticationService.logout(true, "user logged out");
   }
 }

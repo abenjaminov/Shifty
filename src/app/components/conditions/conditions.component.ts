@@ -22,6 +22,9 @@ export class ConditionsComponent implements OnInit {
   conditionTypes: DropdownOption[];
   selectedConditionType: DropdownOption;
 
+  absentNextDayOptions: string[] = ["Yes", "No"];
+  selectedIsLockedForNextDayIndex: number = 1;
+
   conditionImportances: string[];
   selectedImportanceIndex:number = 0;
 
@@ -37,6 +40,8 @@ export class ConditionsComponent implements OnInit {
   rooms: Room[];
   selectedRoom: Room;
 
+  description: string = '';
+
   constructor(
     private profilesService: ProfilesService,
     private tagsService: TagsService,
@@ -49,22 +54,11 @@ export class ConditionsComponent implements OnInit {
     this.init();
   }
 
-  // initGridColumns() {
-  //   var conditionTypeColumn: ShGridColumn = { header: { text: "Type" }, cellInfos: [] };
-  //   var roomColumn : ShGridColumn = { header: { text: "Room" }, cellInfos: [] };
-  //   var profileColumn : ShGridColumn = { header: { text: "Profile" }, cellInfos: [] };
-  //   var professionColumn : ShGridColumn = { header: { text: "Profession" }, cellInfos: [] };
-  //   var dayColumn : ShGridColumn = { header: { text: "Day" }, cellInfos: [] };
-  //   var importanceColumn : ShGridColumn = { header: { text: "Importance" }, cellInfos: [] };
-  //   this.actionsColumn = { header: {text: "Actions"}, cellInfos: [] };
-  //
-  //   this.conditionColumns.push(conditionTypeColumn, roomColumn,profileColumn,professionColumn,dayColumn,importanceColumn);
-  // }
-
   init() {
     this.selectedConditionType = this.selectedConditionType || undefined;
     this.selectedDay = this.selectedDay || undefined;
     this.selectedImportanceIndex = 0;
+    this.selectedIsLockedForNextDayIndex = 1;
     this.selectedProfile = this.selectedProfile || undefined;
     this.selectedRoom = this.selectedRoom || undefined;
     this.selectedTag = this.selectedTag || undefined;
@@ -122,6 +116,7 @@ export class ConditionsComponent implements OnInit {
       condition.roomId = this.selectedRoom.id;
       condition.professionId = this.selectedTag.id;
       condition.importance = ConditionImportance[this.conditionImportances[this.selectedImportanceIndex]];
+      condition.isLockedForNextDay = this.selectedIsLockedForNextDayIndex == 0;
     }
     else if (this.selectedConditionType.id == ConditionType.Permanent) {
       condition.roomId = this.selectedRoom.id;
@@ -129,9 +124,12 @@ export class ConditionsComponent implements OnInit {
       condition.professionId = this.selectedTag.id;
       condition.day = Day[this.selectedDay.id];
       condition.importance = ConditionImportance[this.conditionImportances[this.selectedImportanceIndex]];
+      condition.isLockedForNextDay = this.selectedIsLockedForNextDayIndex == 0;
     }
     else if(this.selectedConditionType.id == ConditionType.Rotation) {
-      
+      condition.description = this.description;
+      condition.importance = ConditionImportance[this.conditionImportances[this.selectedImportanceIndex]];
+      condition.isLockedForNextDay = this.selectedIsLockedForNextDayIndex == 0;
     }
 
     this.conditionsService.addCondition(condition).then(x => {

@@ -34,6 +34,7 @@ export enum AppStatus {
 
 class AppState {
   appStatus: AppStatus = AppStatus.loading;
+  runningRequests: Map<any,string> = new Map<any, string>();
   profiles: Profile[] = [];
   tags: Tag[] = [];
   rooms: Room[] = [];
@@ -54,8 +55,6 @@ export class StateService
 
   private serviceMap: Map<IConstructor, StateMap> = new Map<IConstructor,StateMap>();
 
-  private numberOfRunningRequests = 0;
-
   constructor(
     private httpService: HttpService,
     private eventsService: EventsService
@@ -64,10 +63,22 @@ export class StateService
     this.initServiceMap();
     this.loadApp();
 
-    (window as any).ShState = this.appState;
+    (window as any).AppState = this.appState;
+
+    this.eventsService.subscribe(Events.TryLogin, () => {
+      this.addLoading(Events.TryLogin, "stateService.subscribe to TryLogin");
+    });
+
+    this.eventsService.subscribe(Events.UserAuthorized, () => {
+      this.removeLoading(Events.TryLogin);
+    });
+
+    this.eventsService.subscribe(Events.UserUnAuthorized, () => {
+      this.clearLoading();
+    });
 
     this.eventsService.subscribe(Events.LoggedOut, () => {
-      this.appState.appStatus = AppStatus.ready;
+      this.clearLoading();
     })
   }
 
@@ -143,11 +154,13 @@ export class StateService
   }
 
   async fetch<RT>(T: IConstructor, params?:Array<string>) : Promise<RT> {
-      this.addLoading();
+    const loadingKey = `${T.name}; ${JSON.stringify(params)}`
+
+    this.addLoading(loadingKey, 'stateService.fetch');
 
     let result = await this.fetchInternal<RT>(T, params);
 
-    this.removeLoading();
+    this.removeLoading(loadingKey);
 
       return result;
   }
@@ -198,12 +211,13 @@ export class StateService
       var stateMap = this.getStateMap(T);
 
       if(oldObject) {
-        this.addLoading();
+        const loadingKey = `${T.name}; ${obj.id}`;
+        this.addLoading(loadingKey, "stateService.saveObject");
 
         let result = await this.httpService.put(stateMap.cacheName,`/api/${stateMap.apiConfig.controller}`, obj);
 
         oldObject = obj;
-        this.removeLoading();
+        this.removeLoading(loadingKey);
 
         return obj;
       }
@@ -212,25 +226,28 @@ export class StateService
   async insertObject(T: IConstructor, obj: IStateObject): Promise<IStateObject> {
 
       var stateMap = this.getStateMap(T);
+      let loadingKey = `${T.name}; ${JSON.stringify(obj)}`;
 
-      this.addLoading();
+      this.addLoading(loadingKey, "stateService.insertObject");
 
       let result = await this.httpService.post(stateMap.cacheName, `/api/${stateMap.apiConfig.controller}`, obj);
 
       stateMap.data.push(obj);
 
-      this.removeLoading();
+      this.removeLoading(loadingKey);
 
       return obj;
   }
 
   async deleteObject(T: IConstructor, id: any): Promise<boolean> {
       var stateMap = this.getStateMap(T);
-      this.addLoading();
+    let loadingKey = `${T.name}; ${id}`;
+
+      this.addLoading(loadingKey, "stateService.deleteObject");
 
       let result = await this.httpService.delete(stateMap.cacheName,`/api/${stateMap.apiConfig.controller}`,id );
 
-      this.removeLoading();
+      this.removeLoading(loadingKey);
 
       var index = stateMap.data.findIndex(x => x.id == id);
       stateMap.data = stateMap.data.splice(index,1);
@@ -238,17 +255,24 @@ export class StateService
       return true;
   }
 
-  private addLoading() {
+  private addLoading(id:any, description: string) {
     this.appState.appStatus = AppStatus.loading;
 
-    this.numberOfRunningRequests++;
+    this.appState.runningRequests.set(id, description);
   }
 
-  private removeLoading() {
-    this.numberOfRunningRequests--;
+  private removeLoading(id:any) {
+    if(this.appState.runningRequests.has(id)) {
+      this.appState.runningRequests.delete(id)
 
-    if(this.numberOfRunningRequests == 0) {
-      this.appState.appStatus = AppStatus.ready;
+      if(this.appState.runningRequests.size == 0) {
+        this.appState.appStatus = AppStatus.ready;
+      }
     }
+  }
+
+  private clearLoading() {
+    this.appState.runningRequests.clear();
+    this.appState.appStatus = AppStatus.ready;
   }
 }

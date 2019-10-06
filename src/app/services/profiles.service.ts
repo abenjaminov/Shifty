@@ -51,6 +51,7 @@ export class ProfilesService
   }
 
   fixAbsence(absence: Absence) {
+    absence.key = absence.id;
     absence.startDateForDisplay = `${absence.startDate.getDate()}/${absence.startDate.getMonth() + 1}/${absence.startDate.getFullYear()}`
     absence.endDateForDisplay = `${absence.endDate.getDate()}/${absence.endDate.getMonth() + 1}/${absence.endDate.getFullYear()}`
   }

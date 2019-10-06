@@ -1,6 +1,7 @@
-import { Condition, Room, Tag, DailySchedule  } from "../models/models";
+import { Condition, Room, Tag, DailySchedule, ConditionType  } from "../models/models";
 
 import Enumerable from "linq";
+import { DbContext } from "../database/database";
 
 export class RoomsService {
 
@@ -23,5 +24,25 @@ export class RoomsService {
                 room.conditions = conditionsByRoomId.get(room.id).toArray();
             }            
         });
+    }
+
+    async getRooms(context: DbContext): Promise<Array<Room>> {
+        var rooms = await context.select<Room>(Room, true,true, []);
+
+        let rotationConditions: Array<Condition> = await context.select(Condition, false,false, [{ dataFilters: [{property: 'type', value: ConditionType.Rotation}] }]);
+
+        let rotationRooms = rotationConditions.map(rc => {
+            let room = new Room();
+            room.id = new Date().getTime();
+            room.isDynamic = true;
+            room.name = rc.description;
+            room.conditions = [rc];
+
+            return room;
+        })
+
+        rooms.push(...rotationRooms);
+
+        return rooms;
     }
 }

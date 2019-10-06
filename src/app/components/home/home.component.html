@@ -20,6 +20,7 @@
                     Rooms
                 </div>
                 <div class="cell title" *ngFor="let day of this.days">
+                    <div class="date-string">{{this.weeklySchedule.days[day].dateString}}</div>
                     <span>{{day}}</span>
                     <div class="show-absent" (click)="onShowAbsent(day)">Absences</div>
                 </div>

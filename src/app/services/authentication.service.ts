@@ -41,6 +41,8 @@ export class AuthenticationService {
   }
 
   tryLogin(loginData: LoginData) {
+    this.eventsService.emit(Events.TryLogin, this.authedUserData);
+
     this.httpClient.post('/api/login', loginData, {}).toPromise().then((result: AuthorizedUserData) => {
       this.authedUserData = result;
       this.userAuthorized = true;
@@ -49,7 +51,8 @@ export class AuthenticationService {
 
       this.eventsService.emit(Events.UserAuthorized, this.authedUserData);
     }).catch(error => {
-        
+      this.eventsService.emit(Events.UserUnAuthorized, this.authedUserData);
+      this.logout(false,"Unauthorized");
     });
   }
 

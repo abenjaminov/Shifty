@@ -1,9 +1,9 @@
-import {  Condition } from "../models/models";
+import { Condition } from "../models/models";
 import { Router } from "express-serve-static-core";
 import { RoutesCommon } from "./routeCommon";
 import { getHttpResposeJson } from "../models/helpers";
 
-var express = require('express');
+import * as express from 'express';
 var router: Router = express.Router();
 
 router.get('/', function(req, res, next) {
@@ -22,6 +22,9 @@ router.post('/', (req,res,next) => {
     context.insert(Condition, [condition]).then(x => {
         req.cacheService.clearByPrefix('/api/conditions');
         res.json(getHttpResposeJson(condition, true));
+    }).catch(error => {
+        req.logService.error(error.message, error);
+        res.status(500).send();
     });
 });
 
@@ -33,11 +36,10 @@ router.delete('/:id',(req,res,next) => {
     context.deleteSimple(Condition, conditionId).then(x => {
         req.cacheService.clearByPrefix('/api/conditions');
         res.json(getHttpResposeJson(true, true));
-    }).catch(err => {
-        // TODO : Log
-        console.error("Delete Condition " + err);
+    }).catch(error => {
+        req.logService.error(error.message, error);
         res.status(500).send();
     })
 });
 
-module.exports = router;
+export default router;

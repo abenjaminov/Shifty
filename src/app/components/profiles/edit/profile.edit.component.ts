@@ -1,11 +1,11 @@
-import {Component, forwardRef, Inject, Input} from '@angular/core';
+import {Component, ElementRef, forwardRef, Inject, Input, ViewChild} from '@angular/core';
 import { ProfilesService } from 'src/app/services/profiles.service';
 import {ActivatedRoute, Router} from "@angular/router";
 import {Absence, createEnumList, Day, NonWorkingDay, Profile, Tag} from 'src/app/models';
 import {DropdownOption} from "../../dropdown/dropdown.component";
 import { TagsService } from 'src/app/services/tags.service';
 import { NavigationService } from 'src/app/services/navigation.service';
-import {MatDatepickerInputEvent} from "@angular/material/datepicker";
+import {MatDatepicker, MatDatepickerInputEvent} from "@angular/material/datepicker";
 import * as Enumerable from 'linq';
 import {MatButtonToggleChange} from "@angular/material/button-toggle";
 
@@ -30,6 +30,9 @@ import {MatButtonToggleChange} from "@angular/material/button-toggle";
     nextAbsence: string;
     today: Date;
 
+    @ViewChild('startDatePicker', {static:false}) startDatePicker: MatDatepicker<Date>;
+    @ViewChild('endDatePicker', {static:false}) endDatePicker: MatDatepicker<Date>;
+
     // Working Days
     nonWorkingDays: Array<any>
 
@@ -40,7 +43,6 @@ import {MatButtonToggleChange} from "@angular/material/button-toggle";
        private tagsService: TagsService,
        private navigationService: NavigationService
     ) {
-
     }
 
     ngOnInit() {
@@ -142,6 +144,7 @@ import {MatButtonToggleChange} from "@angular/material/button-toggle";
         if(!this.selectedStartDate || !this.selectedEndDate) return;
         var absence = new Absence();
 
+        absence.key = new Date().getTime();
         absence.startDate = this.toUtcDate(this.selectedStartDate);
         absence.endDate = this.toUtcDate(this.selectedEndDate);
         absence.profileId = this.modifiedProfile.id;
@@ -150,10 +153,15 @@ import {MatButtonToggleChange} from "@angular/material/button-toggle";
 
         this.modifiedProfile.absences.push(absence);
 
+        this.modifiedProfile.absences = Enumerable.from(this.modifiedProfile.absences).orderBy(a => a.startDate).toArray();
+
         this.setNextAbsence();
 
         this.selectedStartDate = undefined;
         this.selectedEndDate = undefined;
+
+        this.startDatePicker.select(null);
+        this.endDatePicker.select(null);
     }
 
     toUtcDate(date: Date) {
@@ -163,11 +171,14 @@ import {MatButtonToggleChange} from "@angular/material/button-toggle";
     dateClass = (d: Date) => {
         const date = d.getDate();
 
-        // Highlight the 1st and 20th day of each month.
         return Enumerable.from(this.modifiedProfile.absences).any(abs => d >= abs.startDate && d <= abs.endDate) ? 'abscent-date' : undefined;
     }
 
     toggleChanged(nonWorkingDay: any, $event: MatButtonToggleChange) {
         nonWorkingDay.isSelected = $event.source.checked;
+    }
+
+    onRemoveAbsenceClicked(absence: Absence) {
+        this.modifiedProfile.absences = Enumerable.from(this.modifiedProfile.absences).where(a => a.key != absence.key).toArray();
     }
 }

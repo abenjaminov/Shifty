@@ -12,6 +12,7 @@ export class Absence {
     endDate: Date;
 
     // Not mapped
+    key: number;
     startDateForDisplay: string;
     endDateForDisplay: string;
 }
@@ -51,6 +52,7 @@ export class Room implements IStateObject {
 
 export class Condition implements IStateObject {
     id:number;
+    description: string;
     type: ConditionType;
     amount: number = 1;
     roomId?: number;

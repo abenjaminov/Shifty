@@ -149,6 +149,7 @@
                     display: flex;
                     align-items: center;
                     justify-content: flex-start;
+                    width: 330px;
 
                     .label {
                         width: 75px;
@@ -157,6 +158,10 @@
                     .date-picker {
                         margin-left: 50px;
                     }
+                }
+
+                .add-absence {
+                    width: 330px;
                 }
             }
 
@@ -167,91 +172,29 @@
 
                 .absence {
                     display: flex;
+                    align-items: center;
+                    justify-content: space-between;
 
-                    .date {
-                        margin-right: 5px;
+                    .dates {
+                        display: flex;
+                        align-items: center;
+
+                        .date {
+                            margin-right: 10px;
+                            width: 150px;
+
+                            .desc {
+                                margin-right: 5px;
+                            }
+                        }
+                    }
+
+                    .remove-period {
+                        font-size: 20px;
                     }
                 }
             }
 
-        }
-    }
-}
-
-.profile-edit-grid {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-
-    .profile-info {
-        display: flex;
-        flex: 1;
-        justify-content: flex-start;
-
-        .profile-image {
-            justify-content: center;
-            margin-right: 50px;
-        }
-
-        .profile-main-info {
-            display: flex;
-            flex-direction: column;
-            width: 350px;
-
-            .info {
-                margin-bottom: 20px;
-
-                .property {
-                    font-size: 18px;
-                }
-            }
-
-            .professions {
-                .title {
-                    font-weight: bold;
-                    font-size: 24px;
-                }
-
-                .profession {
-                    font-size: 18px;
-                    display: grid;
-                    grid-auto-flow: column;
-                    grid-auto-columns: 10% auto 20%;
-                }
-
-                .add-professions {
-                    display: grid;
-                    grid-auto-flow: column;
-                    align-items: center;
-                    grid-auto-columns: 80% auto;
-                    margin-top: 10px;
-                }
-            }
-        }
-    }
-
-    .non-working-days {
-        display: flex;
-        flex-direction: row;
-        flex: 1;
-
-        .non-working-day {
-            width: 100px;
-            height: 25px;
-            border: 1px solid black;
-            text-align: center;
-            margin-right: 10px;
-            cursor: pointer;
-
-            &:hover {
-                background: lightgray;
-            }
-
-            &.selected {
-                background: #373737;
-                color:white;
-            }
         }
     }
 }

@@ -5,4 +5,10 @@
     <div class="sidebar-body">
         <div *ngFor="let item of items" [routerLink]="item.link" (click)="itemClicked(item)" class="sidebar-item" [class.selected]="item.isSelected">{{item.text}}</div>
     </div>
+    <div class="sidebar-footer">
+        <div (click)="onLogoutClicked()" class="logout-item">
+            <span>Logout</span>
+            <fa name="sign-out"></fa>
+        </div>
+    </div>
 </div>

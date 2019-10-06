@@ -67,21 +67,23 @@
                                 <mat-datepicker touchUi #endDatePicker disabled="false" [dateClass]="dateClass"></mat-datepicker>
                             </mat-form-field>
                         </div>
-                        <button class="add-profession" mat-stroked-button (click)="submitAbsence()">
+                        <button class="add-absence" mat-stroked-button (click)="submitAbsence()">
                             Submit Absence
                         </button>
-<!--                        <div>-->
-<!--                            Next Absence : {{this.nextAbsence}}-->
-<!--                        </div>-->
                     </div>
                     <div class="period-list">
                         <div class="absence" *ngFor="let absence of this.modifiedProfile.absences">
-                            <div class="date">
-                                {{absence.startDateForDisplay}}
+                            <div class="dates">
+                                <div class="date">
+                                    <b class="desc">From</b> {{absence.startDateForDisplay}}
+                                </div>
+                                <div class="date">
+                                    <b class="desc">To</b> {{absence.endDateForDisplay}}
+                                </div>
                             </div>
-                            <div class="date">
-                                {{absence.endDateForDisplay}}
-                            </div>
+                            <button class="remove-period" mat-button (click)="onRemoveAbsenceClicked(absence)">
+                                <fa name="trash"></fa>
+                            </button>
                         </div>
                     </div>
                 </div>

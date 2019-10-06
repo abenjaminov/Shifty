@@ -43,7 +43,7 @@ export class HomeComponent implements OnInit {
 
       this.weeklySchedule = result[1];
 
-      this.title = this.weeklySchedule.days[Day.Sunday].dateString + " - " + this.weeklySchedule.days[Day.Saturday].dateString;
+      this.title = 'Weekly assignments ' + this.weeklySchedule.days[Day.Sunday].dateString + " - " + this.weeklySchedule.days[Day.Saturday].dateString;
 
       if(this.weeklySchedule.numberOfAssignments == 0) {
         this.askRunSchedule();

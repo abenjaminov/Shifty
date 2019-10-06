@@ -1,11 +1,11 @@
 import { ScheduleService } from "../services/schedule.service";
 import { RoutesCommon } from "./routeCommon";
-import { Profile, Assignment, Room, DailySchedule, Day, ConditionType, Condition } from "../models/models";
+import { Profile, Assignment, Room, Day, ConditionType, Condition } from "../models/models";
 import { GeneticEnviroment } from "../genetics/evniroment";
 import { Router, Request } from "express";
 import Enumerable from 'linq';
 import { getHttpResposeJson } from "../models/helpers";
-import Excel from 'exceljs';
+import * as Excel from 'exceljs';
 
 var express = require('express');
 var router: Router = express.Router();
@@ -14,7 +14,7 @@ router.get('/run/:date?', async (req: Request,res,next) => {
     var context = RoutesCommon.getContextFromRequest(req);
 
     var profiles = await context.select<Profile>(Profile, true,true, []);
-    var rooms = await context.select<Room>(Room, true,true, []);
+    var rooms = await req.roomService.getRooms(context);
 
     var firstDate = new Date();
 
@@ -46,7 +46,7 @@ router.get('/run/:date?', async (req: Request,res,next) => {
         let day = scheduleService.getDayByDate(dates[index]);
 
         var permanentConditionsForThisDay = Enumerable.from(rooms).selectMany(r => r.conditions).where(c => c.type === ConditionType.Permanent && c.day == day).toArray();
-        // TODO : Take care of other conditions such as absences and more
+        
         let profileIdsNotAllowedForThisDay = prevDayAssignments.filter(a => a.condition.isLockedForNextDay).map(a => a.profileId);
         profileIdsNotAllowedForThisDay = profileIdsNotAllowedForThisDay.concat(permanentConditionsForThisDay.map(c => c.profileId));
 
@@ -155,138 +155,138 @@ router.get('/:date?', async (req,res,next) => {
     res.json(getHttpResposeJson(weeklySchedule, false));
 });
 
-router.get('/export/:startDate/:endDate?', async (req,res,next) => {
-    let workbook = new Excel.Workbook();
-    workbook.creator = "Shifty App";
-    let workSheet = workbook.addWorksheet('Schedule', {views:[{xSplit: 1, ySplit:1}]});
-    workSheet.columns = [];
+// router.get('/export/:startDate/:endDate?', async (req,res,next) => {
+//     let workbook = new Excel.Workbook();
+//     workbook.creator = "Shifty App";
+//     let workSheet = workbook.addWorksheet('Schedule', {views:[{xSplit: 1, ySplit:1}]});
+//     workSheet.columns = [];
 
-    let dateParts = req.params.startDate.split(";");
-    let startDate = new Date(Date.UTC(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2])));
+//     let dateParts = req.params.startDate.split(";");
+//     let startDate = new Date(Date.UTC(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2])));
 
-    let context = RoutesCommon.getContextFromRequest(req);
+//     let context = RoutesCommon.getContextFromRequest(req);
 
-    let weeklySchedule = await req.scheduleService.getWeeklySchedule(startDate);
+//     let weeklySchedule = await req.scheduleService.getWeeklySchedule(startDate);
 
-    let rooms = await context.select<Room>(Room, true,true, []);
+//     let rooms = await context.select<Room>(Room, true,true, []);
 
-    let dates = req.scheduleService.getDatesOfWeek(startDate);
+//     let dates = req.scheduleService.getDatesOfWeek(startDate);
 
-    // Add top left cell value
-    let columns = [{header: 'ZedekMC', key: 'rooms', width: 20}]
-    let days = [];
+//     // Add top left cell value
+//     let columns = [{header: 'ZedekMC', key: 'rooms', width: 20}]
+//     let days = [];
 
-    // For every date of the week, add a column with a header
-    // made out of the name of the day and the date
-    //          Sunday
-    //         29/9/2019
-    for (let index = 0; index < dates.length; index++) {
-        let date = dates[index];
-        let day = req.scheduleService.getDayByDate(date);
-        days.push(day);
+//     // For every date of the week, add a column with a header
+//     // made out of the name of the day and the date
+//     //          Sunday
+//     //         29/9/2019
+//     for (let index = 0; index < dates.length; index++) {
+//         let date = dates[index];
+//         let day = req.scheduleService.getDayByDate(date);
+//         days.push(day);
         
-        let header = `${day}\n${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
+//         let header = `${day}\n${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
 
-        columns.push({
-            header: header,
-            key: day,
-            width: 25
-        });
-    }
+//         columns.push({
+//             header: header,
+//             key: day,
+//             width: 25
+//         });
+//     }
 
-    workSheet.columns = [...columns];
+//     workSheet.columns = [...columns];
 
-    let middleCenterAllignment: any = {
-        vertical: 'middle',
-        horizontal: 'center',
-        wrapText: true
-    }
+//     let middleCenterAllignment: any = {
+//         vertical: 'middle',
+//         horizontal: 'center',
+//         wrapText: true
+//     }
 
     
 
-    // Set the styling for the headers row
-    workSheet.lastRow.height = 35;
-    workSheet.lastRow.alignment = middleCenterAllignment
+//     // Set the styling for the headers row
+//     workSheet.lastRow.height = 35;
+//     workSheet.lastRow.alignment = middleCenterAllignment
 
-    // TODO : Change style for top left cell
+//     // TODO : Change style for top left cell
 
-    for(let room of rooms) {
-        let values = [room.name]
+//     for(let room of rooms) {
+//         let values = [room.name]
 
-        for(let day of days) {
-            let profilesAssignedThisDay = weeklySchedule.days[day].assignments.filter(a=> a.condition.roomId == room.id).map(a => a.profile.name).join('\n');
-            values.push(profilesAssignedThisDay);
-        }
+//         for(let day of days) {
+//             let profilesAssignedThisDay = weeklySchedule.days[day].assignments.filter(a=> a.condition.roomId == room.id).map(a => a.profile.name).join('\n');
+//             values.push(profilesAssignedThisDay);
+//         }
 
-        // Add a row and set all styles for it
-        workSheet.addRow(values)
-        workSheet.lastRow.height = 45;
-        workSheet.lastRow.alignment = middleCenterAllignment
-    }
+//         // Add a row and set all styles for it
+//         workSheet.addRow(values)
+//         workSheet.lastRow.height = 45;
+//         workSheet.lastRow.alignment = middleCenterAllignment
+//     }
 
-    let headerFill : any = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: {
-            argb: "FFF26B3A"
-        },
-        bgColor: {
-            argb: "FF000000"
-        }
-    }
+//     let headerFill : any = {
+//         type: "pattern",
+//         pattern: "solid",
+//         fgColor: {
+//             argb: "FFF26B3A"
+//         },
+//         bgColor: {
+//             argb: "FF000000"
+//         }
+//     }
 
-    let headerFont: any = {
-        name: 'Arial Black',
-        color: { argb: 'FFFFFFFF' },
-        family: 2,
-        size: 12,
-        bold: true
-    }
+//     let headerFont: any = {
+//         name: 'Arial Black',
+//         color: { argb: 'FFFFFFFF' },
+//         family: 2,
+//         size: 12,
+//         bold: true
+//     }
 
-    let columnLetters = ['A','B','C','D','E','F','G','H'];
+//     let columnLetters = ['A','B','C','D','E','F','G','H'];
 
-    // Go over all the columns (A - room names, H - Saturday)
-    // and set the styles for the cells
+//     // Go over all the columns (A - room names, H - Saturday)
+//     // and set the styles for the cells
 
-    // NOTE: Style is set per cell so that it wont exceed table size
-    for(let letter of columnLetters) {
-        // Set styling for roow name cells
-        workSheet.getCell(`${letter}1`).fill = headerFill;
-        workSheet.getCell(`${letter}1`).font = headerFont;
+//     // NOTE: Style is set per cell so that it wont exceed table size
+//     for(let letter of columnLetters) {
+//         // Set styling for roow name cells
+//         workSheet.getCell(`${letter}1`).fill = headerFill;
+//         workSheet.getCell(`${letter}1`).font = headerFont;
 
-        for(let index = 0; index < rooms.length; index++) {
-            // Set styling for the first column
-            if(letter == 'A') {
-                workSheet.getCell(`${letter}${index + 2}`).fill = {
-                    ...headerFill,
-                    fgColor: {argb: "FFF5F5F5"}
-                }
-                workSheet.getCell(`${letter}${index + 2}`).font = {
-                    ...headerFont,
-                    color: {argb: "FF000000"}
-                }
-            }
+//         for(let index = 0; index < rooms.length; index++) {
+//             // Set styling for the first column
+//             if(letter == 'A') {
+//                 workSheet.getCell(`${letter}${index + 2}`).fill = {
+//                     ...headerFill,
+//                     fgColor: {argb: "FFF5F5F5"}
+//                 }
+//                 workSheet.getCell(`${letter}${index + 2}`).font = {
+//                     ...headerFont,
+//                     color: {argb: "FF000000"}
+//                 }
+//             }
 
-            // Set the border for every cell
-            workSheet.getCell(`${letter}${index + 2}`).border = {
-                top: {style:'thin'},
-                left: {style:'thin'},
-                bottom: {style:'thin'},
-                right: {style:'thin'}
-              }
-        }
-    }
+//             // Set the border for every cell
+//             workSheet.getCell(`${letter}${index + 2}`).border = {
+//                 top: {style:'thin'},
+//                 left: {style:'thin'},
+//                 bottom: {style:'thin'},
+//                 right: {style:'thin'}
+//               }
+//         }
+//     }
 
-    let fileName = `Schedule_${startDate.getDate()}_${startDate.getMonth() + 1}_${startDate.getFullYear()}.xlsx`
+//     let fileName = `Schedule_${startDate.getDate()}_${startDate.getMonth() + 1}_${startDate.getFullYear()}.xlsx`
 
-    res.setHeader('Content-Type', 'text/xlsx');
-    res.setHeader('Content-Disposition',`attachment; filename=${fileName}`);
+//     res.setHeader('Content-Type', 'text/xlsx');
+//     res.setHeader('Content-Disposition',`attachment; filename=${fileName}`);
 
-    workbook.xlsx.write(res).then(x => {
-        res.end();
-    });
-});
+//     workbook.xlsx.write(res).then(x => {
+//         res.end();
+//     });
+// });
 
 
 
-module.exports = router;
+export default router;

@@ -1,6 +1,7 @@
 import { ScheduleService } from "../services/schedule.service";
 import { LogService } from "../services/logs.service";
 import { CacheService } from "../services/cache.service";
+import { RoomsService } from "../services/rooms.service";
 
 declare global {
     namespace Express {
@@ -10,6 +11,7 @@ declare global {
             scheduleService:ScheduleService;
             logService: LogService;
             cacheService: CacheService;
+            roomService: RoomsService;
         }
 
         export interface Response {

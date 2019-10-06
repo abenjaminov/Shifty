@@ -3,7 +3,9 @@ import {createEnumList} from "../models";
 import {Subscription} from "rxjs";
 
 export enum Events {
+  TryLogin = "TryLogin",
   UserAuthorized = "UserAuthorized",
+  UserUnAuthorized = "UserUnAuthorized",
   NavigationEnd = "NavigationEnd",
   LoggedOut = "LoggedOut"
 }
