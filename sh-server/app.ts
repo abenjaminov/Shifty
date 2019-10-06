@@ -1,12 +1,12 @@
-import express from 'express';
-import cookieParser = require('cookie-parser');
-import bodyParser from 'body-parser'
+import * as express from 'express';
+import * as cookieParser from 'cookie-parser';
+import * as bodyParser from 'body-parser'
 import { DbContext } from './database/database';
 import { RoutesCommon } from './routes/routeCommon';
 import { ScheduleService } from './services/schedule.service';
 import { Request } from "express";
 import { CacheService } from './services/cache.service';
-import x from './typings/index'
+import * as x from './typings/index'
 import { AuthenticationService } from './services/authentication.service';
 import { LogService, LoggerTypes } from './services/logs.service';
 
@@ -114,7 +114,7 @@ app.use('/api/*', (req: Request ,res,next) => {
         next();
     }
     else {
-        let authorizedResult = new AuthenticationService().authenticate(req.headers.authorization, req.body.username);
+        let authorizedResult = new AuthenticationService().authenticate(req.headers.authorization.toString(), req.body.username);
 
         if(!authorizedResult.authorized) {
             logService.warning(`Authentication failed for '${req.body.username}', token : '${req.headers.authorization}'`);
