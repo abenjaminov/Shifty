@@ -1,10 +1,9 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -20,7 +19,7 @@ const linq_1 = __importDefault(require("linq"));
 const helpers_1 = require("../models/helpers");
 var express = require('express');
 var router = express.Router();
-router.get('/run/:date?', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/run/:date?', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     var context = routeCommon_1.RoutesCommon.getContextFromRequest(req);
     var profiles = yield context.select(models_1.Profile, true, true, []);
     var rooms = yield req.roomService.getRooms(context);
@@ -108,11 +107,11 @@ var prepRoomsForRun = (rooms, permanentConditionsForThisDay) => {
     }
     return roomsInternal;
 };
-router.get('/test', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/test', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     //var solution = GeneticEnviroment.test();
     res.json(helpers_1.getHttpResposeJson(["solution", "For", "The", "Genetics"], false));
 }));
-router.get('/:date?', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/:date?', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     let scheduleService = new schedule_service_1.ScheduleService(routeCommon_1.RoutesCommon.getContextFromRequest(req));
     var firstDate = undefined;
     if (req.params.date) {

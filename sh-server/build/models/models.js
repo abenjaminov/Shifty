@@ -307,13 +307,13 @@ NonWorkingDay = __decorate([
 exports.NonWorkingDay = NonWorkingDay;
 class TypesHelper {
 }
-exports.TypesHelper = TypesHelper;
 TypesHelper.typesMapping = { "Tag": Tag,
     "Condition": Condition,
     "Profile": Profile,
     "Profession": Tag,
     "Absence": Absence,
     "NonWorkingDay": NonWorkingDay };
+exports.TypesHelper = TypesHelper;
 var Day;
 (function (Day) {
     Day["Sunday"] = "Sunday";
