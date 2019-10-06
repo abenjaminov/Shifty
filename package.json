@@ -5,7 +5,7 @@
     "ng": "ng",
     "heroku-postbuild": "ng build --prod --aot",
     "start-ng": "ng serve --port 2424 --proxy-config proxy.conf.json --aot",
-    "start": "node ./sh-server/build/www.js",
+    "start": "tsc && node ./sh-server/build/www.js",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
