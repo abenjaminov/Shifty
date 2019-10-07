@@ -4,15 +4,15 @@
       <span>Welcome</span>
     </div>
     <mat-form-field>
-      <input matInput placeholder="Customer code" [(ngModel)]="loginData.customerCode">
+      <input matInput placeholder="Customer code" name="customerCode" id="customerCode" [(ngModel)]="loginData.customerCode">
     </mat-form-field>
 
     <mat-form-field>
-      <input matInput placeholder="Username" [(ngModel)]="loginData.username">
+      <input matInput placeholder="Username" name="username" id="username" [(ngModel)]="loginData.username">
     </mat-form-field>
 
     <mat-form-field>
-      <input matInput type="password" placeholder="Password" [(ngModel)]="loginData.password">
+      <input matInput type="password" placeholder="Password" name="password" id="password" [(ngModel)]="loginData.password">
     </mat-form-field>
 
     <div class="login-actions">

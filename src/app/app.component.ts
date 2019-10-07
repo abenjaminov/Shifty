@@ -1,12 +1,12 @@
 import {Component, forwardRef, Inject} from '@angular/core';
 import {AuthenticationService} from "./services/authentication.service";
-import {StateService} from "./services/state.service";
+import { StateService, AppStatus } from 'src/app/services/state.service';
 
 @Component({
   selector: 'app-root',
   template: `
     <div>
-      <sh-loading></sh-loading>
+      <sh-loading *ngIf="this.stateService.appState.appStatus == this.AppStatus.loading"></sh-loading>
       <div class="app-grid">
         <div class="sidebar-container" *ngIf="authenticationService.userAuthorized">
           <sh-sidebar></sh-sidebar>
@@ -21,6 +21,7 @@ import {StateService} from "./services/state.service";
 })
 export class AppComponent {
   title = 'Shifty';
+  AppStatus = AppStatus;
 
   constructor(public authenticationService: AuthenticationService, public stateService: StateService) {}
 }

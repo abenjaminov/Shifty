@@ -255,13 +255,13 @@ export class StateService
       return true;
   }
 
-  private addLoading(id:any, description: string) {
+  public addLoading(id:any, description: string) {
     this.appState.appStatus = AppStatus.loading;
 
     this.appState.runningRequests.set(id, description);
   }
 
-  private removeLoading(id:any) {
+  public removeLoading(id:any) {
     if(this.appState.runningRequests.has(id)) {
       this.appState.runningRequests.delete(id)
 

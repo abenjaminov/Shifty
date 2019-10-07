@@ -20,6 +20,7 @@ export class HomeComponent implements OnInit {
   weeklySchedule: WeeklySchedule = new WeeklySchedule();
   title: string;
   weekStartDate:Date = undefined;
+  isWaitingForExport: boolean = false;
 
   assignmentsToRoomAndDay: {[key:string] : string} = {};
 
@@ -98,7 +99,9 @@ export class HomeComponent implements OnInit {
     this.init();
   }
 
-  onExport() {
-    this.scheduleService.exportWeek(this.weeklySchedule.days[Day.Sunday].date);
+  async onExport() {
+    this.isWaitingForExport = true;
+    await this.scheduleService.exportWeek(this.weeklySchedule.days[Day.Sunday].date);
+    this.isWaitingForExport = false;
   }
 }

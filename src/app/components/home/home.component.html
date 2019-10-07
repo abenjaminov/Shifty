@@ -5,7 +5,7 @@
                 <fa name="chevron-left"></fa>
                 <span>Previous week</span>
             </button>
-            <button class="export" mat-raised-button (click)="onExport()">
+            <button class="export" mat-raised-button (click)="onExport()" *ngIf="!isWaitingForExport">
                 <fa name="file"></fa>
                 <span>Export</span>
             </button>

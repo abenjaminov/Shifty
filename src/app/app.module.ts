@@ -33,6 +33,7 @@ import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatDialogModule} from "@angular/material/dialog";
 import { QuestionDialogComponent } from './components/question-dialog/question-dialog.component';
 import {MatButtonToggleModule} from "@angular/material/button-toggle";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
@@ -66,7 +67,8 @@ import {MatButtonToggleModule} from "@angular/material/button-toggle";
         FormsModule,
         MatSnackBarModule,
         MatDialogModule,
-        MatButtonToggleModule
+        MatButtonToggleModule,
+        MatProgressSpinnerModule
     ],
   entryComponents: [AbsentComponent,QuestionDialogComponent],
   providers: [HttpClient, ProfilesService, TagsService, RoomsService, ConditionService],
