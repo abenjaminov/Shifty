@@ -177,17 +177,6 @@ app.use('/api/*', (req: Request ,res,next) => {
     });
 })
 
-// app.use('/api/deleteschedules', async (req,res,next) => {
-//     let context = RoutesCommon.getContextFromRequest(req);
-
-//     for (let index = 2350; index < 2450; index++) {
-//         await context.deleteSimple(Assignment,index);
-//         console.log("Deleted " + index)
-//     }
-
-//     res.end();
-// })
-
 app.use('/api/profiles', profilesRouter);
 app.use('/api/tags', tagsRouter);
 app.use('/api/rooms', roomsRouter);

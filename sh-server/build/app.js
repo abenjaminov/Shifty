@@ -150,14 +150,6 @@ app.use('/api/*', (req, res, next) => {
         res.status(500).send("Error establishing connection and context");
     });
 });
-// app.use('/api/deleteschedules', async (req,res,next) => {
-//     let context = RoutesCommon.getContextFromRequest(req);
-//     for (let index = 2350; index < 2450; index++) {
-//         await context.deleteSimple(Assignment,index);
-//         console.log("Deleted " + index)
-//     }
-//     res.end();
-// })
 app.use('/api/profiles', profilesRoute_1.default);
 app.use('/api/tags', tagsRoute_1.default);
 app.use('/api/rooms', roomsRoute_1.default);
