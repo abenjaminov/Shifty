@@ -292,9 +292,9 @@ router.get('/export/:startDate/:endDate?', async (req,res,next) => {
     res.setHeader('Content-Type', 'text/xlsx');
     res.setHeader('Content-Disposition',`attachment; filename=${fileName}`);
 
-    workbook.xlsx.write(res).then(x => {
-        res.end();
-    });
+    await workbook.xlsx.write(res);
+
+    res.end();
 });
 
 
