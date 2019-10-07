@@ -66,9 +66,9 @@ class ReflectionHelper {
         return primaryDbKey;
     }
 }
+exports.ReflectionHelper = ReflectionHelper;
 ReflectionHelper.PROPERTY_METADATA_KEY = Symbol("propertyMetadata");
 ReflectionHelper.TYPE_META_KEY = Symbol("typeMetadata");
-exports.ReflectionHelper = ReflectionHelper;
 function Table(tableName) {
     return (target) => {
         // Pull the existing metadata or create an empty object

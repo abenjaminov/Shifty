@@ -165,8 +165,6 @@ router.get('/export/:startDate/:endDate?', async (req,res,next) => {
     let dateParts = req.params.startDate.split(";");
     let startDate = new Date(Date.UTC(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2])));
 
-    console.log("Export for " + startDate);
-
     let context = RoutesCommon.getContextFromRequest(req);
 
     try {
