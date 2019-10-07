@@ -126,7 +126,7 @@ export class ConditionsComponent implements OnInit {
     }
     else if(this.selectedConditionType.id == ConditionType.Rotation) {
       condition.description = this.description;
-      condition.roomId = new Date().getTime();
+      condition.roomId = new Date().getTime() % 10000;
     }
 
     this.conditionsService.addCondition(condition).then(x => {

@@ -17,6 +17,7 @@ import roomsRouter from './routes/roomsRoute';
 import conditionsRouter from './routes/conditionsRoute';
 import scheduleRouter from './routes/scheduleRoute';
 import { RoomsService } from './services/rooms.service';
+import { Assignment } from './models/models';
 
 const app: express.Application = express();
 
@@ -175,6 +176,17 @@ app.use('/api/*', (req: Request ,res,next) => {
         res.status(500).send("Error establishing connection and context");
     });
 })
+
+// app.use('/api/deleteschedules', async (req,res,next) => {
+//     let context = RoutesCommon.getContextFromRequest(req);
+
+//     for (let index = 2350; index < 2450; index++) {
+//         await context.deleteSimple(Assignment,index);
+//         console.log("Deleted " + index)
+//     }
+
+//     res.end();
+// })
 
 app.use('/api/profiles', profilesRouter);
 app.use('/api/tags', tagsRouter);
