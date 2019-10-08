@@ -7,6 +7,14 @@ export class RoutesCommonService {
     }
 }
 
+export enum HttpResponseCodes {
+    success = 200,
+    internalServerError = 500,
+    badRequest = 400,
+    unauthorized = 401,
+    notFound = 404
+}
+
 var RoutesCommon = new RoutesCommonService();
 
 export { RoutesCommon }

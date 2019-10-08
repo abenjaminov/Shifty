@@ -6,6 +6,9 @@ import { DropdownOption } from '../dropdown/dropdown.component';
 import { RoomsService } from 'src/app/services/rooms.service';
 import { ConditionService } from 'src/app/services/conditions.service';
 import { CompileShallowModuleMetadata } from '@angular/compiler';
+import {MatDialog} from "@angular/material/dialog";
+import {QuestionDialogComponent} from "../question-dialog/question-dialog.component";
+import {AddConditionComponent} from "./add/add.condition.component";
 
 @Component({
   selector: 'sh-conditions',
@@ -15,38 +18,17 @@ import { CompileShallowModuleMetadata } from '@angular/compiler';
 })
 export class ConditionsComponent implements OnInit {
 
-  allConditions: Condition[];
-  //conditionColumns: ShGridColumn[] = [];
-  //: ShGridActionColumn;
-
-  conditionTypes: DropdownOption[];
-  selectedConditionType: DropdownOption;
-
-  absentNextDayOptions: string[] = ["Yes", "No"];
-  selectedIsLockedForNextDayIndex: number = 1;
-
-  conditionImportances: string[];
-  selectedImportanceIndex:number = 0;
-
-  days: DropdownOption[];
-  selectedDay: DropdownOption;
-
-  profiles: Profile[]
-  selectedProfile: Profile;
-
-  tags: Tag[];
-  selectedTag: Tag;
-
   rooms: Room[];
-  selectedRoom: Room;
-
-  description: string = '';
+  profiles: Profile[];
+  tags: Tag[];
+  allConditions: Condition[];
 
   constructor(
     private profilesService: ProfilesService,
     private tagsService: TagsService,
     private roomsService: RoomsService,
-    public conditionsService: ConditionService
+    public conditionsService: ConditionService,
+    public dialog: MatDialog
   ) { }
 
   ngOnInit() {
@@ -55,17 +37,9 @@ export class ConditionsComponent implements OnInit {
   }
 
   init() {
-    this.selectedConditionType = this.selectedConditionType || undefined;
-    this.selectedDay = this.selectedDay || undefined;
-    this.selectedImportanceIndex = 0;
-    this.selectedIsLockedForNextDayIndex = 1;
-    this.selectedProfile = this.selectedProfile || undefined;
-    this.selectedRoom = this.selectedRoom || undefined;
-    this.selectedTag = this.selectedTag || undefined;
-
-    Promise.all([this.tagsService.load(), 
-                 this.roomsService.load(), 
-                 this.profilesService.load(), 
+    Promise.all([this.tagsService.load(),
+                 this.roomsService.load(),
+                 this.profilesService.load(),
                  this.conditionsService.load()]).then(result => {
 
       this.tags = result[0];
@@ -74,21 +48,6 @@ export class ConditionsComponent implements OnInit {
       this.allConditions = result[3];
 
       this.fixConditionsForDisplay();
-
-      this.conditionTypes = createEnumList(ConditionType).map((item) => {
-        return {
-          id: item,
-          name: item
-        };
-      })
-
-      this.conditionImportances = createEnumList(ConditionImportance);
-      this.days = createEnumList(Day).map((item) => {
-        return {
-          id: item,
-          name: item
-        };
-      });
     });
   }
 
@@ -107,30 +66,13 @@ export class ConditionsComponent implements OnInit {
     })
   }
 
-  addCondition() {
-    var condition = new Condition();
-    condition.type = ConditionType[this.selectedConditionType.id];
-    condition.isLockedForNextDay = this.selectedIsLockedForNextDayIndex == 0;
-    condition.professionId = this.selectedTag.id;
-    condition.importance = ConditionImportance[this.conditionImportances[this.selectedImportanceIndex]];
-    condition.amount = 1;
+  onAddCondition() {
+    const dialogRef = this.dialog.open(AddConditionComponent);
 
-    if(this.selectedConditionType.id == ConditionType.Room) {
-      condition.roomId = this.selectedRoom.id;
-    }
-    else if (this.selectedConditionType.id == ConditionType.Permanent) {
-      condition.roomId = this.selectedRoom.id;
-      condition.profileId = this.selectedProfile.id.toString();
-      condition.day = Day[this.selectedDay.id];
-
-    }
-    else if(this.selectedConditionType.id == ConditionType.Rotation) {
-      condition.description = this.description;
-      condition.roomId = new Date().getTime() % 10000;
-    }
-
-    this.conditionsService.addCondition(condition).then(x => {
-      this.init();
+    dialogRef.afterClosed().subscribe(result => {
+      if(result) {
+          this.init();
+      }
     });
   }
 }

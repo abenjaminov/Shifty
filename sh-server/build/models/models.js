@@ -245,6 +245,9 @@ __decorate([
     reflection_1.Mapped({ descriminator: reflection_1.InterfaceDescriminator.ISimpleMapping, dbColumnName: "isLockedForNextDay", type: reflection_1.MappingType.boolean })
 ], Condition.prototype, "isLockedForNextDay", void 0);
 __decorate([
+    reflection_1.Mapped({ descriminator: reflection_1.InterfaceDescriminator.ISimpleMapping, dbColumnName: "isDeleted", type: reflection_1.MappingType.boolean })
+], Condition.prototype, "isDeleted", void 0);
+__decorate([
     reflection_1.Mapped(conditionToProfileMapping)
 ], Condition.prototype, "profile", void 0);
 __decorate([
@@ -307,13 +310,13 @@ NonWorkingDay = __decorate([
 exports.NonWorkingDay = NonWorkingDay;
 class TypesHelper {
 }
-exports.TypesHelper = TypesHelper;
 TypesHelper.typesMapping = { "Tag": Tag,
     "Condition": Condition,
     "Profile": Profile,
     "Profession": Tag,
     "Absence": Absence,
     "NonWorkingDay": NonWorkingDay };
+exports.TypesHelper = TypesHelper;
 var Day;
 (function (Day) {
     Day["Sunday"] = "Sunday";

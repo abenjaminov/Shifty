@@ -61,6 +61,7 @@ export class Condition implements IStateObject {
     day?: Day;
     profileId?: string;
     isLockedForNextDay?: boolean = false;
+    isDeleted:boolean = false;
 
     // Not Mapped
     profile?: Profile;

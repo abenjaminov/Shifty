@@ -1,49 +1,15 @@
 <div class="sh-conditions">
   <sh-view titleText="Conditions">
-    <div viewContent>
-      <div class="assignemnt"> 
-        <div class="condition-type condition-property">
-          <div class="title">Condition Type:</div>
-          <sh-dropdown [options]="conditionTypes" [(selectedOption)]="selectedConditionType"></sh-dropdown>
+  <div viewActions>
+      <button class="add-condition" mat-raised-button (click)="onAddCondition()">
+          <span>Add Condition</span>
+      </button>
+  </div>
+    <div viewContent class="sh-conditions-content">
 
-          <div class="type-properties-container" *ngIf="selectedConditionType && selectedConditionType.id != 'Rotation'">
-              <div class="title">Room:</div>
-              <sh-dropdown [options]="rooms" [(selectedOption)]="selectedRoom"></sh-dropdown>
-          </div>
-          <div class="type-properties-container" *ngIf="selectedConditionType && selectedConditionType.id == 'Permanent'">
-              <div class="title">Day: </div>
-            <sh-dropdown [options]="days" [(selectedOption)]="selectedDay"></sh-dropdown>
-          </div>
-        </div>
-          <div class="condition-property" *ngIf="selectedConditionType && selectedConditionType.id == 'Rotation'">
-              <div class="title">Description:</div>
-              <mat-form-field class="example-full-width">
-                  <input matInput placeholder="Description" [(ngModel)]="description">
-              </mat-form-field>
-          </div>
-        <div class="condition-profession condition-property" *ngIf="selectedConditionType">
-            <div class="title">Profession:</div>
-            <sh-dropdown [options]="tags" [(selectedOption)]="selectedTag"></sh-dropdown>
-        </div>
-        <div class="condition-profession condition-property" *ngIf="selectedConditionType && selectedConditionType.id == 'Permanent'">
-            <div class="title">Profile:</div>
-            <sh-dropdown [options]="profiles" [(selectedOption)]="selectedProfile"></sh-dropdown>
-        </div>
-        <div class="condition-importance condition-property">
-          <div class="title">Importance:</div>
-          <sh-toggle [options]="conditionImportances" [(selectedOptionIndex)]="selectedImportanceIndex"></sh-toggle>
-        </div>
-        <div class="condition-absent condition-property">
-            <div class="title">Absent next day</div>
-            <sh-toggle [options]="absentNextDayOptions" [(selectedOptionIndex)]="selectedIsLockedForNextDayIndex"></sh-toggle>
-        </div>
-          <button mat-stroked-button (click)="addCondition()">
-              Add Condition
-          </button>
-      </div>
       <div class="conditions-list" *ngIf="conditionsService.state == 'ready'">
           <div viewContent class="table">
-              <div class="row title-row">
+              <div class="row title-row scroll-header">
                   <div class="cell">
                       Type
                   </div>
@@ -72,36 +38,40 @@
                       Delete
                   </div>
               </div>
-              <div *ngFor="let condition of allConditions" class="row">
-                  <div class="cell">
-                      {{condition.type}}
-                  </div>
-                  <div class="cell">
-                      {{condition.description}}
-                  </div>
-                  <div class="cell">
-                      {{condition.room ? condition.room.name : ''}}
-                  </div>
-                  <div class="cell">
-                      {{condition.profile ? condition.profile.name : ''}}
-                  </div>
-                  <div class="cell">
-                      {{condition.profession ? condition.profession.name : ''}}
-                  </div>
-                  <div class="cell">
-                      {{condition.day ? condition.day : ''}}
-                  </div>
-                  <div class="cell">
-                      {{condition.importance ? condition.importance : ''}}
-                  </div>
-                  <div class="cell">
-                      {{condition.isLockedForNextDay ? 'Yes' : 'No'}}
-                  </div>
-                  <div class="small-cell action-cell">
-                      <button mat-button (click)="onDeleteCondition(condition)">
-                          <fa name="trash"></fa>
-                      </button>
+              <div class="scroll-content table-content">
+                  <div class="scroll-wrapper">
+                      <div *ngFor="let condition of allConditions" class="row">
+                          <div class="cell">
+                              {{condition.type}}
+                          </div>
+                          <div class="cell">
+                              {{condition.description}}
+                          </div>
+                          <div class="cell">
+                              {{condition.room ? condition.room.name : ''}}
+                          </div>
+                          <div class="cell">
+                              {{condition.profile ? condition.profile.name : ''}}
+                          </div>
+                          <div class="cell">
+                              {{condition.profession ? condition.profession.name : ''}}
+                          </div>
+                          <div class="cell">
+                              {{condition.day ? condition.day : ''}}
+                          </div>
+                          <div class="cell">
+                              {{condition.importance ? condition.importance : ''}}
+                          </div>
+                          <div class="cell">
+                              {{condition.isLockedForNextDay ? 'Yes' : 'No'}}
+                          </div>
+                          <div class="small-cell action-cell">
+                              <button mat-button (click)="onDeleteCondition(condition)">
+                                  <fa name="trash"></fa>
+                              </button>
 
+                          </div>
+                      </div>
                   </div>
               </div>
           </div>

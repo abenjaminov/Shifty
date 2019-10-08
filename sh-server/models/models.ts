@@ -198,6 +198,7 @@ export class Condition {
     @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "day", type: MappingType.string}) day?: Day;
     @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "profileId", type:MappingType.string}) profileId?: string;
     @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "isLockedForNextDay", type:MappingType.boolean}) isLockedForNextDay?: boolean;
+    @Mapped({ descriminator: InterfaceDescriminator.ISimpleMapping,dbColumnName: "isDeleted", type:MappingType.boolean}) isDeleted?: boolean;
     
     @Mapped(conditionToProfileMapping) profile?: Profile;
     @Mapped(conditionToProfessionMapping) profession?: Tag;

@@ -5,7 +5,10 @@ import { GeneticEnviroment } from "../genetics/evniroment";
 import { Router, Request } from "express";
 import Enumerable from 'linq';
 import { getHttpResposeJson } from "../models/helpers";
-import * as Excel from 'exceljs';
+//import * as Excel from 'exceljs';
+//import Excel from 'exceljs';
+//const Excel = require('exceljs');
+//import * as Excel from 'exceljs';
 
 var express = require('express');
 var router: Router = express.Router();
@@ -156,6 +159,8 @@ router.get('/:date?', async (req,res,next) => {
 });
 
 router.get('/export/:startDate/:endDate?', async (req,res,next) => {
+    const Excel = require('exceljs');
+    
     let workbook = new Excel.Workbook();
     workbook.creator = "Shifty App";
     let workSheet = workbook.addWorksheet('Schedule', {views:[{xSplit: 1, ySplit:1}]});

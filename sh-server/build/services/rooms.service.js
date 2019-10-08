@@ -1,10 +1,9 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -34,7 +33,7 @@ class RoomsService {
     getRooms(context) {
         return __awaiter(this, void 0, void 0, function* () {
             var rooms = yield context.select(models_1.Room, true, true, []);
-            let rotationConditions = yield context.select(models_1.Condition, true, false, [{ dataFilters: [{ property: 'type', value: models_1.ConditionType.Rotation }] }]);
+            let rotationConditions = yield context.select(models_1.Condition, true, false, [{ dataFilters: [{ property: 'type', value: models_1.ConditionType.Rotation }, { property: 'isDeleted', value: false }] }]);
             let rotationRooms = rotationConditions.map(rc => {
                 let room = new models_1.Room();
                 room.id = rc.roomId;

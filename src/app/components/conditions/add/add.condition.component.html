@@ -1,0 +1,45 @@
+<div class="add-condition">
+  <div class="condition-type condition-property">
+    <div class="title">Condition Type:</div>
+    <sh-dropdown [options]="conditionTypes" [(selectedOption)]="selectedConditionType"></sh-dropdown>
+
+    <div class="type-properties-container" *ngIf="selectedConditionType && selectedConditionType.id != 'Rotation'">
+        <div class="title">Room:</div>
+        <sh-dropdown [options]="rooms" [(selectedOption)]="selectedRoom"></sh-dropdown>
+    </div>
+    <div class="type-properties-container" *ngIf="selectedConditionType && selectedConditionType.id == 'Permanent'">
+        <div class="title">Day: </div>
+      <sh-dropdown [options]="days" [(selectedOption)]="selectedDay"></sh-dropdown>
+    </div>
+  </div>
+    <div class="condition-property" *ngIf="selectedConditionType && selectedConditionType.id == 'Rotation'">
+        <div class="title">Description:</div>
+        <mat-form-field class="example-full-width">
+            <input matInput placeholder="Description" [(ngModel)]="description">
+        </mat-form-field>
+    </div>
+  <div class="condition-profession condition-property" *ngIf="selectedConditionType">
+      <div class="title">Profession:</div>
+      <sh-dropdown [options]="tags" [(selectedOption)]="selectedTag"></sh-dropdown>
+  </div>
+  <div class="condition-profession condition-property" *ngIf="selectedConditionType && selectedConditionType.id == 'Permanent'">
+      <div class="title">Profile:</div>
+      <sh-dropdown [options]="profiles" [(selectedOption)]="selectedProfile"></sh-dropdown>
+  </div>
+  <div class="condition-importance condition-property">
+    <div class="title">Importance:</div>
+    <sh-toggle [options]="conditionImportances" [(selectedOptionIndex)]="selectedImportanceIndex"></sh-toggle>
+  </div>
+  <div class="condition-absent condition-property">
+      <div class="title">Absent next day</div>
+      <sh-toggle [options]="absentNextDayOptions" [(selectedOptionIndex)]="selectedIsLockedForNextDayIndex"></sh-toggle>
+  </div>
+  <div class="actions">
+    <button mat-stroked-button (click)="addCondition()">
+        Add Condition
+    </button>
+    <button mat-stroked-button (click)="onClose()">
+      Close
+    </button>
+  </div>
+</div>

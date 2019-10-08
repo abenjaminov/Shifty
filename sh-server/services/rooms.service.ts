@@ -29,7 +29,8 @@ export class RoomsService {
     async getRooms(context: DbContext): Promise<Array<Room>> {
         var rooms = await context.select<Room>(Room, true,true, []);
 
-        let rotationConditions: Array<Condition> = await context.select(Condition,true,false, [{ dataFilters: [{property: 'type', value: ConditionType.Rotation}] }]);
+        let rotationConditions: Array<Condition> = await context.select(Condition,true,false, 
+            [{ dataFilters: [{property: 'type', value: ConditionType.Rotation}, {property: 'isDeleted', value: false}]}]) ;
 
         let rotationRooms = rotationConditions.map(rc => {
             let room = new Room();

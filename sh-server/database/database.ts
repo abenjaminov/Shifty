@@ -289,7 +289,7 @@ export class DbContext {
             for(let prop of Reflect.ownKeys(simpleMappedProps)) {
                 let mappedProp = simpleMappedProps[prop.toString()];
                 if(!mappedProp.isPrimaryKey) {
-                    values[values.length - 1].push(item[prop] ? this.getDbValueText(mappedProp.type, item[prop], true) : null);
+                    values[values.length - 1].push(item[prop] != undefined ? this.getDbValueText(mappedProp.type, item[prop], true) : null);
                 }
             }
         }
@@ -333,7 +333,7 @@ export class DbContext {
         return "No Items";
     }
 
-    async update<T extends IConstructor>(type: T, item: any, returnQueryString?:boolean): Promise<string | Query> {
+    async update<T extends IConstructor>(type: T, item: any, execute?:boolean): Promise<string> {
             let table = ReflectionHelper.getTableName(type);
 
             let simpleMappedProps = ReflectionHelper.getSimpleMappedProperties(type);
@@ -356,7 +356,7 @@ export class DbContext {
 
             let query = `UPDATE ${table} SET ${set.join(',')} WHERE ${where};`;
 
-            if(returnQueryString) {
+            if(!execute) {
                 return query;
             }
             else {
@@ -505,7 +505,7 @@ export class DbContext {
     }
 
     getDbValueText(mappingType: MappingType, value: any, raw?: boolean): string {
-        if(!value) {
+        if(value == undefined || value == null) {
             return null;
         }
         

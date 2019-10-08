@@ -2,15 +2,15 @@
 
 .view {
     width: 100%;
-    height: 100%;
-    display: grid;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
     margin: auto;
-    grid-template-rows: 150px auto;
     align-items: center;
-    justify-items: center;
+    justify-items: flex-start;
 
     .view-header{
-        grid-row: 1;
+        flex-basis: 150px;
         background-color: $theme-secondary;
         width: calc(100% - 100px);
         height: 150px;
@@ -35,8 +35,12 @@
     .view-content {
         margin: 0 auto 0 auto;
         width: 1200px;
-        grid-row: 2;
-        height: calc(100vh - 150px);
+        flex: 1;
+        height: 100%;
         overflow: auto;
+
+        >div {
+            height: 100%;
+        }
     }
 }

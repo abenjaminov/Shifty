@@ -34,6 +34,7 @@ import {MatDialogModule} from "@angular/material/dialog";
 import { QuestionDialogComponent } from './components/question-dialog/question-dialog.component';
 import {MatButtonToggleModule} from "@angular/material/button-toggle";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {AddConditionComponent} from './components/conditions/add/add.condition.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +50,8 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     ToggleComponent,
     AbsentComponent,
     LoginComponent,
-    QuestionDialogComponent
+    QuestionDialogComponent,
+    AddConditionComponent
   ],
     imports: [
         BrowserModule,
@@ -70,7 +72,7 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
         MatButtonToggleModule,
         MatProgressSpinnerModule
     ],
-  entryComponents: [AbsentComponent,QuestionDialogComponent],
+  entryComponents: [AbsentComponent,QuestionDialogComponent,AddConditionComponent],
   providers: [HttpClient, ProfilesService, TagsService, RoomsService, ConditionService],
   bootstrap: [AppComponent]
 })

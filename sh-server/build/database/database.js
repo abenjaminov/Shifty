@@ -1,10 +1,9 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -215,7 +214,7 @@ class DbContext {
                 for (let prop of Reflect.ownKeys(simpleMappedProps)) {
                     let mappedProp = simpleMappedProps[prop.toString()];
                     if (!mappedProp.isPrimaryKey) {
-                        values[values.length - 1].push(item[prop] ? this.getDbValueText(mappedProp.type, item[prop], true) : null);
+                        values[values.length - 1].push(item[prop] != undefined ? this.getDbValueText(mappedProp.type, item[prop], true) : null);
                     }
                 }
             }
@@ -249,7 +248,7 @@ class DbContext {
             return "No Items";
         });
     }
-    update(type, item, returnQueryString) {
+    update(type, item, execute) {
         return __awaiter(this, void 0, void 0, function* () {
             let table = reflection_1.ReflectionHelper.getTableName(type);
             let simpleMappedProps = reflection_1.ReflectionHelper.getSimpleMappedProperties(type);
@@ -266,7 +265,7 @@ class DbContext {
                 }
             }
             let query = `UPDATE ${table} SET ${set.join(',')} WHERE ${where};`;
-            if (returnQueryString) {
+            if (!execute) {
                 return query;
             }
             else {
@@ -381,7 +380,7 @@ class DbContext {
         return result;
     }
     getDbValueText(mappingType, value, raw) {
-        if (!value) {
+        if (value == undefined || value == null) {
             return null;
         }
         if (mappingType == reflection_1.MappingType.string) {
