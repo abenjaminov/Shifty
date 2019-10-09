@@ -5,10 +5,7 @@ import { GeneticEnviroment } from "../genetics/evniroment";
 import { Router, Request } from "express";
 import Enumerable from 'linq';
 import { getHttpResposeJson } from "../models/helpers";
-//import * as Excel from 'exceljs';
-//import Excel from 'exceljs';
-//const Excel = require('exceljs');
-//import * as Excel from 'exceljs';
+import * as Excel from 'exceljs';
 
 var express = require('express');
 var router: Router = express.Router();
@@ -159,16 +156,23 @@ router.get('/:date?', async (req,res,next) => {
 });
 
 router.get('/export/:startDate/:endDate?', async (req,res,next) => {
-    const Excel = require('exceljs');
     
+    let dateParts = req.params.startDate.split(";");
+    let startDate = new Date(Date.UTC(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2])));
+
+    await excelJS(startDate, req,res);
+
+    res.end();
+});
+
+async function excelJS(startDate, req, res) {
     let workbook = new Excel.Workbook();
     workbook.creator = "Shifty App";
     let workSheet = workbook.addWorksheet('Schedule', {views:[{xSplit: 1, ySplit:1}]});
     workSheet.columns = [];
     let rooms, weeklySchedule;
 
-    let dateParts = req.params.startDate.split(";");
-    let startDate = new Date(Date.UTC(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2])));
+    
 
     let context = RoutesCommon.getContextFromRequest(req);
 
@@ -296,9 +300,7 @@ router.get('/export/:startDate/:endDate?', async (req,res,next) => {
     res.setHeader('Content-Disposition',`attachment; filename=${fileName}`);
 
     await workbook.xlsx.write(res);
-
-    res.end();
-});
+}
 
 
 

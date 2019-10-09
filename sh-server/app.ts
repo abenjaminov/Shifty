@@ -17,7 +17,6 @@ import roomsRouter from './routes/roomsRoute';
 import conditionsRouter from './routes/conditionsRoute';
 import scheduleRouter from './routes/scheduleRoute';
 import { RoomsService } from './services/rooms.service';
-import { Assignment } from './models/models';
 
 const app: express.Application = express();
 
