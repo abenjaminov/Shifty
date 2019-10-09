@@ -6,7 +6,6 @@
     }
     .conditions-list {
         height: 100%;
-        margin-top: 20px;
         flex: 1;
         display: flex;
     }
@@ -19,7 +18,7 @@
         width: 100%;
 
         .table-content {
-            height: calc(100% - 75px);
+            height: calc(100% - 200px);
         }
 
         .row {

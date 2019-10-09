@@ -1,11 +1,7 @@
 <div class="profiles">
   <sh-view titleText="Profiles">
-<!--    <sh-grid viewContent>-->
-<!--      <sh-grid-actions-column [columnSource]="actionColumn"></sh-grid-actions-column>-->
-<!--      <sh-grid-column *ngFor="let col of this.columns" [columnSource]="col"></sh-grid-column>-->
-<!--    </sh-grid>-->
     <div viewContent class="table">
-      <div class="row title-row">
+      <div class="row title-row scroll-header">
         <div class="cell">
           Name
         </div>
@@ -16,18 +12,21 @@
           Edit
         </div>
       </div>
-      <div *ngFor="let profile of profiles" class="row">
-        <div class="cell">
-          {{profile.name}}
-        </div>
-        <div class="cell">
-          {{profile.professionsJoinedText}}
-        </div>
-        <div class="small-cell action-cell">
-          <button mat-button (click)="onEditProfile(profile)">
-            <fa name="pencil"></fa>
-          </button>
-
+      <div class=" scroll-content table-content">
+        <div class="scroll-wrapper">
+          <div *ngFor="let profile of profiles" class="row">
+            <div class="cell">
+              {{profile.name}}
+            </div>
+            <div class="cell">
+              {{profile.professionsJoinedText}}
+            </div>
+            <div class="small-cell action-cell">
+              <button mat-button (click)="onEditProfile(profile)">
+                <fa name="pencil"></fa>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
