@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {AuthenticationService, LoginData} from "../../services/authentication.service";
+import {AppStatus, StateService} from "../../services/state.service";
 
 
 @Component({
@@ -11,7 +12,7 @@ export class LoginComponent {
 
   loginData: LoginData = new LoginData();
 
-  constructor(private authenticationService: AuthenticationService) { }
+  constructor(private authenticationService: AuthenticationService, private stateService: StateService) { }
 
   ngOnInit() {
   }
@@ -19,5 +20,6 @@ export class LoginComponent {
   onLoginClicked() {
     // TODO : Check input is ok
     this.authenticationService.tryLogin(this.loginData);
+
   }
 }
