@@ -3,6 +3,8 @@ import {ProfilesService} from "../../services/profiles.service";
 import { Profile } from 'src/app/models';
 import {NavigationService} from "../../services/navigation.service";
 import * as Enumerable from 'linq';
+import {SharedService} from "../../services/shared.service";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'sh-profiles',
@@ -14,10 +16,12 @@ export class ProfilesComponent implements OnInit {
 
   profiles: Array<Profile>;
   public profileToEdit: Profile;
+  searchTerm$: Subject<string>
 
   constructor(
       private profilesService: ProfilesService,
-      private navigationService: NavigationService
+      private navigationService: NavigationService,
+      private sharedService: SharedService
   ) {
 
   }
@@ -25,22 +29,14 @@ export class ProfilesComponent implements OnInit {
 
     this.profilesService.load().then(profiles => {
       this.profiles = profiles;
-      profiles.forEach(x => {
-        //(x as any).professionsHtml = Enumerable.from(x.professions).select(x => x.name).toArray().join(', ');
-      //   this.actionColumn.cellInfos.push({
-      //     actions : [{
-      //       action: (index) => {
-      //         this.onEditProfile(this.profilesService.profiles[index]);
-      //       },
-      //       icon: "pencil"
-      //     }]
-      //   });
-      //   nameColumn.cellInfos.push({ text: x.name });
-      //   professionsColumn.cellInfos.push({ text: x.professions.map(p => p.name).join(', ') });
-       })
-    });
+      this.searchTerm$ = this.sharedService.getSearchTerm();
 
-    //this.columns.push(nameColumn, professionsColumn);
+      this.sharedService.search(this.searchTerm$).subscribe(text => this.onSearchChanged(text));
+    });
+  }
+
+  onSearchChanged(text:string) {
+    this.profiles = this.profilesService.profiles.filter(p => p.name.toLowerCase().startsWith(text.toLocaleLowerCase()) || p.professions.filter(pr => pr.name.toLocaleLowerCase().startsWith(text.toLocaleLowerCase())).length > 0)
   }
 
   onEditProfile(profile: Profile) {
