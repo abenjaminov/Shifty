@@ -209,7 +209,7 @@ class DbContext {
                 values.push([]);
                 let primaryProp = Reflect.ownKeys(simpleMappedProps).find(smp => simpleMappedProps[smp.toString()].isPrimaryKey).toString();
                 if (item[primaryProp] != undefined) {
-                    yield this.update(type, item);
+                    yield this.update(type, item, true);
                 }
                 for (let prop of Reflect.ownKeys(simpleMappedProps)) {
                     let mappedProp = simpleMappedProps[prop.toString()];
@@ -235,7 +235,7 @@ class DbContext {
                 for (let item of items) {
                     values.push([]);
                     if (item[primaryProp] != undefined) {
-                        let updateQuery = yield this.update(type, item, true);
+                        let updateQuery = yield this.update(type, item, false);
                         updateCommands.push(updateQuery);
                     }
                     else {

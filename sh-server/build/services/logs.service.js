@@ -38,13 +38,13 @@ class LogService {
 exports.LogService = LogService;
 class ConsoleLogger {
     info(message) {
-        console.log(colors_1.default.bgWhite(message));
+        console.log(colors_1.default.bgWhite.black(message));
     }
     error(message, exception) {
         console.log(colors_1.default.bold(colors_1.default.bgRed(message)));
     }
     warning(message, exception) {
-        console.log(colors_1.default.bgYellow(message));
+        console.log(colors_1.default.bgYellow.black(message));
     }
 }
 //# sourceMappingURL=logs.service.js.map

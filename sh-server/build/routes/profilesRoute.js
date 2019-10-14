@@ -43,7 +43,7 @@ router.put('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
     var context = routeCommon_1.RoutesCommon.getContextFromRequest(req);
     context.connection.beginTransaction();
     try {
-        yield context.update(models_1.Profile, profile);
+        yield context.update(models_1.Profile, profile, true);
         yield context.updateOneToManyMappings(models_1.Profile, profile);
         yield context.deleteConnections(models_1.Absence, "profileId", profile.id, profile.absences.filter(x => x.id).map(x => x.id));
         yield context.updateOrInsert(models_1.Absence, profile.absences);
@@ -54,7 +54,7 @@ router.put('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
         res.json(helpers_1.getHttpResposeJson(profile, true));
     }
     catch (error) {
-        console.error("Put Profile " + error);
+        req.logService.error(error.message, error);
         context.connection.rollback();
         res.status(500).send();
     }

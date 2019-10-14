@@ -36,7 +36,7 @@ router.put('/', async (req , res) => {
   context.connection.beginTransaction();
 
   try {
-    await context.update(Profile, profile);
+    await context.update(Profile, profile, true);
     await context.updateOneToManyMappings(Profile, profile);
     
     await context.deleteConnections(Absence, "profileId", profile.id,profile.absences.filter(x => x.id).map(x => x.id));
@@ -51,7 +51,7 @@ router.put('/', async (req , res) => {
 
     res.json(getHttpResposeJson(profile, true));
   } catch (error) {
-    console.error("Put Profile " + error);
+    req.logService.error(error.message, error)
     context.connection.rollback();
     res.status(500).send();
   }

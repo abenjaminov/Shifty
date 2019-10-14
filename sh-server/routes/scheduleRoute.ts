@@ -6,6 +6,7 @@ import { Router, Request } from "express";
 import Enumerable from 'linq';
 import { getHttpResposeJson } from "../models/helpers";
 import * as Excel from 'exceljs';
+//const Excel = undefined;
 
 var express = require('express');
 var router: Router = express.Router();
@@ -45,14 +46,25 @@ router.get('/run/:date?', async (req: Request,res,next) => {
     for (let index = 0; index < dates.length; index++) {
         let day = scheduleService.getDayByDate(dates[index]);
 
-        var permanentConditionsForThisDay = Enumerable.from(rooms).selectMany(r => r.conditions).where(c => c.type === ConditionType.Permanent && c.day == day).toArray();
+        var permanentConditionsForThisDay = 
+            Enumerable.from(rooms).selectMany(r => r.conditions).where(c => c.type === ConditionType.Permanent && c.day == day).toArray();
         
+        // Profiles who are locked from the previous day
         let profileIdsNotAllowedForThisDay = prevDayAssignments.filter(a => a.condition.isLockedForNextDay).map(a => a.profileId);
+        // Profiles who are licked and that are part of permanent conditions
         profileIdsNotAllowedForThisDay = profileIdsNotAllowedForThisDay.concat(permanentConditionsForThisDay.map(c => c.profileId));
 
-        var profilesForThisDay = profiles.filter(p => p.isAssigned && profileIdsNotAllowedForThisDay.findIndex(pid => pid == p.id) == -1);
-        profilesForThisDay = Enumerable.from(profilesForThisDay).where(p => Enumerable.from(p.absences).all(abs => !scheduleService.isBetween(dates[index], abs.startDate, abs.endDate))).toArray();
-        profilesForThisDay = Enumerable.from(profilesForThisDay).where(p => Enumerable.from(p.nonWorkingDays).all(nwd => nwd.day != day)).toArray();
+        let absentProfilesForThisDay = 
+            Enumerable.from(profiles).where(p => Enumerable.from(p.absences).any(abs => scheduleService.isBetween(dates[index], abs.startDate, abs.endDate))
+                                                 || Enumerable.from(p.nonWorkingDays).any(nwd => nwd.day == day)).toArray();
+
+        // Remove all the permanent conditions that are absent in this day
+        permanentConditionsForThisDay = Enumerable.from(permanentConditionsForThisDay).where(c => Enumerable.from(absentProfilesForThisDay).all(p => p.id != c.profileId)).toArray()
+
+        profileIdsNotAllowedForThisDay = profileIdsNotAllowedForThisDay.concat(absentProfilesForThisDay.map(p => p.id));
+
+        var profilesForThisDay = profiles.filter(p => p.isAssignable && profileIdsNotAllowedForThisDay.findIndex(pid => pid == p.id) == -1);
+
         let geneticEnv = new GeneticEnviroment();
 
         let roomsForDay = prepRoomsForRun(rooms, permanentConditionsForThisDay);

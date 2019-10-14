@@ -283,7 +283,7 @@ export class DbContext {
             let primaryProp = Reflect.ownKeys(simpleMappedProps).find(smp => simpleMappedProps[smp.toString()].isPrimaryKey).toString();
 
             if(item[primaryProp] != undefined) {
-                await this.update(type, item);
+                await this.update(type, item,true);
             }
 
             for(let prop of Reflect.ownKeys(simpleMappedProps)) {
@@ -317,7 +317,7 @@ export class DbContext {
             for(let item of items) {
                 values.push([]);
                 if(item[primaryProp] != undefined) {
-                    let updateQuery = await this.update(type, item, true);
+                    let updateQuery = await this.update(type, item, false);
                     updateCommands.push(updateQuery);
                 }
                 else {

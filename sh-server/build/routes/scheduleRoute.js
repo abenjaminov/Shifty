@@ -25,6 +25,7 @@ const evniroment_1 = require("../genetics/evniroment");
 const linq_1 = __importDefault(require("linq"));
 const helpers_1 = require("../models/helpers");
 const Excel = __importStar(require("exceljs"));
+//const Excel = undefined;
 var express = require('express');
 var router = express.Router();
 router.get('/run/:date?', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
@@ -51,11 +52,16 @@ router.get('/run/:date?', (req, res, next) => __awaiter(this, void 0, void 0, fu
     for (let index = 0; index < dates.length; index++) {
         let day = scheduleService.getDayByDate(dates[index]);
         var permanentConditionsForThisDay = linq_1.default.from(rooms).selectMany(r => r.conditions).where(c => c.type === models_1.ConditionType.Permanent && c.day == day).toArray();
+        // Profiles who are locked from the previous day
         let profileIdsNotAllowedForThisDay = prevDayAssignments.filter(a => a.condition.isLockedForNextDay).map(a => a.profileId);
+        // Profiles who are licked and that are part of permanent conditions
         profileIdsNotAllowedForThisDay = profileIdsNotAllowedForThisDay.concat(permanentConditionsForThisDay.map(c => c.profileId));
-        var profilesForThisDay = profiles.filter(p => p.isAssigned && profileIdsNotAllowedForThisDay.findIndex(pid => pid == p.id) == -1);
-        profilesForThisDay = linq_1.default.from(profilesForThisDay).where(p => linq_1.default.from(p.absences).all(abs => !scheduleService.isBetween(dates[index], abs.startDate, abs.endDate))).toArray();
-        profilesForThisDay = linq_1.default.from(profilesForThisDay).where(p => linq_1.default.from(p.nonWorkingDays).all(nwd => nwd.day != day)).toArray();
+        let absentProfilesForThisDay = linq_1.default.from(profiles).where(p => linq_1.default.from(p.absences).any(abs => scheduleService.isBetween(dates[index], abs.startDate, abs.endDate))
+            || linq_1.default.from(p.nonWorkingDays).any(nwd => nwd.day == day)).toArray();
+        // Remove all the permanent conditions that are absent in this day
+        permanentConditionsForThisDay = linq_1.default.from(permanentConditionsForThisDay).where(c => linq_1.default.from(absentProfilesForThisDay).all(p => p.id != c.profileId)).toArray();
+        profileIdsNotAllowedForThisDay = profileIdsNotAllowedForThisDay.concat(absentProfilesForThisDay.map(p => p.id));
+        var profilesForThisDay = profiles.filter(p => p.isAssignable && profileIdsNotAllowedForThisDay.findIndex(pid => pid == p.id) == -1);
         let geneticEnv = new evniroment_1.GeneticEnviroment();
         let roomsForDay = prepRoomsForRun(rooms, permanentConditionsForThisDay);
         prevDayAssignments = [];
