@@ -366,14 +366,18 @@ class DbContext {
                         values.push([mainValue, sourceValue]);
                     }
                     insertsRemaining++;
-                    this.connection.query(insert, [values], (err, result) => {
-                        insertsRemaining--;
-                        if (err)
-                            reject(err);
-                        if (insertsRemaining == 0) {
-                            resolve();
-                        }
-                    });
+                    if (values.length == 0)
+                        resolve();
+                    else {
+                        this.connection.query(insert, [values], (err, result) => {
+                            insertsRemaining--;
+                            if (err)
+                                reject(err);
+                            if (insertsRemaining == 0) {
+                                resolve();
+                            }
+                        });
+                    }
                 }
             }).catch(err => {
                 reject(err);

@@ -27,7 +27,7 @@
                     </div>
                 </div>
                 <div class="profile-professions">
-                    <div class="title">Professions</div>
+                    <div class="title" *ngIf="profileToEdit.professions && profileToEdit.professions.length > 0">Professions</div>
                     <div class="profession" *ngFor="let profession of profileToEdit.professions; let i = index">
                         <div>{{profession.name}}</div>
                         <button class="remove-profession" mat-button (click)="removeProfession(profession)">
