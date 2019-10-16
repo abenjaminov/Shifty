@@ -157,6 +157,7 @@ router.delete("/:startDate", async(req,res) => {
 
         await req.dbContext.deleteSimple(Assignment, assignmentIds);
 
+        req.cacheService.clearByPrefix('/api/schedule');
         res.json(getHttpResposeJson(true, true));
     }
     catch(error) {

@@ -43,13 +43,12 @@
         background-color: $theme-primary;
         box-shadow: 0px 0px 3px black;
         border-radius: 3px;
-        padding: 3px 13px;
+        padding: 3px 10px;
     }
 
     .view-content {
         width: 1200px;
         flex: 1;
-        height: 100%;
         overflow: auto;
         position: absolute;
         top: 140px;
@@ -57,12 +56,14 @@
         box-shadow: 0px 0px 3px black;
         border-radius: 3px;
         padding: 10px;
+        height: calc(100% - 165px);
 
         &.has-content-header {
             top: 200px;
+            height: calc(100% - 225px);
         }
 
-        >div {
+        > div {
             height: 100%;
         }
     }

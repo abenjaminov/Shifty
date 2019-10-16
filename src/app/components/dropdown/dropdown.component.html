@@ -2,7 +2,7 @@
 
   <div class="dropdown-input">
       <div class="selected-text">{{selectedOption?.name || '---'}}</div>
-      <fa class="chevron" name="chevron-down" (click)="onOpenClicked()"></fa>
+      <fa-icon class="chevron" icon="chevron-down" (click)="onOpenClicked()"></fa-icon>
   </div>
   <div class="dropdown-content" *ngIf="this.isOpen">
     <div class="dropdown-option" *ngFor="let option of options" (click)="onOptionClicked(option)">

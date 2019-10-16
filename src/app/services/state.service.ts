@@ -33,7 +33,17 @@ export enum AppStatus {
 }
 
 class AppState {
-  appStatus: AppStatus = AppStatus.loading;
+  private _appStatus: AppStatus = AppStatus.loading;
+  get appStatus() {
+    return this._appStatus;
+  }
+
+  set appStatus(status: AppStatus) {
+    setTimeout(x => {
+      this._appStatus = status;
+    });
+  }
+
   runningRequests: Map<any,string> = new Map<any, string>();
   profiles: Profile[] = [];
   tags: Tag[] = [];
@@ -241,7 +251,7 @@ export class StateService
 
   async deleteObject(T: IConstructor, id: any): Promise<boolean> {
       var stateMap = this.getStateMap(T);
-    let loadingKey = `${T.name}; ${id}`;
+      let loadingKey = `${T.name}; ${id}`;
 
       this.addLoading(loadingKey, "stateService.deleteObject");
 

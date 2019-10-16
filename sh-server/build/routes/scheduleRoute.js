@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -28,7 +29,7 @@ const Excel = __importStar(require("exceljs"));
 //const Excel = undefined;
 var express = require('express');
 var router = express.Router();
-router.get('/run/:date?', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+router.get('/run/:date?', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var context = routeCommon_1.RoutesCommon.getContextFromRequest(req);
     var profiles = yield context.select(models_1.Profile, true, true, []);
     var rooms = yield req.roomService.getRooms(context);
@@ -90,39 +91,46 @@ router.get('/run/:date?', (req, res, next) => __awaiter(this, void 0, void 0, fu
             assignments.push(assignment);
         }
     }
-    var result = yield context.insert(models_1.Assignment, assignments).catch((err) => {
-        console.log(err);
-        return err;
-    });
-    if (!result.affectedRows) {
-        res.status(500).json("Error occured running scheduler");
-    }
-    else {
+    try {
+        yield context.insert(models_1.Assignment, assignments);
         req.cacheService.clearByPrefix('/api/schedule');
         res.json(helpers_1.getHttpResposeJson("Success running scheduler", true));
     }
+    catch (err) {
+        req.logService.error("Error running schedule calculation", err);
+        res.status(routeCommon_1.HttpResponseCodes.internalServerError).json("Error occured running scheduler");
+    }
+    ;
 }));
-router.get('/test', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+router.get('/test', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     //var solution = GeneticEnviroment.test();
     res.json(helpers_1.getHttpResposeJson(["solution", "For", "The", "Genetics"], false));
 }));
-router.get('/:date?', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+// Get schedule from start date
+router.get('/:date?', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let scheduleService = new schedule_service_1.ScheduleService(routeCommon_1.RoutesCommon.getContextFromRequest(req));
     var firstDate = undefined;
     if (req.params.date) {
         var dateParts = req.params.date.split(";");
         firstDate = new Date(Date.UTC(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2])));
     }
-    let weeklySchedule = yield scheduleService.getWeeklySchedule(firstDate);
-    res.json(helpers_1.getHttpResposeJson(weeklySchedule, false));
+    try {
+        let weeklySchedule = yield scheduleService.getWeeklySchedule(firstDate);
+        res.json(helpers_1.getHttpResposeJson(weeklySchedule, false));
+    }
+    catch (error) {
+        req.logService.error("Error getting schedule", error);
+        res.status(routeCommon_1.HttpResponseCodes.internalServerError).json("Error getting schedule");
+    }
 }));
-router.delete("/:startDate", (req, res) => __awaiter(this, void 0, void 0, function* () {
+router.delete("/:startDate", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let dateParts = req.params.startDate.split(";");
     let startDate = new Date(Date.UTC(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2])));
     try {
         let weeklySchedule = yield req.scheduleService.getWeeklySchedule(startDate);
         let assignmentIds = linq_1.default.from(Object.keys(models_1.Day).map(d => weeklySchedule.days[d].assignments)).selectMany(a => a).select(a => a.id).toArray();
         yield req.dbContext.deleteSimple(models_1.Assignment, assignmentIds);
+        req.cacheService.clearByPrefix('/api/schedule');
         res.json(helpers_1.getHttpResposeJson(true, true));
     }
     catch (error) {
@@ -130,13 +138,13 @@ router.delete("/:startDate", (req, res) => __awaiter(this, void 0, void 0, funct
         res.status(routeCommon_1.HttpResponseCodes.internalServerError).send().end();
     }
 }));
-router.get('/export/:startDate/:endDate?', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+router.get('/export/:startDate/:endDate?', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let dateParts = req.params.startDate.split(";");
     let startDate = new Date(Date.UTC(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2])));
-    yield excelJS(startDate, req, res);
+    yield createExcelJS(startDate, req, res);
     res.end();
 }));
-function excelJS(startDate, req, res) {
+function createExcelJS(startDate, req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         let workbook = new Excel.Workbook();
         workbook.creator = "Shifty App";
@@ -220,8 +228,8 @@ function excelJS(startDate, req, res) {
             for (let index = 0; index < rooms.length; index++) {
                 // Set styling for the first column
                 if (letter == 'A') {
-                    workSheet.getCell(`${letter}${index + 2}`).fill = Object.assign({}, headerFill, { fgColor: { argb: "FFF5F5F5" } });
-                    workSheet.getCell(`${letter}${index + 2}`).font = Object.assign({}, headerFont, { color: { argb: "FF000000" } });
+                    workSheet.getCell(`${letter}${index + 2}`).fill = Object.assign(Object.assign({}, headerFill), { fgColor: { argb: "FFF5F5F5" } });
+                    workSheet.getCell(`${letter}${index + 2}`).font = Object.assign(Object.assign({}, headerFont), { color: { argb: "FF000000" } });
                 }
                 // Set the border for every cell
                 workSheet.getCell(`${letter}${index + 2}`).border = {

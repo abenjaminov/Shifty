@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -33,11 +34,11 @@ router.get('/:id?', (req, res) => {
     context.select(models_1.Profile, true, true, filter).then(profiles => {
         res.json(helpers_1.getHttpResposeJson(profiles, false));
     }).catch(err => {
-        console.error("Put Profile " + err);
-        // TODO : Log Error
+        req.logService.error("Error getting profiles", err);
+        res.status(routeCommon_1.HttpResponseCodes.internalServerError).send().end();
     });
 });
-router.put('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
+router.put('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var profile = req.body;
     fixProfileBeforeSave(profile);
     var context = routeCommon_1.RoutesCommon.getContextFromRequest(req);
@@ -54,9 +55,9 @@ router.put('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
         res.json(helpers_1.getHttpResposeJson(profile, true));
     }
     catch (error) {
-        req.logService.error(error.message, error);
+        req.logService.error("Error puting profile", error);
         context.connection.rollback();
-        res.status(500).send();
+        res.status(routeCommon_1.HttpResponseCodes.internalServerError).send().end();
     }
 }));
 function fixProfileBeforeSave(profile) {
