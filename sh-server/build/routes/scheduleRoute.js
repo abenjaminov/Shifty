@@ -63,7 +63,7 @@ router.get('/run/:date?', (req, res, next) => __awaiter(this, void 0, void 0, fu
         profileIdsNotAllowedForThisDay = profileIdsNotAllowedForThisDay.concat(absentProfilesForThisDay.map(p => p.id));
         var profilesForThisDay = profiles.filter(p => p.isAssignable && profileIdsNotAllowedForThisDay.findIndex(pid => pid == p.id) == -1);
         let geneticEnv = new evniroment_1.GeneticEnviroment();
-        let roomsForDay = prepRoomsForRun(rooms, permanentConditionsForThisDay);
+        let roomsForDay = req.roomService.getRoomsWithoutPermanentConditions(rooms, permanentConditionsForThisDay);
         prevDayAssignments = [];
         var solutionForThisDay = geneticEnv.run(profilesForThisDay, roomsForDay);
         let roomsDictionary = linq_1.default.from(rooms).toDictionary(r => r.id);
@@ -102,25 +102,6 @@ router.get('/run/:date?', (req, res, next) => __awaiter(this, void 0, void 0, fu
         res.json(helpers_1.getHttpResposeJson("Success running scheduler", true));
     }
 }));
-var prepRoomsForRun = (rooms, permanentConditionsForThisDay) => {
-    let roomsInternal = Object.assign([], rooms.map(r => Object.assign({}, r)));
-    for (let room of roomsInternal) {
-        room.conditions = room.conditions.filter(c => c.type != models_1.ConditionType.Permanent);
-    }
-    for (let permanentCondition of permanentConditionsForThisDay) {
-        let room = roomsInternal.find(r => r.id == permanentCondition.roomId);
-        if (!room) {
-            // TODO : Log Error
-        }
-        else {
-            let conditionWithSameProfession = room.conditions.find(c => c.professionId == permanentCondition.professionId);
-            if (conditionWithSameProfession) {
-                room.conditions = room.conditions.filter(x => x.id != conditionWithSameProfession.id);
-            }
-        }
-    }
-    return roomsInternal;
-};
 router.get('/test', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     //var solution = GeneticEnviroment.test();
     res.json(helpers_1.getHttpResposeJson(["solution", "For", "The", "Genetics"], false));
@@ -134,6 +115,20 @@ router.get('/:date?', (req, res, next) => __awaiter(this, void 0, void 0, functi
     }
     let weeklySchedule = yield scheduleService.getWeeklySchedule(firstDate);
     res.json(helpers_1.getHttpResposeJson(weeklySchedule, false));
+}));
+router.delete("/:startDate", (req, res) => __awaiter(this, void 0, void 0, function* () {
+    let dateParts = req.params.startDate.split(";");
+    let startDate = new Date(Date.UTC(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2])));
+    try {
+        let weeklySchedule = yield req.scheduleService.getWeeklySchedule(startDate);
+        let assignmentIds = linq_1.default.from(Object.keys(models_1.Day).map(d => weeklySchedule.days[d].assignments)).selectMany(a => a).select(a => a.id).toArray();
+        yield req.dbContext.deleteSimple(models_1.Assignment, assignmentIds);
+        res.json(helpers_1.getHttpResposeJson(true, true));
+    }
+    catch (error) {
+        req.logService.error("Error deleting assignments for week that starts at " + startDate);
+        res.status(routeCommon_1.HttpResponseCodes.internalServerError).send().end();
+    }
 }));
 router.get('/export/:startDate/:endDate?', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     let dateParts = req.params.startDate.split(";");

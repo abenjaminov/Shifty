@@ -2,11 +2,12 @@ import { ScheduleService } from "../services/schedule.service";
 import { LogService } from "../services/logs.service";
 import { CacheService } from "../services/cache.service";
 import { RoomsService } from "../services/rooms.service";
+import { DbContext } from "../database/database";
 
 declare global {
     namespace Express {
         export interface Request {
-            dbContext: any;
+            dbContext: DbContext;
             tenant: string;
             scheduleService:ScheduleService;
             logService: LogService;

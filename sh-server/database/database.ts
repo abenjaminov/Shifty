@@ -393,7 +393,7 @@ export class DbContext {
         await this.queryToPromise(deleteQuery);
     }
 
-    deleteSimple<T extends IConstructor>(type: T, keyValue: any): Promise<T> {
+    deleteSimple<T extends IConstructor>(type: T, keyValues?: any[]): Promise<T> {
         let deletePromise = new Promise<T>((resolve, reject) => {
             let simpleMappedProps = ReflectionHelper.getSimpleMappedProperties(type);
 
@@ -404,8 +404,21 @@ export class DbContext {
 
             let primaryKeyMapping: ISimpleMapping = simpleMappedProps[primaryJsonKey];
 
-            let typeText = this.getDbValueText(primaryKeyMapping.type, keyValue);
-            let deleteQuery = `DELETE FROM ${tableName} WHERE ${primaryKeyMapping.dbColumnName} = ${typeText}`;
+            let whereConditions = [];
+            
+            if(keyValues) {
+                for(let keyValue of keyValues) {
+                    let typeText = this.getDbValueText(primaryKeyMapping.type, keyValue);
+                    whereConditions.push(`${primaryKeyMapping.dbColumnName} = ${typeText}`);
+                }
+            } 
+            else {
+                whereConditions.push("1 = 1");
+            }
+            
+
+            
+            let deleteQuery = `DELETE FROM ${tableName} WHERE ${whereConditions.join(' OR ')}`;
 
             this.connection.query(deleteQuery, (err,result) => {
                 if(err) reject(err);

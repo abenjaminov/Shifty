@@ -1,5 +1,5 @@
 import { ScheduleService } from "../services/schedule.service";
-import { RoutesCommon } from "./routeCommon";
+import { RoutesCommon, HttpResponseCodes } from "./routeCommon";
 import { Profile, Assignment, Room, Day, ConditionType, Condition } from "../models/models";
 import { GeneticEnviroment } from "../genetics/evniroment";
 import { Router, Request } from "express";
@@ -67,7 +67,7 @@ router.get('/run/:date?', async (req: Request,res,next) => {
 
         let geneticEnv = new GeneticEnviroment();
 
-        let roomsForDay = prepRoomsForRun(rooms, permanentConditionsForThisDay);
+        let roomsForDay = req.roomService.getRoomsWithoutPermanentConditions(rooms, permanentConditionsForThisDay);
 
         prevDayAssignments = [];
 
@@ -121,31 +121,6 @@ router.get('/run/:date?', async (req: Request,res,next) => {
     }
 });
 
-var prepRoomsForRun = (rooms: Array<Room>, permanentConditionsForThisDay: Array<Condition>) => {
-    let roomsInternal: Array<Room> = Object.assign([], rooms.map(r => Object.assign({}, r)));
-
-    for(let room of roomsInternal) {
-        room.conditions = room.conditions.filter(c => c.type != ConditionType.Permanent);
-    }
-
-    for(let permanentCondition of permanentConditionsForThisDay) {
-        let room = roomsInternal.find(r => r.id == permanentCondition.roomId);
-
-        if(!room) {
-            // TODO : Log Error
-        }
-        else {
-            let conditionWithSameProfession = room.conditions.find(c => c.professionId == permanentCondition.professionId);
-
-            if(conditionWithSameProfession) {
-                room.conditions = room.conditions.filter(x => x.id != conditionWithSameProfession.id)
-            }
-        }
-    }
-
-    return roomsInternal;
-}
-
 router.get('/test', async (req,res,next) => {
     //var solution = GeneticEnviroment.test();
 
@@ -167,6 +142,25 @@ router.get('/:date?', async (req,res,next) => {
     res.json(getHttpResposeJson(weeklySchedule, false));
 });
 
+router.delete("/:startDate", async(req,res) => {
+    let dateParts = req.params.startDate.split(";");
+    let startDate = new Date(Date.UTC(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2])));
+
+    try {
+        let weeklySchedule = await req.scheduleService.getWeeklySchedule(startDate);
+
+        let assignmentIds = Enumerable.from(Object.keys(Day).map(d => weeklySchedule.days[d].assignments)).selectMany(a => a).select(a => a.id).toArray();
+
+        await req.dbContext.deleteSimple(Assignment, assignmentIds);
+
+        res.json(getHttpResposeJson(true, true));
+    }
+    catch(error) {
+        req.logService.error("Error deleting assignments for week that starts at " + startDate);
+        res.status(HttpResponseCodes.internalServerError).send().end();
+    }
+})
+
 router.get('/export/:startDate/:endDate?', async (req,res,next) => {
     
     let dateParts = req.params.startDate.split(";");
@@ -183,8 +177,6 @@ async function excelJS(startDate, req, res) {
     let workSheet = workbook.addWorksheet('Schedule', {views:[{xSplit: 1, ySplit:1}]});
     workSheet.columns = [];
     let rooms, weeklySchedule;
-
-    
 
     let context = RoutesCommon.getContextFromRequest(req);
 
