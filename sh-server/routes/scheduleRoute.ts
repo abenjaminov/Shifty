@@ -6,6 +6,7 @@ import { Router, Request } from "express";
 import Enumerable from 'linq';
 import { getHttpResposeJson } from "../models/helpers";
 import * as Excel from 'exceljs';
+//const Excel = undefined;
 
 var express = require('express');
 var router: Router = express.Router();
@@ -45,17 +46,28 @@ router.get('/run/:date?', async (req: Request,res,next) => {
     for (let index = 0; index < dates.length; index++) {
         let day = scheduleService.getDayByDate(dates[index]);
 
-        var permanentConditionsForThisDay = Enumerable.from(rooms).selectMany(r => r.conditions).where(c => c.type === ConditionType.Permanent && c.day == day).toArray();
+        var permanentConditionsForThisDay = 
+            Enumerable.from(rooms).selectMany(r => r.conditions).where(c => c.type === ConditionType.Permanent && c.day == day).toArray();
         
+        // Profiles who are locked from the previous day
         let profileIdsNotAllowedForThisDay = prevDayAssignments.filter(a => a.condition.isLockedForNextDay).map(a => a.profileId);
+        // Profiles who are licked and that are part of permanent conditions
         profileIdsNotAllowedForThisDay = profileIdsNotAllowedForThisDay.concat(permanentConditionsForThisDay.map(c => c.profileId));
 
-        var profilesForThisDay = profiles.filter(p => p.isAssigned && profileIdsNotAllowedForThisDay.findIndex(pid => pid == p.id) == -1);
-        profilesForThisDay = Enumerable.from(profilesForThisDay).where(p => Enumerable.from(p.absences).all(abs => !scheduleService.isBetween(dates[index], abs.startDate, abs.endDate))).toArray();
-        profilesForThisDay = Enumerable.from(profilesForThisDay).where(p => Enumerable.from(p.nonWorkingDays).all(nwd => nwd.day != day)).toArray();
+        let absentProfilesForThisDay = 
+            Enumerable.from(profiles).where(p => Enumerable.from(p.absences).any(abs => scheduleService.isBetween(dates[index], abs.startDate, abs.endDate))
+                                                 || Enumerable.from(p.nonWorkingDays).any(nwd => nwd.day == day)).toArray();
+
+        // Remove all the permanent conditions that are absent in this day
+        permanentConditionsForThisDay = Enumerable.from(permanentConditionsForThisDay).where(c => Enumerable.from(absentProfilesForThisDay).all(p => p.id != c.profileId)).toArray()
+
+        profileIdsNotAllowedForThisDay = profileIdsNotAllowedForThisDay.concat(absentProfilesForThisDay.map(p => p.id));
+
+        var profilesForThisDay = profiles.filter(p => p.isAssignable && profileIdsNotAllowedForThisDay.findIndex(pid => pid == p.id) == -1);
+
         let geneticEnv = new GeneticEnviroment();
 
-        let roomsForDay = prepRoomsForRun(rooms, permanentConditionsForThisDay);
+        let roomsForDay = req.roomService.getRoomsWithoutPermanentConditions(rooms, permanentConditionsForThisDay);
 
         prevDayAssignments = [];
 
@@ -106,31 +118,6 @@ router.get('/run/:date?', async (req: Request,res,next) => {
     };
 });
 
-var prepRoomsForRun = (rooms: Array<Room>, permanentConditionsForThisDay: Array<Condition>) => {
-    let roomsInternal: Array<Room> = Object.assign([], rooms.map(r => Object.assign({}, r)));
-
-    for(let room of roomsInternal) {
-        room.conditions = room.conditions.filter(c => c.type != ConditionType.Permanent);
-    }
-
-    for(let permanentCondition of permanentConditionsForThisDay) {
-        let room = roomsInternal.find(r => r.id == permanentCondition.roomId);
-
-        if(!room) {
-            // TODO : Log Error
-        }
-        else {
-            let conditionWithSameProfession = room.conditions.find(c => c.professionId == permanentCondition.professionId);
-
-            if(conditionWithSameProfession) {
-                room.conditions = room.conditions.filter(x => x.id != conditionWithSameProfession.id)
-            }
-        }
-    }
-
-    return roomsInternal;
-}
-
 router.get('/test', async (req,res,next) => {
     //var solution = GeneticEnviroment.test();
 
@@ -158,6 +145,25 @@ router.get('/:date?', async (req,res,next) => {
         res.status(HttpResponseCodes.internalServerError).json("Error getting schedule");
     }
 });
+
+router.delete("/:startDate", async(req,res) => {
+    let dateParts = req.params.startDate.split(";");
+    let startDate = new Date(Date.UTC(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2])));
+
+    try {
+        let weeklySchedule = await req.scheduleService.getWeeklySchedule(startDate);
+
+        let assignmentIds = Enumerable.from(Object.keys(Day).map(d => weeklySchedule.days[d].assignments)).selectMany(a => a).select(a => a.id).toArray();
+
+        await req.dbContext.deleteSimple(Assignment, assignmentIds);
+
+        res.json(getHttpResposeJson(true, true));
+    }
+    catch(error) {
+        req.logService.error("Error deleting assignments for week that starts at " + startDate);
+        res.status(HttpResponseCodes.internalServerError).send().end();
+    }
+})
 
 router.get('/export/:startDate/:endDate?', async (req,res,next) => {
     

@@ -1,4 +1,25 @@
 .profiles {
+    .actions {
+
+        input {
+            color:white;
+
+            :focus {
+                background-color: white;
+            }
+        }
+
+        ::ng-deep {
+            span {
+                color:white;
+            }
+
+            .mat-form-field-underline {
+                background-color: white;
+            }
+        }
+    }
+
     .profile-edit-content {
         height: 600px;
     }

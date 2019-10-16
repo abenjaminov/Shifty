@@ -36,7 +36,7 @@ router.put('/', async (req , res) => {
   context.connection.beginTransaction();
 
   try {
-    await context.update(Profile, profile);
+    await context.update(Profile, profile, true);
     await context.updateOneToManyMappings(Profile, profile);
     
     await context.deleteConnections(Absence, "profileId", profile.id,profile.absences.filter(x => x.id).map(x => x.id));

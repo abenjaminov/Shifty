@@ -48,7 +48,7 @@ export class LogService {
 
 class ConsoleLogger implements ILogger {
     info(message:string) {
-        console.log(colors.bgWhite(message));
+        console.log(colors.bgWhite.black(message));
     }
 
     error(message:string, exception?:any) {
@@ -56,6 +56,6 @@ class ConsoleLogger implements ILogger {
     }
 
     warning(message:string, exception?:any) {
-        console.log(colors.bgYellow(message));
+        console.log(colors.bgYellow.black(message));
     }
 }

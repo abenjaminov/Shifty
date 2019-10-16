@@ -77,15 +77,15 @@ export class ScheduleService {
             firstDayOfWeek = startDate.getUTCDate() - startDate.getUTCDay();
         }
         else {
-            firstDayOfWeek = startDate.getUTCDate();
+            firstDayOfWeek = startDate.getDate();
         }
         
-        datesOfWeek.push(new Date(startDate.setUTCDate(firstDayOfWeek)));
+        datesOfWeek.push(new Date(startDate.setDate(firstDayOfWeek)));
 
         var firstDateOfWeek = datesOfWeek[0];
 
         for (let index = 1; index < 7; index++) {
-            var newDate = new Date(firstDateOfWeek.getUTCFullYear(), firstDateOfWeek.getUTCMonth(), firstDateOfWeek.getUTCDate() + index);
+            var newDate = new Date(firstDateOfWeek.getFullYear(), firstDateOfWeek.getMonth(), firstDateOfWeek.getDate() + index);
             datesOfWeek.push(new Date(newDate));
         }
 

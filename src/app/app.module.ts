@@ -35,6 +35,7 @@ import { QuestionDialogComponent } from './components/question-dialog/question-d
 import {MatButtonToggleModule} from "@angular/material/button-toggle";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {AddConditionComponent} from './components/conditions/add/add.condition.component';
+import {MatIconModule} from "@angular/material/icon";
 
 @NgModule({
   declarations: [
@@ -70,7 +71,8 @@ import {AddConditionComponent} from './components/conditions/add/add.condition.c
         MatSnackBarModule,
         MatDialogModule,
         MatButtonToggleModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        MatIconModule
     ],
   entryComponents: [AbsentComponent,QuestionDialogComponent,AddConditionComponent],
   providers: [HttpClient, ProfilesService, TagsService, RoomsService, ConditionService],

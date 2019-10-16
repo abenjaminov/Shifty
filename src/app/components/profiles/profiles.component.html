@@ -1,5 +1,10 @@
 <div class="profiles">
   <sh-view titleText="Profiles">
+    <div viewActions class="actions">
+      <mat-form-field>
+        <input matInput placeholder="Search profiles" (keyup)="searchTerm$.next($event.target.value)">
+      </mat-form-field>
+    </div>
     <div viewContent class="table">
       <div class="row title-row scroll-header">
         <div class="cell">

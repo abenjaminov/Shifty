@@ -30,7 +30,7 @@
                     <div class="title">Professions</div>
                     <div class="profession" *ngFor="let profession of profileToEdit.professions; let i = index">
                         <div>{{profession.name}}</div>
-                        <button class="remove-profession" mat-button (click)="onSaveClicked()">
+                        <button class="remove-profession" mat-button (click)="removeProfession(profession)">
                             <fa name="trash"></fa>
                         </button>
                     </div>
@@ -38,7 +38,7 @@
                         <div class="title">Add Profession</div>
                         <div class="new-profession">
                            <sh-dropdown class="tags-list" [options]="tags" [(selectedOption)]="selectedTag"></sh-dropdown>
-                            <button class="add-profession" mat-button (click)="onSaveClicked()">
+                            <button class="add-profession" mat-button (click)="addProfession()">
                                 <fa name="plus"></fa>
                                 <span>Add</span>
                             </button>

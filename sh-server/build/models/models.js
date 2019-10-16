@@ -142,8 +142,8 @@ __decorate([
     reflection_1.Mapped({ descriminator: reflection_1.InterfaceDescriminator.ISimpleMapping, dbColumnName: "username", type: reflection_1.MappingType.string, isPrimaryKey: false })
 ], Profile.prototype, "username", void 0);
 __decorate([
-    reflection_1.Mapped({ descriminator: reflection_1.InterfaceDescriminator.ISimpleMapping, dbColumnName: "isAssigned", type: reflection_1.MappingType.boolean, isPrimaryKey: false })
-], Profile.prototype, "isAssigned", void 0);
+    reflection_1.Mapped({ descriminator: reflection_1.InterfaceDescriminator.ISimpleMapping, dbColumnName: "isAssignable", type: reflection_1.MappingType.boolean, isPrimaryKey: false })
+], Profile.prototype, "isAssignable", void 0);
 __decorate([
     reflection_1.Mapped(profile_mappings_config_1.profileProfessionsMapping)
 ], Profile.prototype, "professions", void 0);

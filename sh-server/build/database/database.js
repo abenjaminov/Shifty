@@ -209,7 +209,7 @@ class DbContext {
                 values.push([]);
                 let primaryProp = Reflect.ownKeys(simpleMappedProps).find(smp => simpleMappedProps[smp.toString()].isPrimaryKey).toString();
                 if (item[primaryProp] != undefined) {
-                    yield this.update(type, item);
+                    yield this.update(type, item, true);
                 }
                 for (let prop of Reflect.ownKeys(simpleMappedProps)) {
                     let mappedProp = simpleMappedProps[prop.toString()];
@@ -235,7 +235,7 @@ class DbContext {
                 for (let item of items) {
                     values.push([]);
                     if (item[primaryProp] != undefined) {
-                        let updateQuery = yield this.update(type, item, true);
+                        let updateQuery = yield this.update(type, item, false);
                         updateCommands.push(updateQuery);
                     }
                     else {
@@ -295,15 +295,24 @@ class DbContext {
             yield this.queryToPromise(deleteQuery);
         });
     }
-    deleteSimple(type, keyValue) {
+    deleteSimple(type, keyValues) {
         let deletePromise = new Promise((resolve, reject) => {
             let simpleMappedProps = reflection_1.ReflectionHelper.getSimpleMappedProperties(type);
             let primaryJsonKey = Reflect.ownKeys(simpleMappedProps).find(x => simpleMappedProps[x.toString()].isPrimaryKey) || '';
             primaryJsonKey = primaryJsonKey.toString();
             let tableName = reflection_1.ReflectionHelper.getTableName(type);
             let primaryKeyMapping = simpleMappedProps[primaryJsonKey];
-            let typeText = this.getDbValueText(primaryKeyMapping.type, keyValue);
-            let deleteQuery = `DELETE FROM ${tableName} WHERE ${primaryKeyMapping.dbColumnName} = ${typeText}`;
+            let whereConditions = [];
+            if (keyValues) {
+                for (let keyValue of keyValues) {
+                    let typeText = this.getDbValueText(primaryKeyMapping.type, keyValue);
+                    whereConditions.push(`${primaryKeyMapping.dbColumnName} = ${typeText}`);
+                }
+            }
+            else {
+                whereConditions.push("1 = 1");
+            }
+            let deleteQuery = `DELETE FROM ${tableName} WHERE ${whereConditions.join(' OR ')}`;
             this.connection.query(deleteQuery, (err, result) => {
                 if (err)
                     reject(err);

@@ -5,6 +5,31 @@ import { DbContext } from "../database/database";
 
 export class RoomsService {
 
+    getRoomsWithoutPermanentConditions(rooms: Array<Room>, permanentConditionsForThisDay: Array<Condition>) {
+        let roomsInternal: Array<Room> = Object.assign([], rooms.map(r => Object.assign({}, r)));
+
+        for(let room of roomsInternal) {
+            room.conditions = room.conditions.filter(c => c.type != ConditionType.Permanent);
+        }
+
+        for(let permanentCondition of permanentConditionsForThisDay) {
+            let room = roomsInternal.find(r => r.id == permanentCondition.roomId);
+    
+            if(!room) {
+                throw "Room not found id : " + permanentCondition.roomId;
+            }
+            else {
+                let conditionWithSameProfession = room.conditions.find(c => c.professionId == permanentCondition.professionId);
+    
+                if(conditionWithSameProfession) {
+                    room.conditions = room.conditions.filter(x => x.id != conditionWithSameProfession.id)
+                }
+            }
+        }
+    
+        return roomsInternal;
+    }
+
     populateRoomsWithConditions(roomConditions: Condition[]) {
         let rooms: Room[] = [];
         let tags: Tag[] = [];

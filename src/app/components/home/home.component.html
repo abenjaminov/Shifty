@@ -5,16 +5,26 @@
                 <fa name="chevron-left"></fa>
                 <span>Previous week</span>
             </button>
-            <button class="export" mat-raised-button (click)="onExport()" *ngIf="!isWaitingForExport">
-                <fa name="file"></fa>
-                <span>Export</span>
-            </button>
             <button class="switch-week" mat-raised-button (click)="onNextWeekClicked()">
                 <span>Next week</span>
                 <fa name="chevron-right"></fa>
             </button>
         </div>
+        <div class="cotent-header" viewContentHeader>
+            <div class="title">
+                Weekly Schedule
+            </div>
+            <div class="actions">
+                <button mat-icon-button aria-label="Example icon-button with a heart icon">
+                    <fa name="snowflake"></fa>
+                </button>
+                <button mat-icon-button aria-label="Export weekly schedule" matTooltip="Export weekly schedule" (click)="onExport()" *ngIf="!isWaitingForExport">
+                    <fa name="file-excel"></fa>
+                </button>
+            </div>
+        </div>
         <div class="schedule" viewContent>
+
             <div class="row title-row scroll-header">
                 <div class="cell title">
                     Rooms
