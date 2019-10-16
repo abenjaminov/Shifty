@@ -6,6 +6,7 @@ import { getHttpResposeJson } from "../models/helpers";
 import * as express from 'express';
 var router: Router = express.Router();
 
+// Get conditions
 router.get('/', async (req, res) => {
     var context = RoutesCommon.getContextFromRequest(req);
   
@@ -14,6 +15,7 @@ router.get('/', async (req, res) => {
     res.json(getHttpResposeJson(conditions, false));
 });
 
+// Add Condition
 router.post('/', (req,res,next) => {
     var condition: Condition = req.body;
 
@@ -24,10 +26,11 @@ router.post('/', (req,res,next) => {
         res.json(getHttpResposeJson(condition, true));
     }).catch(error => {
         req.logService.error(error.message, error);
-        res.status(500).send();
+        res.status(HttpResponseCodes.internalServerError).send().end();
     });
 });
 
+// Delete Condition
 router.delete('/:id',async (req,res,next) => {
     var conditionId = req.params["id"];
 
@@ -37,8 +40,8 @@ router.delete('/:id',async (req,res,next) => {
 
     if(!conditions || conditions.length == 0) {
         let error = `No Condition with id ${conditionId}`;
-        res.status(HttpResponseCodes.badRequest).send(error);
         req.logService.error(error);
+        res.status(HttpResponseCodes.badRequest).send(error).end();
     }
     else {
         let conditionToDelete = conditions[0];
@@ -51,7 +54,7 @@ router.delete('/:id',async (req,res,next) => {
         }
         catch (error) {
             req.logService.error(error.message, error);
-            res.status(HttpResponseCodes.badRequest).send(error);
+            res.status(HttpResponseCodes.badRequest).send(error).end();
             
         }
     }

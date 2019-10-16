@@ -1,5 +1,5 @@
 import { ScheduleService } from "../services/schedule.service";
-import { RoutesCommon } from "./routeCommon";
+import { RoutesCommon, HttpResponseCodes } from "./routeCommon";
 import { Profile, Assignment, Room, Day, ConditionType, Condition } from "../models/models";
 import { GeneticEnviroment } from "../genetics/evniroment";
 import { Router, Request } from "express";
@@ -93,20 +93,17 @@ router.get('/run/:date?', async (req: Request,res,next) => {
         }
     }
 
-    var result = await context.insert<Assignment>(Assignment, assignments).catch((err:string) => {
-        console.log(err);
-
-        return err;
-    });
-
-    if(!(result as any).affectedRows) {
-        res.status(500).json("Error occured running scheduler");
-    }
-    else {
+    
+    try {
+        await context.insert<Assignment>(Assignment, assignments);
         req.cacheService.clearByPrefix('/api/schedule');
-
         res.json(getHttpResposeJson("Success running scheduler", true));
     }
+    catch(err) {
+        req.logService.error("Error running schedule calculation", err)
+
+        res.status(HttpResponseCodes.internalServerError).json("Error occured running scheduler");
+    };
 });
 
 var prepRoomsForRun = (rooms: Array<Room>, permanentConditionsForThisDay: Array<Condition>) => {
@@ -140,6 +137,7 @@ router.get('/test', async (req,res,next) => {
     res.json(getHttpResposeJson(["solution","For","The","Genetics"], false));
 });
 
+// Get schedule from start date
 router.get('/:date?', async (req,res,next) => {
     let scheduleService = new ScheduleService(RoutesCommon.getContextFromRequest(req));
 
@@ -150,9 +148,15 @@ router.get('/:date?', async (req,res,next) => {
         firstDate = new Date(Date.UTC(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2])));
     }
 
-    let weeklySchedule = await scheduleService.getWeeklySchedule(firstDate)
+    try {
+        let weeklySchedule = await scheduleService.getWeeklySchedule(firstDate)
     
-    res.json(getHttpResposeJson(weeklySchedule, false));
+        res.json(getHttpResposeJson(weeklySchedule, false));
+    } catch (error) {
+        req.logService.error("Error getting schedule", error)
+
+        res.status(HttpResponseCodes.internalServerError).json("Error getting schedule");
+    }
 });
 
 router.get('/export/:startDate/:endDate?', async (req,res,next) => {
@@ -160,19 +164,17 @@ router.get('/export/:startDate/:endDate?', async (req,res,next) => {
     let dateParts = req.params.startDate.split(";");
     let startDate = new Date(Date.UTC(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2])));
 
-    await excelJS(startDate, req,res);
+    await createExcelJS(startDate, req,res);
 
     res.end();
 });
 
-async function excelJS(startDate, req, res) {
+async function createExcelJS(startDate, req, res) {
     let workbook = new Excel.Workbook();
     workbook.creator = "Shifty App";
     let workSheet = workbook.addWorksheet('Schedule', {views:[{xSplit: 1, ySplit:1}]});
     workSheet.columns = [];
     let rooms, weeklySchedule;
-
-    
 
     let context = RoutesCommon.getContextFromRequest(req);
 

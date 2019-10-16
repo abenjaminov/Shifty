@@ -1,4 +1,4 @@
-import { RoutesCommon } from './routeCommon';
+import { RoutesCommon, HttpResponseCodes } from './routeCommon';
 import { Profile, Absence, NonWorkingDay } from '../models/models';
 import { IFilterStatement } from '../database/database';
 import { toUtcDate, getHttpResposeJson } from '../models/helpers';
@@ -22,8 +22,8 @@ router.get('/:id?', (req , res) => {
   context.select(Profile, true,true, filter).then(profiles => {
     res.json(getHttpResposeJson(profiles, false));
   }).catch(err => {
-    console.error("Put Profile " + err);
-    // TODO : Log Error
+    req.logService.error("Error getting profiles", err);
+    res.status(HttpResponseCodes.internalServerError).send().end();
   });
 });
 
@@ -51,9 +51,9 @@ router.put('/', async (req , res) => {
 
     res.json(getHttpResposeJson(profile, true));
   } catch (error) {
-    console.error("Put Profile " + error);
+    req.logService.error("Error puting profile", error)
     context.connection.rollback();
-    res.status(500).send();
+    res.status(HttpResponseCodes.internalServerError).send().end();
   }
 })
 
