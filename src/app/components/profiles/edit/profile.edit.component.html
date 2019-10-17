@@ -2,7 +2,7 @@
     <sh-view titleText="Edit Profile">
         <div viewActions>
             <button class="save-profile" mat-raised-button (click)="onSaveClicked()">
-                <fa name="save"></fa>
+                <fa-icon icon="save"></fa-icon>
                 <span>Save</span>
             </button>
         </div>
@@ -27,11 +27,11 @@
                     </div>
                 </div>
                 <div class="profile-professions">
-                    <div class="title">Professions</div>
+                    <div class="title" *ngIf="profileToEdit.professions && profileToEdit.professions.length > 0">Professions</div>
                     <div class="profession" *ngFor="let profession of profileToEdit.professions; let i = index">
                         <div>{{profession.name}}</div>
                         <button class="remove-profession" mat-button (click)="removeProfession(profession)">
-                            <fa name="trash"></fa>
+                            <fa-icon icon="trash"></fa-icon>
                         </button>
                     </div>
                     <div class="add-profession-container">
@@ -39,7 +39,7 @@
                         <div class="new-profession">
                            <sh-dropdown class="tags-list" [options]="tags" [(selectedOption)]="selectedTag"></sh-dropdown>
                             <button class="add-profession" mat-button (click)="addProfession()">
-                                <fa name="plus"></fa>
+                                <fa-icon icon="plus"></fa-icon>
                                 <span>Add</span>
                             </button>
                         </div>
@@ -82,7 +82,7 @@
                                 </div>
                             </div>
                             <button class="remove-period" mat-button (click)="onRemoveAbsenceClicked(absence)">
-                                <fa name="trash"></fa>
+                                <fa-icon icon="trash"></fa-icon>
                             </button>
                         </div>
                     </div>

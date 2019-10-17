@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -50,7 +51,7 @@ app.use('/api/clearthecacheforthisapp', (req, res) => {
     logService.info("Cache cleared");
     res.json("Cache clear");
 });
-app.use('/api/login', (req, res) => __awaiter(this, void 0, void 0, function* () {
+app.use('/api/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var logService = new logs_service_1.LogService("Login");
     let customerCode = req.body.customerCode;
     try {
@@ -74,8 +75,6 @@ app.use('/api/login', (req, res) => __awaiter(this, void 0, void 0, function* ()
             else {
                 let user = result[0];
                 query = `SELECT * FROM Passwords WHERE userId = '${user.id}'`;
-                // let encrypted = crypto.AES.encrypt(password, customerCode);
-                // query = `UPDATE Passwords SET value = '${encrypted.toString()}'`;
                 result = yield context.queryToPromise(query);
                 let authenticationService = new authentication_service_1.AuthenticationService();
                 let passverified = authenticationService.verifyPassword(password, result[0].value, customerCode);
@@ -146,6 +145,7 @@ app.use('/api/*', (req, res, next) => {
         req.roomService = new rooms_service_1.RoomsService();
         next();
     }).catch(error => {
+        logService.error("Error establishing connection and context", error);
         res.status(500).send("Error establishing connection and context");
     });
 });

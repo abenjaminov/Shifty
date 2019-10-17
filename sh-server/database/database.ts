@@ -416,15 +416,18 @@ export class DbContext {
                 whereConditions.push("1 = 1");
             }
             
+            if(whereConditions.length == 0) {
+                resolve()
+            }
+            else {
+                let deleteQuery = `DELETE FROM ${tableName} WHERE ${whereConditions.join(' OR ')}`;
 
-            
-            let deleteQuery = `DELETE FROM ${tableName} WHERE ${whereConditions.join(' OR ')}`;
-
-            this.connection.query(deleteQuery, (err,result) => {
-                if(err) reject(err);
-
-                resolve(result);
-            });
+                this.connection.query(deleteQuery, (err,result) => {
+                    if(err) reject(err);
+    
+                    resolve(result);
+                });
+            }
         })
 
         return deletePromise;
@@ -485,15 +488,18 @@ export class DbContext {
                     }
                     insertsRemaining++;
 
-                    this.connection.query(insert,[values], (err,result) => {
-                        insertsRemaining--;
-
-                        if(err) reject(err);
-
-                        if(insertsRemaining == 0) {
-                            resolve()
-                        }
-                    });
+                    if(values.length == 0) resolve();
+                    else {
+                        this.connection.query(insert,[values], (err,result) => {
+                            insertsRemaining--;
+    
+                            if(err) reject(err);
+    
+                            if(insertsRemaining == 0) {
+                                resolve()
+                            }
+                        });
+                    }
                 }
             }).catch(err => {
                 reject(err);

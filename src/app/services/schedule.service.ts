@@ -49,6 +49,15 @@ export class ScheduleService {
     this.stateService.removeLoading("exportSchedule");
   }
 
+  async deleteWeeklyAssignments(startDate:Date) {
+    let dateParams = [];
+
+    let dateParam = startDate.getFullYear() + ";" + startDate.getMonth() + ";" + startDate.getDate();
+    dateParams.push(dateParam);
+
+    let deleted = await this.stateService.deleteObject(WeeklySchedule, dateParam)
+  }
+
   load(date?: Date): Promise<WeeklySchedule> {
     this.state = ServiceState.loading;
     let dateParams = undefined;

@@ -83,8 +83,6 @@ app.use('/api/login', async (req,res) => {
             else {
                 let user = result[0];
                 query = `SELECT * FROM Passwords WHERE userId = '${user.id}'`
-                // let encrypted = crypto.AES.encrypt(password, customerCode);
-                // query = `UPDATE Passwords SET value = '${encrypted.toString()}'`;
 
                 result = await context.queryToPromise(query);
 
@@ -172,6 +170,7 @@ app.use('/api/*', (req: Request ,res,next) => {
 
         next();
     }).catch(error => {
+        logService.error("Error establishing connection and context", error);
         res.status(500).send("Error establishing connection and context");
     });
 })

@@ -20,6 +20,7 @@ export class HomeComponent implements OnInit {
   weeklySchedule: WeeklySchedule = new WeeklySchedule();
   title: string;
   weekStartDate:Date = undefined;
+  currentWeekEmpty: boolean = false;
   isWaitingForExport: boolean = false;
 
   assignmentsToRoomAndDay: {[key:string] : string} = {};
@@ -46,25 +47,22 @@ export class HomeComponent implements OnInit {
 
       this.title = 'Weekly assignments ' + this.weeklySchedule.days[Day.Sunday].dateString + " - " + this.weeklySchedule.days[Day.Saturday].dateString;
 
-      if(this.weeklySchedule.numberOfAssignments == 0) {
-        this.askRunSchedule();
+      this.currentWeekEmpty = this.weeklySchedule.numberOfAssignments == 0;
+
+      if(this.currentWeekEmpty) {
+        this.calculateWeeklyAssignments(true);
       }
     })
   }
 
   askRunSchedule(): void {
+
     const dialogRef = this.dialog.open(QuestionDialogComponent, {
       width: '250px',
       data: {title: 'Calculate Assignments', question : 'Would you like to calculate assignments for this week?', answer: false}
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if(result) {
-        this.scheduleService.calculateSchedule(this.weeklySchedule.days[Day.Sunday].date).then(x => {
-          this.init();
-        })
-      }
-    });
+
   }
 
   profileClicked(profile: Profile) {
@@ -103,5 +101,40 @@ export class HomeComponent implements OnInit {
     this.isWaitingForExport = true;
     await this.scheduleService.exportWeek(this.weeklySchedule.days[Day.Sunday].date);
     this.isWaitingForExport = false;
+  }
+
+  onThisWeekClicked() {
+    this.weekStartDate = undefined;
+
+    this.init();
+  }
+
+  calculateWeeklyAssignments(requestPermission?: boolean) {
+    let calculatePromise;
+
+    if(requestPermission) {
+      const dialogRef = this.dialog.open(QuestionDialogComponent, {
+        width: '250px',
+        data: {title: 'Calculate Assignments', question : 'Would you like to calculate assignments for this week?', answer: false}
+      });
+
+      calculatePromise = dialogRef.afterClosed().toPromise();
+    } else {
+      calculatePromise = Promise.resolve(true);
+    }
+
+    calculatePromise.then(result => {
+      if(result) {
+        this.scheduleService.calculateSchedule(this.weeklySchedule.days[Day.Sunday].date).then(x => {
+          this.init();
+        });
+      }
+    });
+  }
+
+  async clearWeeklySchedule() {
+    await this.scheduleService.deleteWeeklyAssignments(this.weeklySchedule.days[Day.Sunday].date);
+
+    this.init();
   }
 }

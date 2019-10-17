@@ -17,10 +17,6 @@
         flex-direction: column;
         width: 100%;
 
-        .table-content {
-            height: calc(100% - 200px);
-        }
-
         .row {
             display: flex;
             border-bottom: 2px solid lightgray;

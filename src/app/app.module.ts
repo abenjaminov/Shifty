@@ -10,7 +10,6 @@ import { RouterModule} from "@angular/router";
 import { ProfilesComponent } from './components/profiles/profiles.component';
 import { ProfileEditComponent } from './components/profiles/edit/profile.edit.component';
 import { DropdownComponent } from './components/dropdown/dropdown.component';
-import {AngularFontAwesomeModule} from "angular-font-awesome";
 import {HttpClient, HttpClientModule} from '@angular/common/http';
 import { LoadingComponent } from './components/loading/loading.component';
 import { ConditionsComponent } from './components/conditions/conditions.component';
@@ -36,6 +35,15 @@ import {MatButtonToggleModule} from "@angular/material/button-toggle";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {AddConditionComponent} from './components/conditions/add/add.condition.component';
 import {MatIconModule} from "@angular/material/icon";
+import {FaIconLibrary, FontAwesomeModule} from "@fortawesome/angular-fontawesome";
+import {
+    faBroom, faCalculator, faChevronDown,
+    faChevronLeft,
+    faChevronRight, faDotCircle, faEdit,
+    faFileExcel, faPlus, faSave,
+    faSnowplow,
+    faTrash
+} from "@fortawesome/free-solid-svg-icons";
 
 @NgModule({
   declarations: [
@@ -58,7 +66,7 @@ import {MatIconModule} from "@angular/material/icon";
         BrowserModule,
         AppRoutingModule,
         RouterModule,
-        AngularFontAwesomeModule,
+        FontAwesomeModule,
         HttpClientModule,
         NoopAnimationsModule,
         MatDatepickerModule,
@@ -78,4 +86,19 @@ import {MatIconModule} from "@angular/material/icon";
   providers: [HttpClient, ProfilesService, TagsService, RoomsService, ConditionService],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+    constructor(library: FaIconLibrary) {
+        library.addIcons(faSnowplow);
+        library.addIcons(faTrash);
+        library.addIcons(faBroom);
+        library.addIcons(faFileExcel);
+        library.addIcons(faChevronLeft);
+        library.addIcons(faChevronRight);
+        library.addIcons(faChevronDown);
+        library.addIcons(faEdit);
+        library.addIcons(faPlus);
+        library.addIcons(faDotCircle);
+        library.addIcons(faCalculator);
+        library.addIcons(faSave);
+    }
+}

@@ -1,25 +1,31 @@
 <div class="sh-home">
     <sh-view [titleText]="title">
-        <div viewActions class="actions">
+        <div viewActions class="header-actions">
             <button class="switch-week" mat-raised-button (click)="onPrevWeekClicked()">
-                <fa name="chevron-left"></fa>
+                <fa-icon icon="chevron-left"></fa-icon>
                 <span>Previous week</span>
+            </button>
+            <button class="this-week" mat-raised-button (click)="onThisWeekClicked()">
+                <span>This week</span>
             </button>
             <button class="switch-week" mat-raised-button (click)="onNextWeekClicked()">
                 <span>Next week</span>
-                <fa name="chevron-right"></fa>
+                <fa-icon icon="chevron-right"></fa-icon>
             </button>
         </div>
         <div class="cotent-header" viewContentHeader>
             <div class="title">
                 Weekly Schedule
             </div>
-            <div class="actions">
-                <button mat-icon-button aria-label="Example icon-button with a heart icon">
-                    <fa name="snowflake"></fa>
+            <div class="content-header-actions">
+                <button *ngIf="currentWeekEmpty" mat-icon-button aria-label="Calculate assignments" matTooltip="Calculate assignments" (click)="calculateWeeklyAssignments(true)">
+                    <fa-icon icon="calculator"></fa-icon>
+                </button>
+                <button *ngIf="!currentWeekEmpty" mat-icon-button aria-label="Clear weekly schedule" matTooltip="Clear weekly schedule" (click)="clearWeeklySchedule()">
+                    <fa-icon icon="broom"></fa-icon>
                 </button>
                 <button mat-icon-button aria-label="Export weekly schedule" matTooltip="Export weekly schedule" (click)="onExport()" *ngIf="!isWaitingForExport">
-                    <fa name="file-excel"></fa>
+                    <fa-icon icon="file-excel"></fa-icon>
                 </button>
             </div>
         </div>

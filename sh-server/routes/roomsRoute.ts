@@ -1,6 +1,5 @@
-import { Room, Condition } from "../models/models";
 import { Router } from "express-serve-static-core";
-import { RoutesCommon } from "./routeCommon";
+import { RoutesCommon, HttpResponseCodes } from "./routeCommon";
 import { getHttpResposeJson } from "../models/helpers";
 
 var express = require('express');
@@ -16,7 +15,7 @@ router.get('/', async (req, res, next) => {
   }
   catch (error) {
     req.logService.error("Error getting rooms", error)
-    res.status(500).send().end();
+    res.status(HttpResponseCodes.internalServerError).send().end();
   }
   
 });
