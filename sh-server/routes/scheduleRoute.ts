@@ -5,8 +5,8 @@ import { GeneticEnviroment } from "../genetics/evniroment";
 import { Router, Request } from "express";
 import Enumerable from 'linq';
 import { getHttpResposeJson } from "../models/helpers";
-import * as Excel from 'exceljs';
-//const Excel = undefined;
+//import * as Excel from 'exceljs';
+const Excel = undefined;
 
 var express = require('express');
 var router: Router = express.Router();
@@ -152,6 +152,8 @@ router.delete("/:startDate", async(req,res) => {
         let assignmentIds = Enumerable.from(Object.keys(Day).map(d => weeklySchedule.days[d].assignments)).selectMany(a => a).select(a => a.id).toArray();
 
         await req.dbContext.deleteSimple(Assignment, assignmentIds);
+
+        req.cacheService.clearByPrefix('/api/schedule');
 
         res.json(getHttpResposeJson(true, true));
     }
