@@ -53,21 +53,32 @@
       cursor: pointer;
       color:black;
 
+      .icon {
+        color: $theme-secondary;
+      }
+
+      .text {
+        margin-left: 10px;
+      }
+
       &.selected {
-        border-left: 7px solid $theme-secondary;
-        padding-left: 8px;
+
         font-weight: 500;
         background-color: $theme-a-secondary;
+        &:focus {
+          border: 0px;
+        }
+        .icon {
+          color: $theme-primary;
+        }
 
         &:hover {
-          border-left: 7px solid $theme-secondary;
           background-color: $theme-a-secondary;
         }
       }
 
       &:hover {
         background-color: $theme-a-secondary;
-        border-left: 7px solid $theme-secondary;
       }
     }
   }

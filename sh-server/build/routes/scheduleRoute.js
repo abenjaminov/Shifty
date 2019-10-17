@@ -1,10 +1,9 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -29,7 +28,7 @@ const Excel = __importStar(require("exceljs"));
 //const Excel = undefined;
 var express = require('express');
 var router = express.Router();
-router.get('/run/:date?', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/run/:date?', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     var context = routeCommon_1.RoutesCommon.getContextFromRequest(req);
     var profiles = yield context.select(models_1.Profile, true, true, []);
     var rooms = yield req.roomService.getRooms(context);
@@ -102,12 +101,12 @@ router.get('/run/:date?', (req, res, next) => __awaiter(void 0, void 0, void 0, 
     }
     ;
 }));
-router.get('/test', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/test', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     //var solution = GeneticEnviroment.test();
     res.json(helpers_1.getHttpResposeJson(["solution", "For", "The", "Genetics"], false));
 }));
 // Get schedule from start date
-router.get('/:date?', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/:date?', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     let scheduleService = new schedule_service_1.ScheduleService(routeCommon_1.RoutesCommon.getContextFromRequest(req));
     var firstDate = undefined;
     if (req.params.date) {
@@ -123,7 +122,7 @@ router.get('/:date?', (req, res, next) => __awaiter(void 0, void 0, void 0, func
         res.status(routeCommon_1.HttpResponseCodes.internalServerError).json("Error getting schedule");
     }
 }));
-router.delete("/:startDate", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.delete("/:startDate", (req, res) => __awaiter(this, void 0, void 0, function* () {
     let dateParts = req.params.startDate.split(";");
     let startDate = new Date(Date.UTC(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2])));
     try {
@@ -138,7 +137,7 @@ router.delete("/:startDate", (req, res) => __awaiter(void 0, void 0, void 0, fun
         res.status(routeCommon_1.HttpResponseCodes.internalServerError).send().end();
     }
 }));
-router.get('/export/:startDate/:endDate?', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/export/:startDate/:endDate?', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     let dateParts = req.params.startDate.split(";");
     let startDate = new Date(Date.UTC(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2])));
     yield createExcelJS(startDate, req, res);
@@ -228,8 +227,8 @@ function createExcelJS(startDate, req, res) {
             for (let index = 0; index < rooms.length; index++) {
                 // Set styling for the first column
                 if (letter == 'A') {
-                    workSheet.getCell(`${letter}${index + 2}`).fill = Object.assign(Object.assign({}, headerFill), { fgColor: { argb: "FFF5F5F5" } });
-                    workSheet.getCell(`${letter}${index + 2}`).font = Object.assign(Object.assign({}, headerFont), { color: { argb: "FF000000" } });
+                    workSheet.getCell(`${letter}${index + 2}`).fill = Object.assign({}, headerFill, { fgColor: { argb: "FFF5F5F5" } });
+                    workSheet.getCell(`${letter}${index + 2}`).font = Object.assign({}, headerFont, { color: { argb: "FF000000" } });
                 }
                 // Set the border for every cell
                 workSheet.getCell(`${letter}${index + 2}`).border = {

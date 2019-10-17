@@ -30,7 +30,13 @@ export class ScheduleService {
       dateParams.push(dateParam);
     }
 
+    let loadingKey = "calculateSchedule;" + dateParams ? dateParams[0] : '';
+
+    this.stateService.addLoading(loadingKey, "Calculate schedule that starts at " + date);
+
     let result = await this.httpService.get(undefined, 'api/schedule/run', dateParams);
+
+    this.stateService.removeLoading(loadingKey);
 
     this.httpService.clearCache(this.stateService.getCacheName(WeeklySchedule));
 

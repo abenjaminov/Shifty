@@ -24,6 +24,7 @@ class StateMap {
   apiConfig : ApiConfig;
   cacheName: string;
   mapToState: (data: any) => any;
+  deleteFromState: (key: any) => boolean;
 }
 
 export enum AppStatus {
@@ -102,6 +103,14 @@ export class StateService
         this.appState.tags.length = 0;
         this.appState.tags.push(...dataCopy);
         return this.appState.tags;
+      },
+      deleteFromState: key => {
+        var index = this.appState.tags.findIndex(x => x.id == key);
+        if(index != -1) {
+          this.appState.tags = this.appState.tags.splice(index,1);
+          return true;
+        }
+        return false;
       }
     });
 
@@ -114,6 +123,14 @@ export class StateService
         this.appState.profiles.length = 0;
         this.appState.profiles.push(...dataCopy);
         return this.appState.profiles;
+      },
+      deleteFromState: key => {
+        var index = this.appState.profiles.findIndex(x => x.id == key);
+        if(index != -1) {
+          this.appState.profiles = this.appState.profiles.splice(index,1);
+          return true;
+        }
+        return false;
       }
     });
 
@@ -126,6 +143,14 @@ export class StateService
         this.appState.rooms.length = 0;
         this.appState.rooms.push(...dataCopy);
         return this.appState.rooms;
+      },
+      deleteFromState: key => {
+        var index = this.appState.rooms.findIndex(x => x.id == key);
+        if(index != -1) {
+          this.appState.rooms = this.appState.rooms.splice(index,1);
+          return true;
+        }
+        return false;
       }
     });
 
@@ -138,6 +163,14 @@ export class StateService
         this.appState.conditions.length = 0;
         this.appState.conditions.push(...dataCopy);
         return this.appState.conditions;
+      },
+      deleteFromState: key => {
+        var index = this.appState.conditions.findIndex(x => x.id == key);
+        if(index != -1) {
+          this.appState.conditions = this.appState.conditions.splice(index,1);
+          return true;
+        }
+        return false;
       }
     });
 
@@ -155,6 +188,13 @@ export class StateService
 
         this.appState.weeklySchedules.set(data.id, data);
         return this.appState.weeklySchedules.get(data.id);
+      },
+      deleteFromState: key => {
+        if(this.appState.weeklySchedules.has(key)) {
+          this.appState.weeklySchedules.delete(key);
+          return true;
+        }
+        return false;
       }
     });
   }
@@ -250,7 +290,7 @@ export class StateService
   }
 
   async deleteObject(T: IConstructor, id: any): Promise<boolean> {
-      var stateMap = this.getStateMap(T);
+      let stateMap = this.getStateMap(T);
       let loadingKey = `${T.name}; ${id}`;
 
       this.addLoading(loadingKey, "stateService.deleteObject");
@@ -259,8 +299,7 @@ export class StateService
 
       this.removeLoading(loadingKey);
 
-      var index = stateMap.data.findIndex(x => x.id == id);
-      stateMap.data = stateMap.data.splice(index,1);
+      stateMap.deleteFromState(id);
 
       return true;
   }

@@ -4,6 +4,7 @@ import {AuthenticationService} from "../../services/authentication.service";
 
 export class SidebarItem {
   public isSelected?: boolean = false;
+  public icon:string;
   constructor(public text:string,public link: string) {
 
   }
@@ -20,9 +21,10 @@ export class SidebarComponent implements OnInit{
 
   constructor(private router: Router, private authenticationService: AuthenticationService) {
     this.items = [
-      { text: "Home",link: "/home", isSelected : false },
-      { text: "Profiles",link: "/profiles", isSelected : false },
-      { text: "Conditions",link: "/conditions" }];
+      { text: "Home",link: "/home", isSelected : false, icon: "home" },
+      { text: "Profiles",link: "/profiles", isSelected : false, icon: "user" },
+      { text: "Conditions",link: "/conditions", isSelected: false, icon: "question" },
+      { text: "Settings",link: "/settings", isSelected: false, icon: "cog" }];
 
     router.events.subscribe((event: Event) => {
       if (event instanceof NavigationEnd) {

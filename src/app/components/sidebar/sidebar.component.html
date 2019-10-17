@@ -3,12 +3,15 @@
         <img src="../../../assets/logo.png" width="150"/>
     </div>
     <div class="sidebar-body">
-        <div *ngFor="let item of items" [routerLink]="item.link" (click)="itemClicked(item)" class="sidebar-item" [class.selected]="item.isSelected">{{item.text}}</div>
+        <div *ngFor="let item of items" [routerLink]="item.link" (click)="itemClicked(item)" class="sidebar-item" [class.selected]="item.isSelected">
+            <fa-icon class="icon" [icon]="item.icon"></fa-icon>
+            <span class="text">{{item.text}}</span>
+        </div>
     </div>
     <div class="sidebar-footer">
         <div (click)="onLogoutClicked()" class="logout-item">
             <span>Logout</span>
-            <fa-icon icon="sign-out"></fa-icon>
+            <fa-icon icon="sign-out-alt"></fa-icon>
         </div>
     </div>
 </div>

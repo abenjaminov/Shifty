@@ -48,7 +48,7 @@ export class ScheduleService {
 
         weeklySchedule.startDate = datesOfWeek[0];
         weeklySchedule.endDate = datesOfWeek[6];
-        weeklySchedule.id = weeklySchedule.startDate.toISOString() + "-" + weeklySchedule.endDate.toISOString();
+        weeklySchedule.id = weeklySchedule.startDate.getFullYear() + ";" + weeklySchedule.startDate.getMonth() + ";" + weeklySchedule.startDate.getDate();
 
         return weeklySchedule;
     }

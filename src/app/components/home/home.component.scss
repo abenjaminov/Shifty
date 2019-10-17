@@ -37,9 +37,17 @@
     align-items: center;
     justify-content: space-between;
 
+    .title {
+      font-weight: 500;
+    }
+
     .content-header-actions {
       display: flex;
       justify-content: flex-end;
+
+      .calculate-assignments {
+        animation: blinking 2s infinite;
+      }
 
       ::ng-deep .mat-button-wrapper {
         font-size: 20px;

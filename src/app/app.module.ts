@@ -39,10 +39,10 @@ import {FaIconLibrary, FontAwesomeModule} from "@fortawesome/angular-fontawesome
 import {
     faBroom, faCalculator, faChevronDown,
     faChevronLeft,
-    faChevronRight, faDotCircle, faEdit,
-    faFileExcel, faPlus, faSave,
+    faChevronRight, faCog, faDotCircle, faEdit,
+    faFileExcel, faHome, faPersonBooth, faPlus, faQuestion, faSave, faSignOutAlt,
     faSnowplow,
-    faTrash
+    faTrash, faUser
 } from "@fortawesome/free-solid-svg-icons";
 
 @NgModule({
@@ -100,5 +100,10 @@ export class AppModule {
         library.addIcons(faDotCircle);
         library.addIcons(faCalculator);
         library.addIcons(faSave);
+        library.addIcons(faSignOutAlt);
+        library.addIcons(faHome);
+        library.addIcons(faUser);
+        library.addIcons(faQuestion);
+        library.addIcons(faCog);
     }
 }

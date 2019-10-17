@@ -5,8 +5,8 @@ import { GeneticEnviroment } from "../genetics/evniroment";
 import { Router, Request } from "express";
 import Enumerable from 'linq';
 import { getHttpResposeJson } from "../models/helpers";
-//import * as Excel from 'exceljs';
-const Excel = undefined;
+import * as Excel from 'exceljs';
+//const Excel = undefined;
 
 var express = require('express');
 var router: Router = express.Router();

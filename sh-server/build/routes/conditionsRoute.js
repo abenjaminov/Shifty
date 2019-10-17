@@ -1,10 +1,9 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -22,7 +21,7 @@ const helpers_1 = require("../models/helpers");
 const express = __importStar(require("express"));
 var router = express.Router();
 // Get conditions
-router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
     var context = routeCommon_1.RoutesCommon.getContextFromRequest(req);
     let conditions = yield context.select(models_1.Condition, true, false, [{ dataFilters: [{ property: "isDeleted", value: false }] }]);
     res.json(helpers_1.getHttpResposeJson(conditions, false));
@@ -40,7 +39,7 @@ router.post('/', (req, res, next) => {
     });
 });
 // Delete Condition
-router.delete('/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.delete('/:id', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     var conditionId = req.params["id"];
     var context = routeCommon_1.RoutesCommon.getContextFromRequest(req);
     let conditions = yield context.select(models_1.Condition, false, false, [{ dataFilters: [{ property: "id", value: conditionId }] }]);

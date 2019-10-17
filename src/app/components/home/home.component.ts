@@ -48,21 +48,7 @@ export class HomeComponent implements OnInit {
       this.title = 'Weekly assignments ' + this.weeklySchedule.days[Day.Sunday].dateString + " - " + this.weeklySchedule.days[Day.Saturday].dateString;
 
       this.currentWeekEmpty = this.weeklySchedule.numberOfAssignments == 0;
-
-      if(this.currentWeekEmpty) {
-        this.calculateWeeklyAssignments(true);
-      }
     })
-  }
-
-  askRunSchedule(): void {
-
-    const dialogRef = this.dialog.open(QuestionDialogComponent, {
-      width: '250px',
-      data: {title: 'Calculate Assignments', question : 'Would you like to calculate assignments for this week?', answer: false}
-    });
-
-
   }
 
   profileClicked(profile: Profile) {

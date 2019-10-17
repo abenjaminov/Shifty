@@ -18,13 +18,13 @@
                 Weekly Schedule
             </div>
             <div class="content-header-actions">
-                <button *ngIf="currentWeekEmpty" mat-icon-button aria-label="Calculate assignments" matTooltip="Calculate assignments" (click)="calculateWeeklyAssignments(true)">
+                <button class="calculate-assignments" *ngIf="currentWeekEmpty" mat-icon-button aria-label="Calculate assignments" matTooltip="Calculate assignments" (click)="calculateWeeklyAssignments(true)">
                     <fa-icon icon="calculator"></fa-icon>
                 </button>
                 <button *ngIf="!currentWeekEmpty" mat-icon-button aria-label="Clear weekly schedule" matTooltip="Clear weekly schedule" (click)="clearWeeklySchedule()">
                     <fa-icon icon="broom"></fa-icon>
                 </button>
-                <button mat-icon-button aria-label="Export weekly schedule" matTooltip="Export weekly schedule" (click)="onExport()" *ngIf="!isWaitingForExport">
+                <button mat-icon-button aria-label="Export weekly schedule" matTooltip="Export weekly schedule" (click)="onExport()" *ngIf="!isWaitingForExport && !currentWeekEmpty">
                     <fa-icon icon="file-excel"></fa-icon>
                 </button>
             </div>
