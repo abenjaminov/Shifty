@@ -67,6 +67,12 @@ body {
     overflow: visible!important;
 }
 
+.three-dots {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 @keyframes blinking {
     0% {
         background-color: transparent;

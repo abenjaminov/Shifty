@@ -46,6 +46,9 @@ router.get('/run/:date?', async (req: Request,res,next) => {
     for (let index = 0; index < dates.length; index++) {
         let day = scheduleService.getDayByDate(dates[index]);
 
+        // TODO : Remove this when settings exist
+        if(day == Day.Saturday || day == Day.Friday) next;
+
         var permanentConditionsForThisDay = 
             Enumerable.from(rooms).selectMany(r => r.conditions).where(c => c.type === ConditionType.Permanent && c.day == day).toArray();
         

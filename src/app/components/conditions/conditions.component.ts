@@ -22,6 +22,10 @@ export class ConditionsComponent implements OnInit {
   profiles: Profile[];
   tags: Tag[];
   allConditions: Condition[];
+  permanentConditions: Condition[];
+  roomConditions: Condition[];
+
+  permanentOpen: boolean;
 
   constructor(
     private profilesService: ProfilesService,
@@ -46,6 +50,9 @@ export class ConditionsComponent implements OnInit {
       this.rooms = result[1];
       this.profiles = result[2];
       this.allConditions = result[3];
+
+      this.permanentConditions = this.conditionsService.permanentConditions;
+      this.roomConditions = this.conditionsService.roomConditions;
 
       this.fixConditionsForDisplay();
     });
@@ -74,5 +81,9 @@ export class ConditionsComponent implements OnInit {
           this.init();
       }
     });
+  }
+
+  togglePermanent() {
+    this.permanentOpen = !this.permanentOpen;
   }
 }

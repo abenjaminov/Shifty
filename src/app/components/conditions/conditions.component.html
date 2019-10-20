@@ -40,7 +40,7 @@
               </div>
               <div class="scroll-content table-content">
                   <div class="scroll-wrapper">
-                      <div *ngFor="let condition of allConditions" class="row">
+                      <div *ngFor="let condition of roomConditions" class="row">
                           <div class="cell">
                               {{condition.type}}
                           </div>
@@ -72,6 +72,45 @@
 
                           </div>
                       </div>
+                      <div class="row seperator">
+                          <fa-icon class="toggle" icon="plus" *ngIf="!permanentOpen" (click)="togglePermanent()"></fa-icon>
+                          <fa-icon class="toggle" icon="minus" *ngIf="permanentOpen" (click)="togglePermanent()"></fa-icon>
+                          <span class="text">Permanent conditions</span>
+                      </div>
+                      <ng-container *ngIf="permanentOpen">
+                          <div *ngFor="let condition of permanentConditions" class="row">
+                              <div class="cell">
+                                  {{condition.type}}
+                              </div>
+                              <div class="cell">
+                                  {{condition.description}}
+                              </div>
+                              <div class="cell">
+                                  {{condition.room ? condition.room.name : ''}}
+                              </div>
+                              <div class="cell">
+                                  {{condition.profile ? condition.profile.name : ''}}
+                              </div>
+                              <div class="cell">
+                                  {{condition.profession ? condition.profession.name : ''}}
+                              </div>
+                              <div class="cell">
+                                  {{condition.day ? condition.day : ''}}
+                              </div>
+                              <div class="cell">
+                                  {{condition.importance ? condition.importance : ''}}
+                              </div>
+                              <div class="cell">
+                                  {{condition.isLockedForNextDay ? 'Yes' : 'No'}}
+                              </div>
+                              <div class="small-cell action-cell">
+                                  <button mat-button (click)="onDeleteCondition(condition)">
+                                      <fa-icon icon="trash"></fa-icon>
+                                  </button>
+
+                              </div>
+                          </div>
+                      </ng-container>
                   </div>
               </div>
           </div>

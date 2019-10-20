@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import { Observable, Subscriber, Observer, fromEvent } from 'rxjs';
+import * as Enumerable from 'linq';
 
 export class DropdownOption {
   id: string;
@@ -25,7 +26,7 @@ export class DropdownComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    
+    this.options = Enumerable.from(this.options).orderBy(opt => opt.name).toArray();
   }
 
   onChange($event) {

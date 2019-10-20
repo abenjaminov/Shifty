@@ -51,6 +51,9 @@ router.get('/run/:date?', (req, res, next) => __awaiter(this, void 0, void 0, fu
     var assignments = [];
     for (let index = 0; index < dates.length; index++) {
         let day = scheduleService.getDayByDate(dates[index]);
+        // TODO : Remove this when settings exist
+        if (day == models_1.Day.Saturday || day == models_1.Day.Friday)
+            next;
         var permanentConditionsForThisDay = linq_1.default.from(rooms).selectMany(r => r.conditions).where(c => c.type === models_1.ConditionType.Permanent && c.day == day).toArray();
         // Profiles who are locked from the previous day
         let profileIdsNotAllowedForThisDay = prevDayAssignments.filter(a => a.condition.isLockedForNextDay).map(a => a.profileId);

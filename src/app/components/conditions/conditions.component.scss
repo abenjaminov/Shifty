@@ -1,3 +1,5 @@
+@import '../../../theme.scss';
+
 .sh-conditions {
     .sh-conditions-content {
         display: flex;
@@ -34,6 +36,22 @@
 
                 &:hover {
                     background-color: transparent;
+                }
+            }
+
+            &.seperator {
+                padding: 10px 0px;
+                background-color: $theme-secondary;
+                color:$theme-primary;
+
+                .toggle {
+                    cursor: pointer;
+                    margin-left: 10px;
+                }
+
+                .text {
+                    margin-left: 10px;
+                    font-size: 18px;
                 }
             }
 

@@ -24,7 +24,8 @@ export class SidebarComponent implements OnInit{
       { text: "Home",link: "/home", isSelected : false, icon: "home" },
       { text: "Profiles",link: "/profiles", isSelected : false, icon: "user" },
       { text: "Conditions",link: "/conditions", isSelected: false, icon: "question" },
-      { text: "Settings",link: "/settings", isSelected: false, icon: "cog" }];
+      //{ text: "Settings",link: "/settings", isSelected: false, icon: "cog" }
+      ];
 
     router.events.subscribe((event: Event) => {
       if (event instanceof NavigationEnd) {

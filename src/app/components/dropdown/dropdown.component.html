@@ -1,11 +1,11 @@
 <div class="sh-dropdown">
 
   <div class="dropdown-input">
-      <div class="selected-text">{{selectedOption?.name || '---'}}</div>
+      <div class="selected-text three-dots">{{selectedOption?.name || '---'}}</div>
       <fa-icon class="chevron" icon="chevron-down" (click)="onOpenClicked()"></fa-icon>
   </div>
   <div class="dropdown-content" *ngIf="this.isOpen">
-    <div class="dropdown-option" *ngFor="let option of options" (click)="onOptionClicked(option)">
+    <div class="dropdown-option three-dots" *ngFor="let option of options" (click)="onOptionClicked(option)">
         {{option.name}}
     </div>
   </div>

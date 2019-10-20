@@ -40,7 +40,7 @@ import {
     faBroom, faCalculator, faChevronDown,
     faChevronLeft,
     faChevronRight, faCog, faDotCircle, faEdit,
-    faFileExcel, faHome, faPersonBooth, faPlus, faQuestion, faSave, faSignOutAlt,
+    faFileExcel, faHome, faMinus, faPersonBooth, faPlus, faQuestion, faSave, faSignOutAlt,
     faSnowplow,
     faTrash, faUser
 } from "@fortawesome/free-solid-svg-icons";
@@ -97,6 +97,7 @@ export class AppModule {
         library.addIcons(faChevronDown);
         library.addIcons(faEdit);
         library.addIcons(faPlus);
+        library.addIcons(faMinus);
         library.addIcons(faDotCircle);
         library.addIcons(faCalculator);
         library.addIcons(faSave);

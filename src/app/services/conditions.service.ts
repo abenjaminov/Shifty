@@ -1,7 +1,8 @@
-import { Injectable, Inject, forwardRef } from '@angular/core';
-import { ServiceState } from './models';
-import {Condition, Profile} from '../models';
-import { StateService, IStateObject } from './state.service';
+import {Injectable} from '@angular/core';
+import {ServiceState} from './models';
+import {Condition, ConditionType} from '../models';
+import {IStateObject, StateService} from './state.service';
+import * as Enumerable from 'linq';
 
 @Injectable()
 export class ConditionService {
@@ -13,6 +14,14 @@ export class ConditionService {
 
   get conditions(): Condition[] {
     return this.stateService.getState(Condition) as Condition[];
+  }
+
+  get permanentConditions(): Condition[] {
+    return Enumerable.from(this.stateService.appState.conditions).where(condition => condition.type == ConditionType.Permanent).toArray();
+  }
+
+  get roomConditions(): Condition[] {
+    return Enumerable.from(this.stateService.appState.conditions).where(condition => condition.type == ConditionType.Room).toArray();
   }
 
   load(): Promise<Condition[]> {
